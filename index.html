@@ -596,10 +596,26 @@
             filteredOrders.forEach((order, index) => {
                 let displayPhone = (order.phone && order.phone !== "undefined") ? order.phone : "請見官方LINE"; let callAction = displayPhone !== "請見官方LINE" ? `tel:${displayPhone}` : "javascript:void(0)";
                 let cardHtml = `<div id="ticket-card-${order.id}" class="ticket-edge bg-white border-2 border-seefoodDarkBlue rounded-2xl shadow-md relative overflow-hidden mb-3"><div class="bg-seefoodDarkBlue text-white px-4 py-2.5 flex justify-between items-center"><span class="text-[10px] font-black ${order.used ? 'bg-gray-600' : 'bg-red-500 animate-pulse'} px-2 py-0.5 rounded">${order.used ? '✅ 惜福自取完畢' : '🎫 獵人未取餐憑證'}</span><span class="text-xs font-mono font-bold">單號: ${order.orderId || '驗證中'}</span></div><div class="p-4 space-y-3"><div class="text-center"><h3 class="text-lg font-black text-gray-900">${order.store}</h3><p class="text-xs font-bold text-gray-500 mt-0.5">📍 門市取餐地址：${order.address || '請見官方LINE'}</p><p class="text-sm font-black text-blue-600 bg-blue-50 py-1.5 rounded-lg border mt-2 px-2">${order.item}</p></div><div class="text-center text-xs text-gray-400 py-1 border-y border-dashed">⏳ 自取截止：${order.time}</div>`;
-                if (!order.used) { cardHtml += `<div class="space-y-2 pt-1"><p class="text-[10px] font-black text-red-600 bg-red-50 border border-red-200 py-1 rounded text-center">⚠️ 確保權益！下單後請務必立刻致電商家確認取餐時間和品項</p><a href="${callAction}" class="flex items-center justify-center bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black w-full py-3 rounded-xl text-xs shadow-sm">📞 點我快打致電商家：${displayPhone}</a><div class="swipe-track mt-2 select-none"><span class="text-xs font-black text-red-400 tracking-widest animate-pulse">➡️ 右滑交付店員確認核銷</span><div class="swipe-handle" id="swiper-${order.id}" ontouchstart="initSwipe(event, ${order.id}, '${order.orderId}')" onmousedown="initSwipe(event, ${order.id}, '${order.orderId}')">▶️</div></div></div>`; } else { cardHtml += `<div class="text-center text-xs font-bold text-gray-400 py-2 bg-gray-50 border rounded-xl">核銷完成時間：${order.verifyTime || order.date}</div>`; }
-                cardHtml += `</div></div>`; container.innerHTML += cardHtml;
-            });
-        }
+               if (!order.used) { 
+                    cardHtml += `<div class="space-y-2 pt-1">
+                        <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl shadow-sm">
+                            <p class="text-[10px] font-black text-amber-600 text-center mb-1.5">⚠️ 確保權益！下單後請務必立刻致電商家確認</p>
+                            <div class="bg-white p-2.5 rounded-lg border border-dashed border-amber-300 text-center relative">
+                                <span class="absolute -top-2.5 left-1/2 transform -translate-x-1/2 bg-white px-2 text-[9px] text-gray-400 font-bold">👇 不知道怎麼說？照著唸就好 👇</span>
+                                <p class="text-xs font-black text-gray-800 mt-1 leading-relaxed text-left">
+                                    「你好，我是美食獵人！我有在 SEEFOOD 下單一份【<span class="text-red-500">${order.item}</span>】，我的訂單編號是 <span class="bg-slate-100 border px-1 rounded text-seefoodDarkBlue font-mono">${order.orderId}</span>，請問最晚幾點前要過去拿？」
+                                </p>
+                            </div>
+                        </div>
+                        <a href="${callAction}" class="flex items-center justify-center bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black w-full py-3.5 rounded-xl text-xs shadow-sm active:scale-95 transition">📞 點我快打致電商家：${displayPhone}</a>
+                        <div class="swipe-track mt-2 select-none shadow-inner">
+                            <span class="text-xs font-black text-red-400 tracking-widest animate-pulse">➡️ 右滑交付店員確認核銷</span>
+                            <div class="swipe-handle" id="swiper-${order.id}" ontouchstart="initSwipe(event, ${order.id}, '${order.orderId}')" onmousedown="initSwipe(event, ${order.id}, '${order.orderId}')">▶️</div>
+                        </div>
+                    </div>`; 
+                } else { 
+                    cardHtml += `<div class="text-center text-xs font-bold text-gray-400 py-2 bg-gray-50 border rounded-xl">核銷完成時間：${order.verifyTime || order.date}</div>`; 
+                }
 
         let swipeState = { startX: 0, currentX: 0, maxDelta: 0, activeId: null, orderId: '' };
         function initSwipe(e, id, orderId) { swipeState.startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX; swipeState.activeId = id; swipeState.orderId = orderId; const handle = document.getElementById(`swiper-${id}`); swipeState.maxDelta = handle.parentElement.clientWidth - handle.offsetWidth - 4; document.addEventListener('touchmove', handleSwipe); document.addEventListener('mousemove', handleSwipe); document.addEventListener('touchend', endSwipe); document.addEventListener('mouseup', endSwipe); }
