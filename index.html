@@ -538,23 +538,33 @@
         function closeCheckout() { document.getElementById('checkout-modal').classList.add('hidden'); }
 
         // 🏦 滿血版雙核財務渲染引擎
-        function openFinanceModal() {
+       function openFinanceModal() {
             document.getElementById('fb-code').value = localStorage.getItem('seefood_merchant_bank_code') || ""; document.getElementById('fb-branch').value = localStorage.getItem('seefood_merchant_bank_branch') || "";
             document.getElementById('fb-acc').value = localStorage.getItem('seefood_merchant_bank_account') || ""; document.getElementById('fb-owner').value = localStorage.getItem('seefood_merchant_bank_owner') || "";
-            let isVip = localStorage.getItem('seefood_merchant_vip') === 'true'; document.getElementById('finance-vip-fee').classList.toggle('hidden', !isVip);
+            
+            // 隱藏舊版寫死在前端的 UI，改用後台算好的精確資料
+            let isVip = localStorage.getItem('seefood_merchant_vip') === 'true'; 
+            let vipFeeRow = document.getElementById('finance-vip-fee');
+            if (vipFeeRow) vipFeeRow.classList.add('hidden'); 
             
             if (userStats.merchantFinance) {
                 let fin = userStats.merchantFinance;
                 if(fin.currentPeriod) document.getElementById('current-period-title').innerText = fin.currentPeriod;
                 if(fin.historyPeriod) document.getElementById('history-period-title').innerHTML = `${fin.historyPeriod} <span class="text-[10px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-800/60 ml-1">對帳中</span>`;
+                
+                // 動態渲染本期帳單 (包含結轉欠款與 VIP 費)
                 document.getElementById('fin-sales').innerText = `$${fin.sales || 0}`;
-                document.getElementById('fin-fee').innerText = `-$${fin.gatewayFee || 0}`;
+                document.getElementById('fin-fee').innerHTML = `-$${fin.gatewayFee || 0} 
+                    ${fin.vipFee > 0 ? `<br><span class="text-red-400">大覺者 VIP 費 <b>-$${fin.vipFee}</b></span>` : ''}
+                    ${fin.debtIn < 0 ? `<br><span class="text-amber-400">前期結轉欠款 <b>-$${Math.abs(fin.debtIn)}</b></span>` : ''}`;
                 document.getElementById('finance-net-income').innerText = `$${fin.netIncome || 0}`;
-                let histVipFee = isVip ? 299 : 0;
-                let histNet = Math.max(0, (fin.historySales || 0) - (fin.historyFee || 0) - histVipFee);
+                
+                // 動態渲染歷史帳單
                 document.getElementById('hist-sales').innerText = `$${fin.historySales || 0}`;
-                document.getElementById('hist-fee').innerText = `-$${fin.historyFee || 0}`;
-                document.getElementById('hist-net-income').innerText = `$${histNet}`;
+                document.getElementById('hist-fee').innerHTML = `-$${fin.historyFee || 0} 
+                    ${fin.historyVipFee > 0 ? `<br><span class="text-red-400">大覺者 VIP 費 <b>-$${fin.historyVipFee}</b></span>` : ''}
+                    ${fin.historyDebtIn < 0 ? `<br><span class="text-amber-400">前期結轉欠款 <b>-$${Math.abs(fin.historyDebtIn)}</b></span>` : ''}`;
+                document.getElementById('hist-net-income').innerText = `$${fin.historyNetIncome || 0}`;
             } else {
                 document.getElementById('current-period-title').innerText = "本期資料結算中";
                 document.getElementById('fin-sales').innerText = "$0"; document.getElementById('fin-fee').innerText = "-$0"; document.getElementById('finance-net-income').innerText = "$0";
@@ -564,7 +574,6 @@
             document.getElementById('finance-modal').classList.remove('hidden');
         }
         function closeFinanceModal() { document.getElementById('finance-modal').classList.add('hidden'); }
-
         function switchOrderSubTab(subTab) {
             orderSubTab = subTab;
             document.getElementById('order-tab-active').className = subTab === 'active' ? "w-1/2 text-center py-2.5 rounded-lg bg-white text-seefoodDarkBlue shadow-sm transition-all" : "w-1/2 text-center py-2.5 rounded-lg text-gray-500 transition-all";
