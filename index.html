@@ -298,16 +298,14 @@
         let cloudBanners = []; let bannerIndex = 0;
         let textBannerTemplates = [ { emoji: "🌍", text: "獵人雷達點燈系統：全台各區滿 100 店即刻開車解鎖！" }, { emoji: "👑", text: "加入創始大覺者 VIP 享有黃金標籤特權，免抽成免月費！" } ];
 
-        // 🎯 時間轉換安全晶片 (解決 Google Sheets 雞婆傳送 ISO Date 的問題)
+        // 🎯 核心防線：時間翻譯晶片 (過濾 Google Sheets 亂碼)
         function safeFormatTime(val) {
             if (!val) return "今日限時";
             let str = String(val);
             if (str.includes('T') && str.endsWith('Z')) {
                 try {
                     let d = new Date(str);
-                    if (d.getFullYear() < 1970) {
-                        return d.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false });
-                    }
+                    if (d.getFullYear() < 1970) return d.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false });
                     return d.toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false });
                 } catch(e) {}
             }
@@ -442,7 +440,6 @@
 
                 storesData = [];
                 rawData.forEach(store => {
-                    // 🎯 修正3：首頁如果有商品空值，補上預設文案
                     let finalNote = store.note;
                     if (!finalNote) { finalNote = store.itemType === '固定菜單' ? "這很有名耶..還需要介紹嗎？直接搶就對了！" : "※ 餐廳新鮮現做優質備品"; }
 
@@ -452,7 +449,7 @@
                         lat: parseFloat(store.lat) || 0, lng: parseFloat(store.lng) || 0, 
                         itemType: store.itemType, item: store.item, note: finalNote,
                         originalPrice: parseFloat(store.originalPrice) || 0, discountPrice: parseFloat(store.discountPrice) || 0, remain: parseInt(store.remain) || 0, 
-                        time: safeFormatTime(store.time), // 🎯 修正1：時間轉譯 
+                        time: safeFormatTime(store.time),
                         discountRate: store.originalPrice > 0 ? (store.discountPrice / store.originalPrice) : 0, isVip: localStorage.getItem('seefood_merchant_vip') === 'true' && store.shopId === localStorage.getItem('seefood_merchant_shop_id')
                     });
                 });
@@ -579,11 +576,14 @@
             emptyState.classList.add('hidden'); container.innerHTML = "";
             filteredOrders.forEach((order, index) => {
                 let displayPhone = (order.phone && order.phone !== "undefined") ? order.phone : "請見官方LINE"; let callAction = displayPhone !== "請見官方LINE" ? `tel:${displayPhone}` : "javascript:void(0)";
-                let orderTime = safeFormatTime(order.time); // 🎯 修正1：時間轉譯
+                
+                // 🎯 確保時間經過安全晶片翻譯
+                let orderTime = safeFormatTime(order.time); 
                 
                 let cardHtml = `<div id="ticket-card-${order.id}" class="ticket-edge bg-white border-2 border-seefoodDarkBlue rounded-2xl shadow-md relative overflow-hidden mb-3"><div class="bg-seefoodDarkBlue text-white px-4 py-2.5 flex justify-between items-center"><span class="text-[10px] font-black ${order.used ? 'bg-gray-600' : 'bg-red-500 animate-pulse'} px-2 py-0.5 rounded">${order.used ? '✅ 惜福自取完畢' : '🎫 獵人未取餐憑證'}</span><span class="text-xs font-mono font-bold">單號: ${order.orderId || '驗證中'}</span></div><div class="p-4 space-y-3"><div class="text-center"><h3 class="text-lg font-black text-gray-900">${order.store}</h3><p class="text-xs font-bold text-gray-500 mt-0.5">📍 門市取餐地址：${order.address || '請見官方LINE'}</p><p class="text-sm font-black text-blue-600 bg-blue-50 py-1.5 rounded-lg border mt-2 px-2">${order.item}</p></div><div class="text-center text-xs text-gray-400 py-1 border-y border-dashed">⏳ 自取截止：${orderTime}</div>`;
                 
                 if (!order.used) { 
+                    // 🎯 社恐防尷尬通話小抄 UI
                     cardHtml += `<div class="space-y-2 pt-1">
                         <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl shadow-sm">
                             <p class="text-[10px] font-black text-amber-600 text-center mb-1.5">⚠️ 確保權益！下單後請務必立刻致電商家確認</p>
@@ -601,6 +601,7 @@
                         </div>
                     </div>`; 
                 } else { 
+                    // 🎯 核銷完成時間也要過濾
                     cardHtml += `<div class="text-center text-xs font-bold text-gray-400 py-2 bg-gray-50 border rounded-xl">核銷完成時間：${safeFormatTime(order.verifyTime || order.date)}</div>`; 
                 }
                 
@@ -620,7 +621,7 @@
             const p = new URLSearchParams(); p.append('action', 'verifyOrder'); p.append('orderId', orderId);
             fetch(gasUrl, { method: "POST", body: p }).then(() => {
                 let saved = JSON.parse(localStorage.getItem('seefood_orders_list') || "[]"); let idx = saved.findIndex(o => o.id === localId);
-                if(idx !== -1) { saved[idx].used = true; saved[idx].verifyTime = new Date().toLocaleString(); localStorage.setItem('seefood_orders_list', JSON.stringify(saved)); }
+                if(idx !== -1) { saved[idx].used = true; saved[idx].verifyTime = new Date().toLocaleString('zh-TW', {hour12:false}); localStorage.setItem('seefood_orders_list', JSON.stringify(saved)); }
                 syncUserDataFromCloud();
             });
         }
@@ -633,13 +634,13 @@
             const pBtn = document.querySelector('button[onclick="submitPayment()"]'); pBtn.innerText = "⚡ 正在向綠界/LINE Pay索取對帳單號..."; pBtn.disabled = true;
 
             const p = new URLSearchParams(); p.append('action', 'buyItem'); p.append('shopId', currentOrder.shopId); p.append('itemIndex', currentOrder.itemIndex); p.append('buyerUid', userStats.lineUid);
-            p.append('time', currentOrder.time); // 🎯 修正1：確實送出時間
+            p.append('time', currentOrder.time); 
 
             fetch(gasUrl, { method: "POST", body: p }).then(res => res.json()).then(resJson => {
                 pBtn.innerText = "🚀 模擬結帳（前往綠界 / LINE Pay）"; pBtn.disabled = false;
                 if (resJson.status === "success") {
                     let saved = JSON.parse(localStorage.getItem('seefood_orders_list') || "[]");
-                    saved.push({ id: Date.now(), orderId: resJson.orderId, shopId: currentOrder.shopId, store: currentOrder.store, item: currentOrder.item, address: currentOrder.address, phone: currentOrder.phone, time: currentOrder.time, used: false, date: new Date().toLocaleString() });
+                    saved.push({ id: Date.now(), orderId: resJson.orderId, shopId: currentOrder.shopId, store: currentOrder.store, item: currentOrder.item, address: currentOrder.address, phone: currentOrder.phone, time: currentOrder.time, used: false, date: new Date().toLocaleString('zh-TW', {hour12:false}) });
                     localStorage.setItem('seefood_orders_list', JSON.stringify(saved)); let localCount = parseInt(localStorage.getItem('seefood_local_buy_count') || "0"); localStorage.setItem('seefood_local_buy_count', localCount + 1);
                     userStats.hasFirstOrder = true; userStats.co2Total += 0.5; userStats.savedAmount += (Number(currentOrder.origPrice) - Number(currentOrder.price)) || 0; userStats.storeCounts[currentOrder.store] = (userStats.storeCounts[currentOrder.store] || 0) + 1; saveUserStats(); renderBadgesWall();
                     alert(`💳 付款模擬成功！\n\n交易編號：${resJson.orderId}\n已經為您向店家包好保留餐點，請看獵人小卡提示！`); 
@@ -712,14 +713,14 @@
             
             for (let i = 1; i <= maxSlots; i++) {
                 let typeSelect = document.getElementById(`dash-itemType${i}`); 
-                if (!typeSelect) continue; // 🛡️ 致命崩潰防護
+                if (!typeSelect) continue; 
                 let type = typeSelect.value; 
                 if (type === "暫不使用") { localStorage.setItem('seefood_slot_data_' + i, JSON.stringify({type: type, name: "", desc: "", orig: 150, rate: 0.5, rem: 0})); formData.append(`itemType${i}`, "暫不使用"); formData.append(`itemName${i}`, "【未啟用】"); formData.append(`itemDesc${i}`, ""); formData.append(`orig${i}`, 0); formData.append(`disc${i}`, 0); formData.append(`rem${i}`, 0); continue; }
                 
                 let nameInput = document.getElementById(`dash-itemName${i}`); let name = nameInput ? nameInput.value.trim() : ""; 
                 let descInput = document.getElementById(`dash-itemDesc${i}`); let desc = descInput ? descInput.value.trim() : "";
                 
-                // 🎯 修正3：幽靈預設文案
+                // 🎯 修正3：自動補齊幽靈文案
                 if (type === "固定菜單" && desc === "") { desc = "這很有名耶..還需要介紹嗎？直接搶就對了！"; }
 
                 let orig = parseFloat(document.getElementById(`dash-orig${i}`).value) || 0; let rateStr = document.getElementById(`dash-rate${i}`).value; let rate = parseFloat(rateStr) || 0; let rem = parseInt(document.getElementById(`dash-rem${i}`).value) || 0;
