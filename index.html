@@ -171,8 +171,16 @@
                         <p class="text-[10px] text-gray-400 mt-1">💡 建議填寫明確時間，例如：6/17 21:00前</p>
                     </div>
 
+                    <div id="merchant-active-orders-zone" class="mt-4 bg-slate-800 rounded-2xl p-4 border border-slate-700 shadow-lg relative z-10 hidden">
+                        <div class="flex justify-between items-center mb-3 border-b border-slate-700 pb-2">
+                            <h4 class="font-black text-white text-sm flex items-center"><span class="animate-pulse mr-1">🟢</span> 待取餐訂單 (未核銷)</h4>
+                            <button type="button" onclick="syncUserDataFromCloud()" class="text-[10px] bg-slate-700 text-blue-300 font-bold px-2 py-1 rounded shadow-sm active:scale-95 transition">🔄 刷新</button>
+                        </div>
+                        <div id="merchant-active-orders-list" class="space-y-2"></div>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-2 pt-1 text-xs relative z-10">
-                        <div class="col-span-2 text-center text-[10px] font-bold text-slate-400 mb-1">
+                        <div class="col-span-2 text-center text-[10px] font-bold text-slate-400 mb-1 mt-2">
                             🛡️ 營運安全線：為防範異常交易，單日累積營業額達 $10,000 系統將強制打烊。
                         </div>
                         <button type="button" onclick="updateStoreOnlineStatus('OFF')" class="bg-slate-700 text-white font-black py-3 rounded-xl active:scale-95 transition hover:bg-slate-600">🛑 結束販售 (下架)</button>
@@ -305,7 +313,7 @@
         let cloudBanners = []; let bannerIndex = 0;
         let textBannerTemplates = [ { emoji: "🌍", text: "獵人雷達點燈系統：全台各區滿 100 店即刻開車解鎖！" }, { emoji: "👑", text: "加入創始大覺者 VIP 享有黃金標籤特權，免抽成免月費！" } ];
 
-        // 🎯 修正4：XSS 終極防護晶片 (將所有可能夾帶代碼的字串進行轉譯)
+        // 🎯 XSS 終極防護晶片 (將所有可能夾帶代碼的字串進行轉譯)
         function escapeHTML(str) {
             if (typeof str !== 'string') return '';
             return str.replace(/[&<>'"]/g, function(tag) {
@@ -398,6 +406,33 @@
                             if (json.myShop.storeStatus === 'ON') { b.innerText = "營業中"; b.className = "text-xs bg-emerald-600 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px] animate-pulse"; } 
                             else { b.innerText = "休息中"; b.className = "text-xs bg-slate-500 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px]"; }
                         }
+                        
+                        // 🎯 渲染商家的待取餐訂單 (即時戰情板)
+                        if (json.myShop.activeOrders) {
+                            const ordersZone = document.getElementById('merchant-active-orders-zone');
+                            const ordersList = document.getElementById('merchant-active-orders-list');
+                            ordersZone.classList.remove('hidden');
+                            
+                            if (json.myShop.activeOrders.length > 0) {
+                                let html = '';
+                                json.myShop.activeOrders.forEach(o => {
+                                    html += `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex justify-between items-center shadow-inner">
+                                        <div>
+                                            <p class="text-emerald-400 font-mono font-black text-sm tracking-wider">${escapeHTML(o.orderId)}</p>
+                                            <p class="text-gray-300 text-xs mt-0.5 font-bold">${escapeHTML(o.item)}</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-gray-500 text-[10px] font-bold">自取截止: ${safeFormatTime(o.time)}</p>
+                                            <p class="text-seefoodYellow font-black text-xs mt-0.5">$${o.price}</p>
+                                        </div>
+                                    </div>`;
+                                });
+                                ordersList.innerHTML = html;
+                            } else {
+                                ordersList.innerHTML = '<p class="text-center text-slate-500 text-xs py-4 font-bold">目前尚無待取餐訂單</p>';
+                            }
+                        }
+                        
                         checkMerchantUrlParameters(); 
                     }
                     if (json.orders && json.orders.length > 0) {
@@ -599,7 +634,6 @@
                 let displayPhone = (order.phone && order.phone !== "undefined") ? order.phone : "請見官方LINE"; let callAction = displayPhone !== "請見官方LINE" ? `tel:${displayPhone}` : "javascript:void(0)";
                 let orderTime = safeFormatTime(order.time); 
                 
-                // 🎯 確保票券上的店家、商品名稱也過濾 XSS
                 let safeStoreName = escapeHTML(order.store);
                 let safeItemName = escapeHTML(order.item);
                 let safeOrderId = escapeHTML(order.orderId);
@@ -746,8 +780,8 @@
 
                 let orig = parseFloat(document.getElementById(`dash-orig${i}`).value) || 0; let rateStr = document.getElementById(`dash-rate${i}`).value; let rate = parseFloat(rateStr) || 0; let rem = parseInt(document.getElementById(`dash-rem${i}`).value) || 0;
                 
-                // 🎯 修正2A：前端攔截防洗錢
-                if (status === "ON" && (orig * rate) > 1000) { alert(`❌ 上架攔截：品項 ${i < 10 ? '0'+i : i} 折後價大於 $1,000，將觸發防洗錢機制！系統已自動轉為審核中。`); }
+                // 🎯 提示老闆：千元商品將會觸發審核
+                if (status === "ON" && (orig * rate) > 1000) { alert(`⚠️ 上架攔截提示：品項 ${i < 10 ? '0'+i : i} 折後價大於 $1,000，將觸發防洗錢機制！系統會自動轉為審核中，待實物驗證後方可顯示。`); }
                 if (status === "ON" && type === "超值惜福包" && !desc) { alert(`❌ 上架被退回：品項 ${i < 10 ? '0'+i : i} 是【超值惜福包】，請填寫今日內容物描述！`); return; }
                 if (status === "ON" && type === "固定菜單" && !name) { alert(`❌ 上架被退回：品項 ${i < 10 ? '0'+i : i} 請填寫常態商品名稱！`); return; }
                 
@@ -762,7 +796,6 @@
                 if (resJson.status === "error") { alert(resJson.msg); return; }
                 const b = document.getElementById('dashboard-status-badge');
                 
-                // 🎯 如果後端回傳的是「成功但有警告（例如觸發了千元審查）」，把警告顯示給老闆看
                 if (resJson.msg && resJson.msg.includes("⚠️")) {
                     alert(resJson.msg);
                 } else if (status === 'ON') { 
