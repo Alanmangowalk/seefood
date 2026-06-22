@@ -305,7 +305,6 @@
         <div id="seefood-alert-modal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
             <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 w-10/12 max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform scale-95 transition-transform duration-300 relative overflow-hidden" id="seefood-alert-box">
                 <div id="seefood-alert-glow" class="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                
                 <div class="text-center relative z-10">
                     <div id="seefood-alert-icon" class="text-5xl mb-3 drop-shadow-lg">⚠️</div>
                     <h3 id="seefood-alert-title" class="text-lg font-black text-white tracking-wider mb-2">系統提示</h3>
@@ -316,6 +315,23 @@
                 <button onclick="closeSeefoodAlert()" id="seefood-alert-btn" class="mt-5 w-full bg-seefoodYellow text-slate-900 font-black py-3.5 rounded-xl shadow-lg active:scale-95 transition text-sm">
                     了解，繼續出擊
                 </button>
+            </div>
+        </div>
+
+        <div id="seefood-confirm-modal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 w-10/12 max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform scale-95 transition-transform duration-300 relative overflow-hidden" id="seefood-confirm-box">
+                <div id="seefood-confirm-glow" class="absolute -top-10 -right-10 w-32 h-32 bg-red-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="text-center relative z-10">
+                    <div id="seefood-confirm-icon" class="text-5xl mb-3 drop-shadow-lg">🚨</div>
+                    <h3 id="seefood-confirm-title" class="text-lg font-black text-white tracking-wider mb-2">系統確認</h3>
+                    <div id="seefood-confirm-message" class="text-xs text-gray-300 leading-relaxed font-bold bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 text-left overflow-y-auto max-h-48 no-scrollbar">
+                        確認內容
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mt-5 relative z-10">
+                    <button id="seefood-confirm-cancel" class="w-full bg-slate-700 text-gray-300 font-black py-3.5 rounded-xl shadow-lg active:scale-95 transition text-sm">取消</button>
+                    <button id="seefood-confirm-ok" class="w-full bg-red-600 text-white font-black py-3.5 rounded-xl shadow-lg active:scale-95 transition text-sm">確定執行</button>
+                </div>
             </div>
         </div>
 
@@ -330,7 +346,7 @@
         let cloudBanners = []; let bannerIndex = 0;
         let textBannerTemplates = [ { emoji: "🌍", text: "獵人雷達點燈系統：全台各區滿 100 店即刻開車解鎖！" }, { emoji: "👑", text: "加入創始大覺者 VIP 享有黃金標籤特權，免抽成免月費！" } ];
 
-        // 🛡️ UI/UX 升級：攔截全站原生 alert，換上 SEEFOOD 戰術彈窗
+        // 🛡️ UI/UX 升級：攔截全站原生 alert，換上 SEEFOOD 戰術彈窗 (單按鈕)
         window.alert = function(msg) {
             const modal = document.getElementById('seefood-alert-modal');
             const box = document.getElementById('seefood-alert-box');
@@ -353,11 +369,11 @@
                 glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-red-500/20 rounded-full blur-3xl pointer-events-none";
                 btnEl.className = "mt-5 w-full bg-red-600 text-white font-black py-3.5 rounded-xl shadow-lg active:scale-95 transition text-sm";
             } else if (content.includes("🛡️")) {
-                type = "shield"; title = "🛡️ 平台防洗錢安全機制"; iconEl.innerText = "👁️‍🗨️";
+                type = "shield"; title = "🛡️ 平台防禦機制"; iconEl.innerText = "👁️‍🗨️";
                 glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none";
                 btnEl.className = "mt-5 w-full bg-seefoodDarkBlue text-white border border-blue-500/50 font-black py-3.5 rounded-xl shadow-lg active:scale-95 transition text-sm";
             } else {
-                iconEl.innerText = "💡"; title = "💡 獵場情報";
+                iconEl.innerText = "💡"; title = "💡 系統情報";
                 glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-seefoodYellow/20 rounded-full blur-3xl pointer-events-none";
                 btnEl.className = "mt-5 w-full bg-seefoodYellow text-slate-900 font-black py-3.5 rounded-xl shadow-lg active:scale-95 transition text-sm";
             }
@@ -382,7 +398,39 @@
             setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
-        // 🎯 XSS 終極防護晶片 (將所有可能夾帶代碼的字串進行轉譯，只在渲染 HTML 標籤內時調用)
+        // 🛡️ UI/UX 升級：SEEFOOD 專屬戰術確認彈窗 (雙按鈕 Promise 封裝)
+        window.seefoodConfirm = function(msg) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('seefood-confirm-modal');
+                const box = document.getElementById('seefood-confirm-box');
+                const msgEl = document.getElementById('seefood-confirm-message');
+                const btnCancel = document.getElementById('seefood-confirm-cancel');
+                const btnOk = document.getElementById('seefood-confirm-ok');
+
+                msgEl.innerHTML = String(msg).replace(/\n/g, '<br>');
+
+                const cleanup = () => {
+                    modal.classList.add('opacity-0');
+                    box.classList.remove('scale-100');
+                    box.classList.add('scale-95');
+                    setTimeout(() => { modal.classList.add('hidden'); }, 300);
+                    btnCancel.onclick = null;
+                    btnOk.onclick = null;
+                };
+
+                btnCancel.onclick = () => { cleanup(); resolve(false); };
+                btnOk.onclick = () => { cleanup(); resolve(true); };
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    box.classList.remove('scale-95');
+                    box.classList.add('scale-100');
+                }, 10);
+            });
+        };
+
+        // 🎯 XSS 終極防護晶片
         function escapeHTML(str) {
             if (typeof str !== 'string') return '';
             return str.replace(/[&<>'"]/g, function(tag) {
@@ -401,7 +449,7 @@
                     return d.toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false });
                 } catch(e) {}
             }
-            return str; // 🎯 修正2：拔除時間防護，確保回傳乾淨字串
+            return str; 
         }
 
         function checkTos() { if (!localStorage.getItem('seefood_tos_agreed')) { document.getElementById('tos-modal').classList.remove('hidden'); } }
@@ -451,12 +499,12 @@
                 if (json.status === "success") {
                     if (json.myShop) {
                         localStorage.setItem('seefood_merchant_shop_id', json.myShop.shopId);
-                        localStorage.setItem('seefood_merchant_shop_name', json.myShop.shopName); // 🎯 修正1：拔除記憶體濾網
+                        localStorage.setItem('seefood_merchant_shop_name', json.myShop.shopName); 
                         localStorage.setItem('seefood_merchant_vip', json.myShop.isVip ? 'true' : 'false');
-                        localStorage.setItem('seefood_merchant_bank_code', json.myShop.bCode); // 🎯 修正1：拔除記憶體濾網
-                        localStorage.setItem('seefood_merchant_bank_branch', json.myShop.bBranch); // 🎯 修正1：拔除記憶體濾網
-                        localStorage.setItem('seefood_merchant_bank_account', json.myShop.bAcc); // 🎯 修正1：拔除記憶體濾網
-                        localStorage.setItem('seefood_merchant_bank_owner', json.myShop.bOwner); // 🎯 修正1：拔除記憶體濾網
+                        localStorage.setItem('seefood_merchant_bank_code', json.myShop.bCode); 
+                        localStorage.setItem('seefood_merchant_bank_branch', json.myShop.bBranch); 
+                        localStorage.setItem('seefood_merchant_bank_account', json.myShop.bAcc); 
+                        localStorage.setItem('seefood_merchant_bank_owner', json.myShop.bOwner); 
                         if (json.myShop.finance) { userStats.merchantFinance = json.myShop.finance; }
                         
                         if (json.myShop.liveSlots && json.myShop.liveSlots.length > 0) {
@@ -476,7 +524,6 @@
                             else { b.innerText = "休息中"; b.className = "text-xs bg-slate-500 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px]"; }
                         }
                         
-                        // 🎯 渲染商家的待取餐訂單 (即時戰情板)
                         if (json.myShop.activeOrders) {
                             const ordersZone = document.getElementById('merchant-active-orders-zone');
                             const ordersList = document.getElementById('merchant-active-orders-list');
@@ -559,7 +606,7 @@
                 cloudBanners = resJson.banners || [];
                 if (cloudBanners.length > 0) {
                     document.getElementById('image-banner-container').classList.remove('hidden'); document.getElementById('text-banner-container').classList.add('hidden');
-                    document.getElementById('image-banner-img').src = cloudBanners[0].imgUrl; document.getElementById('image-banner-title').innerText = cloudBanners[0].title;
+                    document.getElementById('image-banner-img').src = cloudBanners[0].imgUrl; document.getElementById('image-banner-title').innerText = escapeHTML(cloudBanners[0].title);
                 }
                 startBannerCarousel();
 
@@ -568,7 +615,6 @@
                     let finalNote = store.note;
                     if (!finalNote) { finalNote = store.itemType === '固定菜單' ? "這很有名耶..還需要介紹嗎？直接搶就對了！" : "※ 餐廳新鮮現做優質備品"; }
 
-                    // 🎯 修正3：拔除記憶體濾網，讓 data 保持原始純淨
                     storesData.push({
                         id: `${store.shopId}-${store.itemIndex}`, shopId: store.shopId, itemIndex: store.itemIndex, city: store.city || "全部地區", district: store.district || "全部行政區", address: store.address,
                         phone: store.phone, name: store.name, 
@@ -634,7 +680,6 @@
                 else if (!userLocation) { distanceHtml = `<p class="text-xs text-blue-500 font-bold cursor-pointer animate-pulse bg-blue-50 px-2 py-0.5 rounded border border-blue-200 shadow-sm" onclick="requestLocation()">📍 點我解鎖真實距離</p>`; } 
                 else { let distDisplay = s.distance > 1000 ? (s.distance/1000).toFixed(1) + "km" : s.distance + "m"; distanceHtml = `<p class="text-xs text-gray-400 font-bold">📍 距離 ${distDisplay}</p>`; }
 
-                // 🎯 為了確保按鈕呼叫 JS 函數時，單引號不會讓程式壞掉
                 let safeJsName = escapeHTML(s.name).replace(/'/g, "\\'");
                 let safeJsItem = escapeHTML(s.item).replace(/'/g, "\\'");
                 let safeJsAddress = escapeHTML(s.address).replace(/'/g, "\\'");
@@ -806,9 +851,11 @@
             }).catch(() => { btn.innerText = "💾 寫入雲端財務資料"; btn.disabled = false; alert("連線異常"); });
         }
 
-        function triggerGrandMasterUpgrade() {
+        // 🎯 觸發 VIP 升級 (使用戰術 Confirm)
+        async function triggerGrandMasterUpgrade() {
             const shopId = localStorage.getItem('seefood_merchant_shop_id') || "SFB-001";
-            if(confirm("🔮 【先享受後扣款】\n升級大覺者將解鎖 10 格商品欄位與「今日最殺推薦」特權！\n月費 $299 將於雙週結帳時自動從營業額抵扣，若餘額不足自動降級。\n\n確定要立即升級嗎？")) {
+            let userConfirmed = await seefoodConfirm("🔮 【先享受後扣款】\n升級大覺者將解鎖 10 格商品欄位與「今日最殺推薦」特權！\n月費 $299 將於雙週結帳時自動從營業額抵扣，若餘額不足自動降級。\n\n確定要立即升級嗎？");
+            if(userConfirmed) {
                 const p = new URLSearchParams(); p.append('action', 'upgradeVip'); p.append('shopId', shopId);
                 fetch(gasUrl, { method: "POST", body: p }).then(res => res.json()).then(resJson => {
                     if (resJson.status === "success") { localStorage.setItem('seefood_merchant_vip', 'true'); alert("🎉 升級成功！您現在是 SEEFOOD 大覺者，VIP 資格已綁定雲端！"); document.getElementById('vip-upgrade-banner').classList.add('hidden'); document.getElementById('dashboard-plan-badge').innerText = "大覺者 VIP (10格)"; renderDashboardSlots(); } else { alert("升級失敗，請洽客服"); }
@@ -835,7 +882,8 @@
 
         function renderDashboardSlots() { const container = document.getElementById('dashboard-slots-container'); container.innerHTML = ""; let isVip = localStorage.getItem('seefood_merchant_vip') === 'true'; let maxSlots = isVip ? 10 : 3; for (let i = 1; i <= maxSlots; i++) { container.innerHTML += generateSingleSlotHtmlRow(i); } }
 
-        function updateStoreOnlineStatus(status) {
+        // 🎯 極速開賣/結束販售 (使用戰術 Confirm)
+        async function updateStoreOnlineStatus(status) {
             const shopId = new URLSearchParams(window.location.search).get('shopId') || localStorage.getItem('seefood_merchant_shop_id');
             const shopName = document.getElementById('dashboard-shop-title').innerText; const time = document.getElementById('dash-time').value.trim(); 
             
@@ -844,7 +892,9 @@
                 let confirmMsg = isOverwrite 
                     ? `🚨【 偵測到既有上架商品 】\n\n系統偵測到您目前有「營業中」的品項。本次極速開賣將會【完全覆蓋】您先前的商品內容、折數與剩餘份數。\n\n確定要執行雲端覆蓋並更新雷達畫面嗎？`
                     : `⚠️【 SEEFOOD 惜福安全防線 】\n\n請老闆再次確認：本次上架的所有餐點皆符合食品安全，且為「新鮮製作之優質備品」或「當日即期品」。\n\n💡 系統防呆提示：上架滿 8 小時後，系統雷達會自動將商品下架並將庫存歸零。\n\n是否確定立即發車？`;
-                if(!confirm(confirmMsg)) return; 
+                
+                let userConfirmed = await seefoodConfirm(confirmMsg);
+                if(!userConfirmed) return; 
             }
 
             const formData = new URLSearchParams(); formData.append('action', 'updateStatus'); formData.append('shopId', shopId); formData.append('shopName', shopName); formData.append('time', time); formData.append('status', status);
