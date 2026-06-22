@@ -302,6 +302,23 @@
             </div>
         </div>
 
+        <div id="seefood-alert-modal" class="absolute inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 w-10/12 max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform scale-95 transition-transform duration-300 relative overflow-hidden" id="seefood-alert-box">
+                <div id="seefood-alert-glow" class="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="text-center relative z-10">
+                    <div id="seefood-alert-icon" class="text-5xl mb-3 drop-shadow-lg">⚠️</div>
+                    <h3 id="seefood-alert-title" class="text-lg font-black text-white tracking-wider mb-2">系統提示</h3>
+                    <div id="seefood-alert-message" class="text-xs text-gray-300 leading-relaxed font-bold bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 text-left overflow-y-auto max-h-48 no-scrollbar">
+                        警告內容
+                    </div>
+                </div>
+                <button onclick="closeSeefoodAlert()" id="seefood-alert-btn" class="mt-5 w-full bg-seefoodYellow text-slate-900 font-black py-3.5 rounded-xl shadow-lg active:scale-95 transition text-sm">
+                    了解，繼續出擊
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -312,6 +329,58 @@
         let userLocation = null;
         let cloudBanners = []; let bannerIndex = 0;
         let textBannerTemplates = [ { emoji: "🌍", text: "獵人雷達點燈系統：全台各區滿 100 店即刻開車解鎖！" }, { emoji: "👑", text: "加入創始大覺者 VIP 享有黃金標籤特權，免抽成免月費！" } ];
+
+        // 🛡️ UI/UX 升級：攔截全站原生 alert，換上 SEEFOOD 戰術彈窗
+        window.alert = function(msg) {
+            const modal = document.getElementById('seefood-alert-modal');
+            const box = document.getElementById('seefood-alert-box');
+            const iconEl = document.getElementById('seefood-alert-icon');
+            const titleEl = document.getElementById('seefood-alert-title');
+            const msgEl = document.getElementById('seefood-alert-message');
+            const glowEl = document.getElementById('seefood-alert-glow');
+            const btnEl = document.getElementById('seefood-alert-btn');
+
+            let content = String(msg);
+            let type = "warning"; 
+            let title = "⚠️ 系統風控與提示";
+
+            if (content.includes("✅") || content.includes("🎉") || content.includes("🟢")) {
+                type = "success"; title = "✅ 執行成功"; iconEl.innerText = "✨";
+                glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none";
+                btnEl.className = "mt-5 w-full bg-emerald-500 text-white font-black py-3.5 rounded-xl shadow-lg active:scale-95 transition text-sm";
+            } else if (content.includes("❌") || content.includes("🚨") || content.includes("🔴")) {
+                type = "error"; title = "🚨 阻斷與警告"; iconEl.innerText = "🛑";
+                glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-red-500/20 rounded-full blur-3xl pointer-events-none";
+                btnEl.className = "mt-5 w-full bg-red-600 text-white font-black py-3.5 rounded-xl shadow-lg active:scale-95 transition text-sm";
+            } else if (content.includes("🛡️")) {
+                type = "shield"; title = "🛡️ 平台防洗錢安全機制"; iconEl.innerText = "👁️‍🗨️";
+                glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none";
+                btnEl.className = "mt-5 w-full bg-seefoodDarkBlue text-white border border-blue-500/50 font-black py-3.5 rounded-xl shadow-lg active:scale-95 transition text-sm";
+            } else {
+                iconEl.innerText = "💡"; title = "💡 獵場情報";
+                glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-seefoodYellow/20 rounded-full blur-3xl pointer-events-none";
+                btnEl.className = "mt-5 w-full bg-seefoodYellow text-slate-900 font-black py-3.5 rounded-xl shadow-lg active:scale-95 transition text-sm";
+            }
+
+            msgEl.innerHTML = content.replace(/\n/g, '<br>');
+            titleEl.innerText = title;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+                box.classList.add('scale-100');
+            }, 10);
+        };
+
+        function closeSeefoodAlert() {
+            const modal = document.getElementById('seefood-alert-modal');
+            const box = document.getElementById('seefood-alert-box');
+            modal.classList.add('opacity-0');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
 
         // 🎯 XSS 終極防護晶片 (將所有可能夾帶代碼的字串進行轉譯)
         function escapeHTML(str) {
@@ -719,7 +788,7 @@
                 btn.innerText = "💾 寫入雲端財務資料"; btn.disabled = false;
                 if (resJson.status === "error") { alert(resJson.msg); return; }
                 localStorage.setItem('seefood_merchant_bank_code', code); localStorage.setItem('seefood_merchant_bank_branch', branch); localStorage.setItem('seefood_merchant_bank_account', acc); localStorage.setItem('seefood_merchant_bank_owner', owner);
-                alert("💾 銀行撥款帳戶已成功寫入雲端綁定！"); syncUserDataFromCloud();
+                alert("✅ 銀行撥款帳戶已成功寫入雲端綁定！"); syncUserDataFromCloud();
             }).catch(() => { btn.innerText = "💾 寫入雲端財務資料"; btn.disabled = false; alert("連線異常"); });
         }
 
@@ -780,7 +849,6 @@
 
                 let orig = parseFloat(document.getElementById(`dash-orig${i}`).value) || 0; let rateStr = document.getElementById(`dash-rate${i}`).value; let rate = parseFloat(rateStr) || 0; let rem = parseInt(document.getElementById(`dash-rem${i}`).value) || 0;
                 
-                // 🎯 提示老闆：千元商品將會觸發審核
                 if (status === "ON" && (orig * rate) > 1000) { alert(`⚠️ 上架攔截提示：品項 ${i < 10 ? '0'+i : i} 折後價大於 $1,000，將觸發防洗錢機制！系統會自動轉為審核中，待實物驗證後方可顯示。`); }
                 if (status === "ON" && type === "超值惜福包" && !desc) { alert(`❌ 上架被退回：品項 ${i < 10 ? '0'+i : i} 是【超值惜福包】，請填寫今日內容物描述！`); return; }
                 if (status === "ON" && type === "固定菜單" && !name) { alert(`❌ 上架被退回：品項 ${i < 10 ? '0'+i : i} 請填寫常態商品名稱！`); return; }
