@@ -401,7 +401,7 @@
                     return d.toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false });
                 } catch(e) {}
             }
-            return escapeHTML(str);
+            return str; // 🎯 修正2：拔除時間防護，確保回傳乾淨字串
         }
 
         function checkTos() { if (!localStorage.getItem('seefood_tos_agreed')) { document.getElementById('tos-modal').classList.remove('hidden'); } }
@@ -415,7 +415,7 @@
                     const bTitle = document.getElementById('image-banner-title');
                     if (bImg && bTitle) {
                         bImg.style.opacity = 0;
-                        setTimeout(() => { bImg.src = cloudBanners[bannerIndex].imgUrl; bTitle.innerText = escapeHTML(cloudBanners[bannerIndex].title); bImg.style.opacity = 1; }, 300);
+                        setTimeout(() => { bImg.src = cloudBanners[bannerIndex].imgUrl; bTitle.innerText = cloudBanners[bannerIndex].title; bImg.style.opacity = 1; }, 300);
                     }
                 } else if (textBannerTemplates.length > 0) {
                     bannerIndex = (bannerIndex + 1) % textBannerTemplates.length;
@@ -476,6 +476,7 @@
                             else { b.innerText = "休息中"; b.className = "text-xs bg-slate-500 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px]"; }
                         }
                         
+                        // 🎯 渲染商家的待取餐訂單 (即時戰情板)
                         if (json.myShop.activeOrders) {
                             const ordersZone = document.getElementById('merchant-active-orders-zone');
                             const ordersList = document.getElementById('merchant-active-orders-list');
@@ -490,7 +491,7 @@
                                             <p class="text-gray-300 text-xs mt-0.5 font-bold">${escapeHTML(o.item)}</p>
                                         </div>
                                         <div class="text-right">
-                                            <p class="text-gray-500 text-[10px] font-bold">自取截止: ${safeFormatTime(o.time)}</p>
+                                            <p class="text-gray-500 text-[10px] font-bold">自取截止: ${escapeHTML(safeFormatTime(o.time))}</p>
                                             <p class="text-seefoodYellow font-black text-xs mt-0.5">$${o.price}</p>
                                         </div>
                                     </div>`;
@@ -558,7 +559,7 @@
                 cloudBanners = resJson.banners || [];
                 if (cloudBanners.length > 0) {
                     document.getElementById('image-banner-container').classList.remove('hidden'); document.getElementById('text-banner-container').classList.add('hidden');
-                    document.getElementById('image-banner-img').src = cloudBanners[0].imgUrl; document.getElementById('image-banner-title').innerText = escapeHTML(cloudBanners[0].title);
+                    document.getElementById('image-banner-img').src = cloudBanners[0].imgUrl; document.getElementById('image-banner-title').innerText = cloudBanners[0].title;
                 }
                 startBannerCarousel();
 
@@ -567,6 +568,7 @@
                     let finalNote = store.note;
                     if (!finalNote) { finalNote = store.itemType === '固定菜單' ? "這很有名耶..還需要介紹嗎？直接搶就對了！" : "※ 餐廳新鮮現做優質備品"; }
 
+                    // 🎯 修正3：拔除記憶體濾網，讓 data 保持原始純淨
                     storesData.push({
                         id: `${store.shopId}-${store.itemIndex}`, shopId: store.shopId, itemIndex: store.itemIndex, city: store.city || "全部地區", district: store.district || "全部行政區", address: store.address,
                         phone: store.phone, name: store.name, 
@@ -632,11 +634,12 @@
                 else if (!userLocation) { distanceHtml = `<p class="text-xs text-blue-500 font-bold cursor-pointer animate-pulse bg-blue-50 px-2 py-0.5 rounded border border-blue-200 shadow-sm" onclick="requestLocation()">📍 點我解鎖真實距離</p>`; } 
                 else { let distDisplay = s.distance > 1000 ? (s.distance/1000).toFixed(1) + "km" : s.distance + "m"; distanceHtml = `<p class="text-xs text-gray-400 font-bold">📍 距離 ${distDisplay}</p>`; }
 
-                let safeJsName = s.name.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                let safeJsItem = s.item.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                let safeJsAddress = s.address.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                let safeJsPhone = s.phone.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                let safeJsTime = s.time.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                // 🎯 為了確保按鈕呼叫 JS 函數時，單引號不會讓程式壞掉
+                let safeJsName = escapeHTML(s.name).replace(/'/g, "\\'");
+                let safeJsItem = escapeHTML(s.item).replace(/'/g, "\\'");
+                let safeJsAddress = escapeHTML(s.address).replace(/'/g, "\\'");
+                let safeJsPhone = escapeHTML(s.phone).replace(/'/g, "\\'");
+                let safeJsTime = escapeHTML(s.time).replace(/'/g, "\\'");
 
                 container.innerHTML += `
                     <div class="bg-white border ${isGoldenVip ? 'vip-border' : 'border-gray-200'} rounded-2xl p-4 relative shadow-sm">
@@ -713,9 +716,12 @@
                 let displayPhone = (order.phone && order.phone !== "undefined") ? order.phone : "請見官方LINE"; let callAction = displayPhone !== "請見官方LINE" ? `tel:${displayPhone}` : "javascript:void(0)";
                 let orderTime = safeFormatTime(order.time); 
                 
-                let safeJsOrderId = (order.orderId || '').replace(/'/g, "\\'");
+                let safeStoreName = escapeHTML(order.store);
+                let safeItemName = escapeHTML(order.item);
+                let safeOrderId = escapeHTML(order.orderId);
+                let safeJsOrderId = safeOrderId.replace(/'/g, "\\'");
                 
-                let cardHtml = `<div id="ticket-card-${order.id}" class="ticket-edge bg-white border-2 border-seefoodDarkBlue rounded-2xl shadow-md relative overflow-hidden mb-3"><div class="bg-seefoodDarkBlue text-white px-4 py-2.5 flex justify-between items-center"><span class="text-[10px] font-black ${order.used ? 'bg-gray-600' : 'bg-red-500 animate-pulse'} px-2 py-0.5 rounded">${order.used ? '✅ 惜福自取完畢' : '🎫 獵人未取餐憑證'}</span><span class="text-xs font-mono font-bold">單號: ${escapeHTML(order.orderId) || '驗證中'}</span></div><div class="p-4 space-y-3"><div class="text-center"><h3 class="text-lg font-black text-gray-900">${escapeHTML(order.store)}</h3><p class="text-xs font-bold text-gray-500 mt-0.5">📍 門市取餐地址：${escapeHTML(order.address) || '請見官方LINE'}</p><p class="text-sm font-black text-blue-600 bg-blue-50 py-1.5 rounded-lg border mt-2 px-2">${escapeHTML(order.item)}</p></div><div class="text-center text-xs text-gray-400 py-1 border-y border-dashed">⏳ 自取截止：${orderTime}</div>`;
+                let cardHtml = `<div id="ticket-card-${order.id}" class="ticket-edge bg-white border-2 border-seefoodDarkBlue rounded-2xl shadow-md relative overflow-hidden mb-3"><div class="bg-seefoodDarkBlue text-white px-4 py-2.5 flex justify-between items-center"><span class="text-[10px] font-black ${order.used ? 'bg-gray-600' : 'bg-red-500 animate-pulse'} px-2 py-0.5 rounded">${order.used ? '✅ 惜福自取完畢' : '🎫 獵人未取餐憑證'}</span><span class="text-xs font-mono font-bold">單號: ${safeOrderId || '驗證中'}</span></div><div class="p-4 space-y-3"><div class="text-center"><h3 class="text-lg font-black text-gray-900">${safeStoreName}</h3><p class="text-xs font-bold text-gray-500 mt-0.5">📍 門市取餐地址：${escapeHTML(order.address) || '請見官方LINE'}</p><p class="text-sm font-black text-blue-600 bg-blue-50 py-1.5 rounded-lg border mt-2 px-2">${safeItemName}</p></div><div class="text-center text-xs text-gray-400 py-1 border-y border-dashed">⏳ 自取截止：${escapeHTML(orderTime)}</div>`;
                 
                 if (!order.used) { 
                     cardHtml += `<div class="space-y-2 pt-1">
@@ -724,7 +730,7 @@
                             <div class="bg-white p-2.5 rounded-lg border border-dashed border-amber-300 text-center relative mt-3">
                                 <span class="absolute -top-2.5 left-1/2 transform -translate-x-1/2 bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-[9px] font-bold border border-amber-200 whitespace-nowrap shadow-sm">👇 不知道怎麼說？照著唸就好 👇</span>
                                 <p class="text-xs font-black text-gray-800 mt-2 leading-relaxed text-left tracking-wide">
-                                    「你好，我是美食獵人！我有在 SEEFOOD 下單一份【<span class="text-red-500">${escapeHTML(order.item)}</span>】，我的訂單編號是 <span class="bg-slate-100 border px-1 rounded text-seefoodDarkBlue font-mono">${escapeHTML(order.orderId)}</span>，請問最晚幾點前要過去拿？」
+                                    「你好，我是美食獵人！我有在 SEEFOOD 下單一份【<span class="text-red-500">${safeItemName}</span>】，我的訂單編號是 <span class="bg-slate-100 border px-1 rounded text-seefoodDarkBlue font-mono">${safeOrderId}</span>，請問最晚幾點前要過去拿？」
                                 </p>
                             </div>
                         </div>
@@ -735,7 +741,7 @@
                         </div>
                     </div>`; 
                 } else { 
-                    cardHtml += `<div class="text-center text-xs font-bold text-gray-400 py-2 bg-gray-50 border rounded-xl">核銷完成時間：${safeFormatTime(order.verifyTime || order.date)}</div>`; 
+                    cardHtml += `<div class="text-center text-xs font-bold text-gray-400 py-2 bg-gray-50 border rounded-xl">核銷完成時間：${escapeHTML(safeFormatTime(order.verifyTime || order.date))}</div>`; 
                 }
                 
                 cardHtml += `</div></div>`; container.innerHTML += cardHtml;
