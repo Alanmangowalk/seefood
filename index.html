@@ -382,7 +382,7 @@
             setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
-        // 🎯 XSS 終極防護晶片 (將所有可能夾帶代碼的字串進行轉譯，但只在渲染 HTML 標籤內時調用)
+        // 🎯 XSS 終極防護晶片 (將所有可能夾帶代碼的字串進行轉譯，只在渲染 HTML 標籤內時調用)
         function escapeHTML(str) {
             if (typeof str !== 'string') return '';
             return str.replace(/[&<>'"]/g, function(tag) {
@@ -415,7 +415,7 @@
                     const bTitle = document.getElementById('image-banner-title');
                     if (bImg && bTitle) {
                         bImg.style.opacity = 0;
-                        setTimeout(() => { bImg.src = cloudBanners[bannerIndex].imgUrl; bTitle.innerText = cloudBanners[bannerIndex].title; bImg.style.opacity = 1; }, 300);
+                        setTimeout(() => { bImg.src = cloudBanners[bannerIndex].imgUrl; bTitle.innerText = escapeHTML(cloudBanners[bannerIndex].title); bImg.style.opacity = 1; }, 300);
                     }
                 } else if (textBannerTemplates.length > 0) {
                     bannerIndex = (bannerIndex + 1) % textBannerTemplates.length;
@@ -451,12 +451,12 @@
                 if (json.status === "success") {
                     if (json.myShop) {
                         localStorage.setItem('seefood_merchant_shop_id', json.myShop.shopId);
-                        localStorage.setItem('seefood_merchant_shop_name', json.myShop.shopName);
+                        localStorage.setItem('seefood_merchant_shop_name', json.myShop.shopName); // 🎯 修正1：拔除記憶體濾網
                         localStorage.setItem('seefood_merchant_vip', json.myShop.isVip ? 'true' : 'false');
-                        localStorage.setItem('seefood_merchant_bank_code', json.myShop.bCode);
-                        localStorage.setItem('seefood_merchant_bank_branch', json.myShop.bBranch);
-                        localStorage.setItem('seefood_merchant_bank_account', json.myShop.bAcc);
-                        localStorage.setItem('seefood_merchant_bank_owner', json.myShop.bOwner);
+                        localStorage.setItem('seefood_merchant_bank_code', json.myShop.bCode); // 🎯 修正1：拔除記憶體濾網
+                        localStorage.setItem('seefood_merchant_bank_branch', json.myShop.bBranch); // 🎯 修正1：拔除記憶體濾網
+                        localStorage.setItem('seefood_merchant_bank_account', json.myShop.bAcc); // 🎯 修正1：拔除記憶體濾網
+                        localStorage.setItem('seefood_merchant_bank_owner', json.myShop.bOwner); // 🎯 修正1：拔除記憶體濾網
                         if (json.myShop.finance) { userStats.merchantFinance = json.myShop.finance; }
                         
                         if (json.myShop.liveSlots && json.myShop.liveSlots.length > 0) {
@@ -476,7 +476,6 @@
                             else { b.innerText = "休息中"; b.className = "text-xs bg-slate-500 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px]"; }
                         }
                         
-                        // 🎯 渲染商家的待取餐訂單 (即時戰情板)
                         if (json.myShop.activeOrders) {
                             const ordersZone = document.getElementById('merchant-active-orders-zone');
                             const ordersList = document.getElementById('merchant-active-orders-list');
@@ -559,7 +558,7 @@
                 cloudBanners = resJson.banners || [];
                 if (cloudBanners.length > 0) {
                     document.getElementById('image-banner-container').classList.remove('hidden'); document.getElementById('text-banner-container').classList.add('hidden');
-                    document.getElementById('image-banner-img').src = cloudBanners[0].imgUrl; document.getElementById('image-banner-title').innerText = cloudBanners[0].title;
+                    document.getElementById('image-banner-img').src = cloudBanners[0].imgUrl; document.getElementById('image-banner-title').innerText = escapeHTML(cloudBanners[0].title);
                 }
                 startBannerCarousel();
 
