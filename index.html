@@ -35,6 +35,7 @@
                     <p><span class="text-emerald-400 font-bold">2. 平台免責聲明：</span>本平台（照路有限公司）僅提供資訊撮合與代收付服務。餐點之製造、包裝、保存與衛生安全，全由供餐商家獨立承擔法律責任。若生消費糾紛或食安問題，概由商家負責。</p>
                     <p><span class="text-emerald-400 font-bold">3. 逾期未取沒收：</span>消費者知悉並同意，若未於商家規定之「取餐限時」內自取，視同自願放棄。商家有權直接銷毀食品，且<span class="text-red-400">平台不予退款</span>。</p>
                     <p><span class="text-emerald-400 font-bold">4. 數位憑證效力：</span>畫面「滑動核銷」視為合意交付憑證，不得以誤觸要求撤銷。</p>
+                    <p><span class="text-emerald-400 font-bold">5. 交易防線與防洗錢聲明：</span>平台方具備金流與交易異常之主動稽核權。若經系統偵測有疑似洗錢、信用卡盜刷、非真實消費之異常行為，平台有權無限期凍結該帳款並配合檢警調查，用戶與商家不得異議。</p>
                 </div>
             </div>
             <div class="p-6 bg-slate-800 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
@@ -171,6 +172,9 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 pt-1 text-xs relative z-10">
+                        <div class="col-span-2 text-center text-[10px] font-bold text-slate-400 mb-1">
+                            🛡️ 營運安全線：為防範異常交易，單日累積營業額達 $10,000 系統將強制打烊。
+                        </div>
                         <button type="button" onclick="updateStoreOnlineStatus('OFF')" class="bg-slate-700 text-white font-black py-3 rounded-xl active:scale-95 transition hover:bg-slate-600">🛑 結束販售 (下架)</button>
                         <button type="button" id="btn-online-submit" onclick="updateStoreOnlineStatus('ON')" class="bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-black py-3 rounded-xl active:scale-95 transition shadow-lg hover:from-emerald-700">⚡ 極速開賣 (上架)</button>
                     </div>
@@ -274,10 +278,13 @@
                     <p><span class="font-bold text-gray-500">門市地址：</span> <span id="modal-address" class="font-bold text-seefoodDarkBlue"></span></p>
                     <p class="text-red-500 font-black text-xs pt-1 border-t border-gray-200 mt-2">⚠️ 重要：付款成功後，務必立即撥打外帶聯絡電話向店家確認保留，過期打烊不予保留。</p>
                 </div>
-                <div class="p-3 space-y-1.5 text-xs">
+                <div class="p-3 space-y-1.5 text-xs relative">
                     <div class="flex justify-between"><span class="text-gray-500 font-bold">商品體驗價</span><span id="price-subtotal" class="font-black text-sm"></span></div>
                     <div class="flex justify-between"><span class="text-gray-500 font-bold">系統動態維護費 (10% 區間$5-$20)</span><span id="price-fee" class="font-black text-blue-600"></span></div>
                     <div class="flex justify-between text-sm font-black text-gray-900 pt-2 border-t border-gray-200 mt-1"><span>總計付款金額</span><span id="price-total" class="text-red-600 text-lg"></span></div>
+                    <div class="text-center text-[10px] text-gray-400 mt-3 pt-2 border-t border-dashed">
+                        🛡️ 平台單日搶購安全額度：$3,000 / 帳戶
+                    </div>
                 </div>
                 <div class="flex items-center space-x-2 py-1 px-1">
                     <input type="checkbox" id="agree-tos" class="w-4 h-4 rounded text-seefoodDarkBlue accent-seefoodDarkBlue">
@@ -298,7 +305,15 @@
         let cloudBanners = []; let bannerIndex = 0;
         let textBannerTemplates = [ { emoji: "🌍", text: "獵人雷達點燈系統：全台各區滿 100 店即刻開車解鎖！" }, { emoji: "👑", text: "加入創始大覺者 VIP 享有黃金標籤特權，免抽成免月費！" } ];
 
-        // 🎯 核心防線：時間翻譯晶片 (過濾 Google Sheets 亂碼)
+        // 🎯 修正4：XSS 終極防護晶片 (將所有可能夾帶代碼的字串進行轉譯)
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return '';
+            return str.replace(/[&<>'"]/g, function(tag) {
+                const charsToReplace = { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' };
+                return charsToReplace[tag] || tag;
+            });
+        }
+
         function safeFormatTime(val) {
             if (!val) return "今日限時";
             let str = String(val);
@@ -309,7 +324,7 @@
                     return d.toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false });
                 } catch(e) {}
             }
-            return str;
+            return escapeHTML(str);
         }
 
         function checkTos() { if (!localStorage.getItem('seefood_tos_agreed')) { document.getElementById('tos-modal').classList.remove('hidden'); } }
@@ -323,7 +338,7 @@
                     const bTitle = document.getElementById('image-banner-title');
                     if (bImg && bTitle) {
                         bImg.style.opacity = 0;
-                        setTimeout(() => { bImg.src = cloudBanners[bannerIndex].imgUrl; bTitle.innerText = cloudBanners[bannerIndex].title; bImg.style.opacity = 1; }, 300);
+                        setTimeout(() => { bImg.src = cloudBanners[bannerIndex].imgUrl; bTitle.innerText = escapeHTML(cloudBanners[bannerIndex].title); bImg.style.opacity = 1; }, 300);
                     }
                 } else if (textBannerTemplates.length > 0) {
                     bannerIndex = (bannerIndex + 1) % textBannerTemplates.length;
@@ -359,24 +374,21 @@
                 if (json.status === "success") {
                     if (json.myShop) {
                         localStorage.setItem('seefood_merchant_shop_id', json.myShop.shopId);
-                        localStorage.setItem('seefood_merchant_shop_name', json.myShop.shopName);
+                        localStorage.setItem('seefood_merchant_shop_name', escapeHTML(json.myShop.shopName));
                         localStorage.setItem('seefood_merchant_vip', json.myShop.isVip ? 'true' : 'false');
-                        localStorage.setItem('seefood_merchant_bank_code', json.myShop.bCode);
-                        localStorage.setItem('seefood_merchant_bank_branch', json.myShop.bBranch);
-                        localStorage.setItem('seefood_merchant_bank_account', json.myShop.bAcc);
-                        localStorage.setItem('seefood_merchant_bank_owner', json.myShop.bOwner);
+                        localStorage.setItem('seefood_merchant_bank_code', escapeHTML(json.myShop.bCode));
+                        localStorage.setItem('seefood_merchant_bank_branch', escapeHTML(json.myShop.bBranch));
+                        localStorage.setItem('seefood_merchant_bank_account', escapeHTML(json.myShop.bAcc));
+                        localStorage.setItem('seefood_merchant_bank_owner', escapeHTML(json.myShop.bOwner));
                         if (json.myShop.finance) { userStats.merchantFinance = json.myShop.finance; }
                         
                         if (json.myShop.liveSlots && json.myShop.liveSlots.length > 0) {
                             for(let i=1; i<=10; i++) {
                                 localStorage.removeItem('seefood_slot_data_' + i); 
-                                // 🎯 修正 1：先清空舊的鎖定記憶，確保聽從雲端指令
                                 localStorage.removeItem('seefood_slot_' + i + '_locked'); 
                             }
                             json.myShop.liveSlots.forEach(slot => {
                                 localStorage.setItem('seefood_slot_data_' + slot.index, JSON.stringify({ type: slot.type, name: slot.name, desc: slot.desc, orig: slot.orig, rate: slot.rate, rem: slot.rem }));
-                                
-                                // 🎯 修正 2：如果大腦說這格是固定菜單，不管手機有沒有失憶，強制幫它重新上鎖！
                                 if (slot.type === "固定菜單" && slot.name && slot.name !== "【未啟用】") {
                                     localStorage.setItem('seefood_slot_' + slot.index + '_locked', slot.name);
                                 }
@@ -395,6 +407,7 @@
                 }
             } catch (e) { console.error("同步失敗", e); loadUserStats(); renderBadgesWall(); }
         }
+
         function recalculateUserStats(orders) {
             userStats.co2Total = 14.5 + (orders.length * 0.5); userStats.savedAmount = 0; userStats.storeCounts = {}; userStats.hasFirstOrder = orders.length > 0;
             orders.forEach(o => { userStats.savedAmount += o.price; userStats.storeCounts[o.store] = (userStats.storeCounts[o.store] || 0) + 1; });
@@ -442,7 +455,7 @@
                 cloudBanners = resJson.banners || [];
                 if (cloudBanners.length > 0) {
                     document.getElementById('image-banner-container').classList.remove('hidden'); document.getElementById('text-banner-container').classList.add('hidden');
-                    document.getElementById('image-banner-img').src = cloudBanners[0].imgUrl; document.getElementById('image-banner-title').innerText = cloudBanners[0].title;
+                    document.getElementById('image-banner-img').src = cloudBanners[0].imgUrl; document.getElementById('image-banner-title').innerText = escapeHTML(cloudBanners[0].title);
                 }
                 startBannerCarousel();
 
@@ -452,10 +465,10 @@
                     if (!finalNote) { finalNote = store.itemType === '固定菜單' ? "這很有名耶..還需要介紹嗎？直接搶就對了！" : "※ 餐廳新鮮現做優質備品"; }
 
                     storesData.push({
-                        id: `${store.shopId}-${store.itemIndex}`, shopId: store.shopId, itemIndex: store.itemIndex, city: store.city || "全部地區", district: store.district || "全部行政區", address: store.address,
-                        phone: store.phone, name: store.name, 
+                        id: `${store.shopId}-${store.itemIndex}`, shopId: store.shopId, itemIndex: store.itemIndex, city: escapeHTML(store.city) || "全部地區", district: escapeHTML(store.district) || "全部行政區", address: escapeHTML(store.address),
+                        phone: escapeHTML(store.phone), name: escapeHTML(store.name), 
                         lat: parseFloat(store.lat) || 0, lng: parseFloat(store.lng) || 0, 
-                        itemType: store.itemType, item: store.item, note: finalNote,
+                        itemType: store.itemType, item: escapeHTML(store.item), note: escapeHTML(finalNote),
                         originalPrice: parseFloat(store.originalPrice) || 0, discountPrice: parseFloat(store.discountPrice) || 0, remain: parseInt(store.remain) || 0, 
                         time: safeFormatTime(store.time),
                         discountRate: store.originalPrice > 0 ? (store.discountPrice / store.originalPrice) : 0, isVip: localStorage.getItem('seefood_merchant_vip') === 'true' && store.shopId === localStorage.getItem('seefood_merchant_shop_id')
@@ -584,32 +597,33 @@
             emptyState.classList.add('hidden'); container.innerHTML = "";
             filteredOrders.forEach((order, index) => {
                 let displayPhone = (order.phone && order.phone !== "undefined") ? order.phone : "請見官方LINE"; let callAction = displayPhone !== "請見官方LINE" ? `tel:${displayPhone}` : "javascript:void(0)";
-                
-                // 🎯 確保時間經過安全晶片翻譯
                 let orderTime = safeFormatTime(order.time); 
                 
-                let cardHtml = `<div id="ticket-card-${order.id}" class="ticket-edge bg-white border-2 border-seefoodDarkBlue rounded-2xl shadow-md relative overflow-hidden mb-3"><div class="bg-seefoodDarkBlue text-white px-4 py-2.5 flex justify-between items-center"><span class="text-[10px] font-black ${order.used ? 'bg-gray-600' : 'bg-red-500 animate-pulse'} px-2 py-0.5 rounded">${order.used ? '✅ 惜福自取完畢' : '🎫 獵人未取餐憑證'}</span><span class="text-xs font-mono font-bold">單號: ${order.orderId || '驗證中'}</span></div><div class="p-4 space-y-3"><div class="text-center"><h3 class="text-lg font-black text-gray-900">${order.store}</h3><p class="text-xs font-bold text-gray-500 mt-0.5">📍 門市取餐地址：${order.address || '請見官方LINE'}</p><p class="text-sm font-black text-blue-600 bg-blue-50 py-1.5 rounded-lg border mt-2 px-2">${order.item}</p></div><div class="text-center text-xs text-gray-400 py-1 border-y border-dashed">⏳ 自取截止：${orderTime}</div>`;
+                // 🎯 確保票券上的店家、商品名稱也過濾 XSS
+                let safeStoreName = escapeHTML(order.store);
+                let safeItemName = escapeHTML(order.item);
+                let safeOrderId = escapeHTML(order.orderId);
+                
+                let cardHtml = `<div id="ticket-card-${order.id}" class="ticket-edge bg-white border-2 border-seefoodDarkBlue rounded-2xl shadow-md relative overflow-hidden mb-3"><div class="bg-seefoodDarkBlue text-white px-4 py-2.5 flex justify-between items-center"><span class="text-[10px] font-black ${order.used ? 'bg-gray-600' : 'bg-red-500 animate-pulse'} px-2 py-0.5 rounded">${order.used ? '✅ 惜福自取完畢' : '🎫 獵人未取餐憑證'}</span><span class="text-xs font-mono font-bold">單號: ${safeOrderId || '驗證中'}</span></div><div class="p-4 space-y-3"><div class="text-center"><h3 class="text-lg font-black text-gray-900">${safeStoreName}</h3><p class="text-xs font-bold text-gray-500 mt-0.5">📍 門市取餐地址：${escapeHTML(order.address) || '請見官方LINE'}</p><p class="text-sm font-black text-blue-600 bg-blue-50 py-1.5 rounded-lg border mt-2 px-2">${safeItemName}</p></div><div class="text-center text-xs text-gray-400 py-1 border-y border-dashed">⏳ 自取截止：${orderTime}</div>`;
                 
                 if (!order.used) { 
-                    // 🎯 社恐防尷尬通話小抄 UI
                     cardHtml += `<div class="space-y-2 pt-1">
                         <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl shadow-sm">
                             <p class="text-[10px] font-black text-amber-600 text-center mb-1.5">⚠️ 確保權益！下單後請務必立刻致電商家確認</p>
                             <div class="bg-white p-2.5 rounded-lg border border-dashed border-amber-300 text-center relative mt-3">
                                 <span class="absolute -top-2.5 left-1/2 transform -translate-x-1/2 bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-[9px] font-bold border border-amber-200 whitespace-nowrap shadow-sm">👇 不知道怎麼說？照著唸就好 👇</span>
                                 <p class="text-xs font-black text-gray-800 mt-2 leading-relaxed text-left tracking-wide">
-                                    「你好，我是美食獵人！我有在 SEEFOOD 下單一份【<span class="text-red-500">${order.item}</span>】，我的訂單編號是 <span class="bg-slate-100 border px-1 rounded text-seefoodDarkBlue font-mono">${order.orderId}</span>，請問最晚幾點前要過去拿？」
+                                    「你好，我是美食獵人！我有在 SEEFOOD 下單一份【<span class="text-red-500">${safeItemName}</span>】，我的訂單編號是 <span class="bg-slate-100 border px-1 rounded text-seefoodDarkBlue font-mono">${safeOrderId}</span>，請問最晚幾點前要過去拿？」
                                 </p>
                             </div>
                         </div>
                         <a href="${callAction}" class="flex items-center justify-center bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black w-full py-3.5 rounded-xl text-xs shadow-sm active:scale-95 transition">📞 點我快打致電商家：${displayPhone}</a>
                         <div class="swipe-track mt-2 select-none shadow-inner">
                             <span class="text-xs font-black text-red-400 tracking-widest animate-pulse">➡️ 右滑交付店員確認核銷</span>
-                            <div class="swipe-handle" id="swiper-${order.id}" ontouchstart="initSwipe(event, ${order.id}, '${order.orderId}')" onmousedown="initSwipe(event, ${order.id}, '${order.orderId}')">▶️</div>
+                            <div class="swipe-handle" id="swiper-${order.id}" ontouchstart="initSwipe(event, ${order.id}, '${safeOrderId}')" onmousedown="initSwipe(event, ${order.id}, '${safeOrderId}')">▶️</div>
                         </div>
                     </div>`; 
                 } else { 
-                    // 🎯 核銷完成時間也要過濾
                     cardHtml += `<div class="text-center text-xs font-bold text-gray-400 py-2 bg-gray-50 border rounded-xl">核銷完成時間：${safeFormatTime(order.verifyTime || order.date)}</div>`; 
                 }
                 
@@ -728,12 +742,15 @@
                 let nameInput = document.getElementById(`dash-itemName${i}`); let name = nameInput ? nameInput.value.trim() : ""; 
                 let descInput = document.getElementById(`dash-itemDesc${i}`); let desc = descInput ? descInput.value.trim() : "";
                 
-                // 🎯 修正3：自動補齊幽靈文案
                 if (type === "固定菜單" && desc === "") { desc = "這很有名耶..還需要介紹嗎？直接搶就對了！"; }
 
                 let orig = parseFloat(document.getElementById(`dash-orig${i}`).value) || 0; let rateStr = document.getElementById(`dash-rate${i}`).value; let rate = parseFloat(rateStr) || 0; let rem = parseInt(document.getElementById(`dash-rem${i}`).value) || 0;
+                
+                // 🎯 修正2A：前端攔截防洗錢
+                if (status === "ON" && (orig * rate) > 1000) { alert(`❌ 上架攔截：品項 ${i < 10 ? '0'+i : i} 折後價大於 $1,000，將觸發防洗錢機制！系統已自動轉為審核中。`); }
                 if (status === "ON" && type === "超值惜福包" && !desc) { alert(`❌ 上架被退回：品項 ${i < 10 ? '0'+i : i} 是【超值惜福包】，請填寫今日內容物描述！`); return; }
                 if (status === "ON" && type === "固定菜單" && !name) { alert(`❌ 上架被退回：品項 ${i < 10 ? '0'+i : i} 請填寫常態商品名稱！`); return; }
+                
                 let lockedName = localStorage.getItem('seefood_slot_' + i + '_locked');
                 if (status === "ON" && type === "固定菜單" && name && !lockedName) { localStorage.setItem('seefood_slot_' + i + '_locked', name); nameInput.readOnly = true; nameInput.classList.remove('bg-slate-900', 'text-white'); nameInput.classList.add('bg-slate-800', 'text-gray-500'); }
                 localStorage.setItem('seefood_slot_data_' + i, JSON.stringify({type: type, name: name, desc: desc, orig: orig, rate: rateStr, rem: rem})); formData.append(`itemType${i}`, type); formData.append(`itemName${i}`, name); formData.append(`itemDesc${i}`, desc); formData.append(`orig${i}`, orig); formData.append(`disc${i}`, Math.round(orig * rate)); formData.append(`rem${i}`, rem);
@@ -744,8 +761,16 @@
                 if(btn) { btn.innerText = "⚡ 極速開賣 (上架)"; btn.disabled = false; }
                 if (resJson.status === "error") { alert(resJson.msg); return; }
                 const b = document.getElementById('dashboard-status-badge');
-                if (status === 'ON') { b.innerText = "營業中"; b.className = "text-xs bg-emerald-600 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px] animate-pulse"; alert('🟢【開張成功！】最新狀態已同步雲端，系統已記住您本次設定。'); renderDashboardSlots(); } 
-                else { b.innerText = "休息中"; b.className = "text-xs bg-slate-500 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px]"; alert('🔴【店鋪已下架休息】'); }
+                
+                // 🎯 如果後端回傳的是「成功但有警告（例如觸發了千元審查）」，把警告顯示給老闆看
+                if (resJson.msg && resJson.msg.includes("⚠️")) {
+                    alert(resJson.msg);
+                } else if (status === 'ON') { 
+                    b.innerText = "營業中"; b.className = "text-xs bg-emerald-600 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px] animate-pulse"; alert('🟢【開張成功！】最新狀態已同步雲端，系統已記住您本次設定。'); 
+                } else { 
+                    b.innerText = "休息中"; b.className = "text-xs bg-slate-500 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px]"; alert('🔴【店鋪已下架休息】'); 
+                }
+                renderDashboardSlots();
                 fetchLiveStores(); 
             }).catch((err) => { console.error(err); if(btn) { btn.innerText = "⚡ 極速開賣 (上架)"; btn.disabled = false; } alert("連線異常，請檢查網路狀態"); });
         }
