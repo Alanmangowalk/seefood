@@ -368,9 +368,18 @@
                         if (json.myShop.finance) { userStats.merchantFinance = json.myShop.finance; }
                         
                         if (json.myShop.liveSlots && json.myShop.liveSlots.length > 0) {
-                            for(let i=1; i<=10; i++) localStorage.removeItem('seefood_slot_data_' + i); 
+                            for(let i=1; i<=10; i++) {
+                                localStorage.removeItem('seefood_slot_data_' + i); 
+                                // 🎯 修正 1：先清空舊的鎖定記憶，確保聽從雲端指令
+                                localStorage.removeItem('seefood_slot_' + i + '_locked'); 
+                            }
                             json.myShop.liveSlots.forEach(slot => {
                                 localStorage.setItem('seefood_slot_data_' + slot.index, JSON.stringify({ type: slot.type, name: slot.name, desc: slot.desc, orig: slot.orig, rate: slot.rate, rem: slot.rem }));
+                                
+                                // 🎯 修正 2：如果大腦說這格是固定菜單，不管手機有沒有失憶，強制幫它重新上鎖！
+                                if (slot.type === "固定菜單" && slot.name && slot.name !== "【未啟用】") {
+                                    localStorage.setItem('seefood_slot_' + slot.index + '_locked', slot.name);
+                                }
                             });
                             document.getElementById('dash-time').value = safeFormatTime(json.myShop.storeTime) || "今日打烊前";
                             const b = document.getElementById('dashboard-status-badge');
@@ -386,7 +395,6 @@
                 }
             } catch (e) { console.error("同步失敗", e); loadUserStats(); renderBadgesWall(); }
         }
-
         function recalculateUserStats(orders) {
             userStats.co2Total = 14.5 + (orders.length * 0.5); userStats.savedAmount = 0; userStats.storeCounts = {}; userStats.hasFirstOrder = orders.length > 0;
             orders.forEach(o => { userStats.savedAmount += o.price; userStats.storeCounts[o.store] = (userStats.storeCounts[o.store] || 0) + 1; });
