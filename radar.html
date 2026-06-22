@@ -39,7 +39,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
         /* 🎯 修正跑馬燈：確保永遠從畫面最右側邊緣外側進場 */
-        .ticker-wrap { width: 100%; overflow: hidden; background: rgba(15, 23, 42, 0.9); border-top: 1px solid #1e293b; border-bottom: 1px solid #1e293b; box-sizing: border-box; }
         .ticker { display: inline-block; white-space: nowrap; padding-left: 100vw; animation: ticker 40s linear infinite; }
         @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
         
@@ -103,10 +102,14 @@
         </div>
     </div>
 
-    <div class="ticker-wrap py-2.5 mb-5 shadow-[inset_0_0_15px_rgba(0,0,0,0.5)] relative z-10">
-        <div class="absolute left-3 top-2.5 text-xs font-black text-radarGreen z-20 bg-slate-900 pr-2">📡 LATEST_NEWS:</div>
-        <div id="news-ticker" class="ticker text-xs font-bold text-gray-300">
-            ⏳ 正在接入 GAS 雲端大腦，解析全台雷達數據...
+    <div class="w-full bg-slate-900/90 border-y border-slate-700 flex items-center mb-5 shadow-[inset_0_0_15px_rgba(0,0,0,0.5)] relative z-10 box-border">
+        <div class="flex-none bg-slate-900 text-radarGreen text-xs font-black px-3 py-2.5 z-20 relative border-r border-slate-700 shadow-[5px_0_10px_rgba(15,23,42,0.8)]">
+            📡 LATEST_NEWS:
+        </div>
+        <div class="flex-1 overflow-hidden relative py-2.5">
+            <div id="news-ticker" class="ticker text-xs font-bold text-gray-300">
+                ⏳ 正在接入 GAS 雲端大腦，解析全台雷達數據...
+            </div>
         </div>
     </div>
 
