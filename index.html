@@ -240,7 +240,7 @@
                     
                     <div class="mt-3 space-y-1.5 text-xs border-t border-slate-800/60 pt-2.5">
                         <div class="flex justify-between text-gray-400"><span>當期已核銷營收</span><span id="fin-sales" class="font-bold text-white">$0</span></div>
-                        <div class="flex justify-between text-gray-500"><span>扣金流手續費 (3.15%)</span><span id="fin-fee" class="text-red-400">-$0</span></div>
+                        <div class="flex justify-between text-gray-500"><span>扣金流手續費 (3.15% 最低$5)</span><span id="fin-fee" class="text-red-400">-$0</span></div>
                         <div class="pt-2 mt-1 border-t border-slate-800/40 flex justify-between items-end">
                             <span class="text-gray-300 font-bold">🏦 當期預估實得</span><span id="finance-net-income" class="text-seefoodYellow font-black text-xl">$0</span>
                         </div>
@@ -260,7 +260,7 @@
                     
                     <div class="space-y-1.5 text-xs border-t border-slate-800/60 pt-2">
                         <div class="flex justify-between text-gray-400"><span>上期自取核銷總額</span><span id="hist-sales" class="font-bold text-gray-300">$0</span></div>
-                        <div class="flex justify-between text-gray-500"><span>扣金流手續費 (3.15%)</span><span id="hist-fee" class="text-red-400/80">-$0</span></div>
+                        <div class="flex justify-between text-gray-500"><span>扣金流手續費 (3.15% 最低$5)</span><span id="hist-fee" class="text-red-400/80">-$0</span></div>
                         <div id="finance-vip-fee" class="flex justify-between text-gray-500 hidden"><span>大覺者 VIP 月費</span><span class="text-red-400/80">-$299</span></div>
                         <div class="pt-2 mt-1 border-t border-slate-800/40 flex justify-between items-end">
                             <span class="text-gray-400 font-bold">🏦 上期最終應撥金額</span><span id="hist-net-income" class="text-emerald-400 font-black text-xl">$0</span>
@@ -708,8 +708,10 @@
             });
         }
 
+        // 🎯 買家結帳預覽公式：10%平台維護費，保底$5，上限$20
         function openCheckout(store, item, price, time, itemIndex, origPrice, shopId, address, phone) {
-            currentOrder = { store, item, price, time, itemIndex, origPrice, shopId, address, phone }; let fee = Math.max(5, Math.min(20, Math.round(price * 0.1)));
+            currentOrder = { store, item, price, time, itemIndex, origPrice, shopId, address, phone }; 
+            let fee = Math.max(5, Math.min(20, Math.round(price * 0.1)));
             document.getElementById('modal-store').innerText = store; 
             document.getElementById('modal-item').innerText = item; 
             document.getElementById('modal-address').innerText = address;
@@ -851,7 +853,6 @@
             }).catch(() => { btn.innerText = "💾 寫入雲端財務資料"; btn.disabled = false; alert("連線異常"); });
         }
 
-        // 🎯 觸發 VIP 升級 (使用戰術 Confirm)
         async function triggerGrandMasterUpgrade() {
             const shopId = localStorage.getItem('seefood_merchant_shop_id') || "SFB-001";
             let userConfirmed = await seefoodConfirm("🔮 【先享受後扣款】\n升級大覺者將解鎖 10 格商品欄位與「今日最殺推薦」特權！\n月費 $299 將於雙週結帳時自動從營業額抵扣，若餘額不足自動降級。\n\n確定要立即升級嗎？");
@@ -882,7 +883,6 @@
 
         function renderDashboardSlots() { const container = document.getElementById('dashboard-slots-container'); container.innerHTML = ""; let isVip = localStorage.getItem('seefood_merchant_vip') === 'true'; let maxSlots = isVip ? 10 : 3; for (let i = 1; i <= maxSlots; i++) { container.innerHTML += generateSingleSlotHtmlRow(i); } }
 
-        // 🎯 極速開賣/結束販售 (使用戰術 Confirm)
         async function updateStoreOnlineStatus(status) {
             const shopId = new URLSearchParams(window.location.search).get('shopId') || localStorage.getItem('seefood_merchant_shop_id');
             const shopName = document.getElementById('dashboard-shop-title').innerText; const time = document.getElementById('dash-time').value.trim(); 
