@@ -49,18 +49,19 @@
         .dark-map-tiles { filter: invert(100%) hue-rotate(180deg) brightness(90%) contrast(95%); }
         .leaflet-container { background: #000 !important; font-family: inherit; }
         
-        /* 🗺️ 地圖 Marker 聲納波紋動畫 (零成本物理特效) */
+        /* 🗺️ 地圖 Marker 🟢 聲納波紋動畫 (營業中) */
         @keyframes sonar-ripple {
             0% { transform: scale(0.1); opacity: 0.8; }
             100% { transform: scale(2.5); opacity: 0; }
         }
         .sonar-marker { background: #10b981; border-radius: 50%; position: relative; width: 10px; height: 10px; box-shadow: 0 0 10px #10b981; }
         .sonar-marker::after {
-            content: "";
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #10b981; border-radius: 50%;
-            animation: sonar-ripple 2s ease-out infinite;
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #10b981; border-radius: 50%; animation: sonar-ripple 2s ease-out infinite;
         }
+
+        /* 🗺️ 地圖 Marker ⚪ 整備中暗點 (未上架/潛水) */
+        .standby-marker { background: #64748b; border-radius: 50%; position: relative; width: 8px; height: 8px; box-shadow: 0 0 5px rgba(100,116,139,0.5); opacity: 0.7; }
 
         /* 🗺️ 地圖彈窗客製化：融合 Tailwind 科技暗黑風 */
         .leaflet-popup-content-wrapper { background-color: #0f172a; color: #e2e8f0; border: 1px solid #10b981; border-radius: 12px; font-family: inherit; box-shadow: 0 0 15px rgba(16,185,129,0.3); }
@@ -96,8 +97,9 @@
             <div class="absolute top-2 right-2 bg-black/70 text-radarGreen text-[9px] font-mono px-2 py-0.5 rounded-sm border border-radarGreen/30 z-[400] pointer-events-none animate-pulse">
                 RECIVING L-UID GPS...
             </div>
-            <div class="absolute bottom-2 left-2 bg-black/70 text-gray-300 text-[9px] px-2.5 py-1 rounded-sm z-[400] pointer-events-none font-bold tracking-wide">
-                💡 點擊下方卡片飛梭至該戰區
+            <div class="absolute bottom-2 left-2 bg-black/70 text-gray-300 text-[9px] px-2.5 py-1 rounded-sm z-[400] pointer-events-none font-bold tracking-wide flex space-x-2">
+                <span>🟢 營業中</span>
+                <span class="text-slate-400">⚪ 整備中</span>
             </div>
         </div>
     </div>
@@ -129,7 +131,7 @@
     </div>
 
     <script>
-        // ⚠️ 記得將這裡換成你真實的 GAS 網址！
+        // ⚠️ 你的真實 GAS 網址
         const gasUrl = "https://script.google.com/macros/s/AKfycbxOsS40qejUGDKjp0kQFn76CeM0DBiTN41HHorYJ6gBa9qK1fTEP3xDRbn7CgXo3C4Z9g/exec";
         
         const thresholdRules = { "台中市_西屯區": 100, "台北市_大安區": 100, "台中市_烏日區": 50, "台中市_南屯區": 80 };
@@ -141,7 +143,9 @@
             try {
                 const res = await fetch(gasUrl + "?t=" + new Date().getTime());
                 const data = await res.json();
-                processRadarData(data.stores || []);
+                
+                // 🎯 關鍵修正：把所有的註冊店家 (allMerchants) 跟 上架營業中 (stores) 的資料一起餵給地圖處理
+                processRadarData(data.allMerchants || [], data.stores || []);
             } catch (err) {
                 document.getElementById('news-ticker').innerText = "⚠️ 系統連線異常，請稍後再試...";
                 document.getElementById('district-container').innerHTML = '<div class="text-center text-red-500 py-10">資料庫讀取失敗</div>';
@@ -156,13 +160,20 @@
             }).addTo(map);
         }
 
-        function processRadarData(stores) {
+        // 🎯 核心重構：處理全台所有註冊店家，並用 ActiveStores 判斷誰在發光
+        function processRadarData(allMerchants, activeStores) {
             let uniqueShops = {}; 
+            
+            // 建立一個有在上架營業的店鋪 ID 快速查詢字典
+            let activeShopIds = new Set();
+            activeStores.forEach(s => activeShopIds.add(s.shopId));
+            
             let tickerMsgs = [];
             let allMarkers = [];
             districtDataMap = {}; 
 
-            stores.forEach(s => { if (!uniqueShops[s.shopId]) { uniqueShops[s.shopId] = s; } });
+            // 過濾掉重複的 shopId，確保一個店在地圖上只有一個點
+            allMerchants.forEach(s => { if (!uniqueShops[s.shopId]) { uniqueShops[s.shopId] = s; } });
 
             Object.values(uniqueShops).forEach(s => {
                 let dKey = `${s.city}_${s.district}`;
@@ -174,18 +185,31 @@
                 
                 let isIgnited = (s.lat && s.lng); 
                 if (isIgnited) {
-                    dObj.validNodes++;
+                    dObj.validNodes++; // 🎯 關鍵修改：只要有座標（註冊成功），就計算進門檻！
                     
-                    // 🗺️ 🎯 視覺強化：自定義 CSS 聲納 Marker
-                    let myIcon = L.divIcon({ className: 'custom-sonar-icon', html: '<div class="sonar-marker"></div>', iconSize: [10, 10], iconAnchor: [5, 5] });
-                    let marker = L.marker([s.lat, s.lng], { icon: myIcon }).addTo(map).bindPopup(`<div class="text-center"><p class="text-xs text-radarGreen font-black">📍 ${s.name}</p><p class="text-[9px] text-gray-400">${s.address}</p></div>`);
+                    // 判斷這家店現在有沒有營業中
+                    let isActive = activeShopIds.has(s.shopId);
+                    
+                    // 視覺升級：動態標記顏色與狀態文字
+                    let iconHtml = isActive ? '<div class="sonar-marker"></div>' : '<div class="standby-marker"></div>';
+                    let statusText = isActive ? '<span class="text-radarGreen font-black animate-pulse">🟢 營業發車中</span>' : '<span class="text-slate-400 font-bold">⚪ 雷達整備中</span>';
+                    
+                    let myIcon = L.divIcon({ className: isActive ? 'custom-sonar-icon' : 'custom-standby-icon', html: iconHtml, iconSize: [10, 10], iconAnchor: [5, 5] });
+                    let marker = L.marker([s.lat, s.lng], { icon: myIcon })
+                        .addTo(map)
+                        .bindPopup(`<div class="text-center"><p class="text-xs font-black text-white mb-1.5 tracking-wide">📍 ${s.name}</p><p class="text-[10px]">${statusText}</p></div>`);
                     
                     dObj.markers.push(marker);
                     allMarkers.push(marker);
                 }
 
-                if (isIgnited) tickerMsgs.push(`[${s.district}] 已確立戰術座標：${s.name}`);
-                else tickerMsgs.push(`[${s.district}] 收到入場申請：${s.name}`);
+                if (isIgnited) {
+                    if (activeShopIds.has(s.shopId)) {
+                        tickerMsgs.push(`[${s.district}] 獵場發車中：${s.name}`);
+                    } else {
+                        tickerMsgs.push(`[${s.district}] 座標鎖定 整備中：${s.name}`);
+                    }
+                }
             });
 
             if (allMarkers.length > 0) {
@@ -219,7 +243,7 @@
                 if (isHunting) tickerMsgs.push(`⚔️ [${d.district}] 獵場已解鎖！0抽成特權開啟！持續招募中！`);
 
                 container.innerHTML += `
-                    <div onclick="focusDistrict('${dKey}', ${isHunting}, ${percent}, ${threshold}, ${d.validNodes})" class="${cardClass} rounded-2xl p-4 overflow-hidden">
+                    <div onclick="focusDistrict('${dKey}', ${isHunting}, ${percent}, ${threshold}, ${d.validNodes})" class="${cardClass} rounded-2xl p-4 overflow-hidden mb-4">
                         <div class="flex justify-between items-center mb-3">
                             <h3 class="font-black text-lg text-white glow-text-green">[${d.city}] ${d.district}</h3>
                             ${statusHtml}
