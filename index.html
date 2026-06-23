@@ -322,6 +322,12 @@
                 </div>
 
                 <div class="w-full bg-white p-5 pb-8 shadow-[0_-10px_30px_rgba(0,0,0,0.3)] z-30 rounded-t-2xl relative flex-none">
+                    
+                    <div class="mb-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                        <p class="text-[10px] text-gray-500 font-bold mb-0.5 flex items-center">📍 目標取餐防線 (門市地址)</p>
+                        <p class="text-xs font-black text-seefoodDarkBlue truncate" id="sniper-address">載入中...</p>
+                    </div>
+
                     <div class="flex justify-between items-end mb-2">
                         <div>
                             <p class="text-[10px] text-gray-500 font-bold">體驗價 <span id="price-subtotal"></span> + 系統費 <span id="price-fee" class="text-blue-600"></span></p>
@@ -764,13 +770,17 @@
             });
         }
 
-        // 🎯 買家結帳預覽發動 (SniperUX 整合版)
+        // 🎯 買家結帳預覽發動 (SniperUX 整合版) - 確保帶入地址！
         function openCheckout(store, item, price, time, itemIndex, origPrice, shopId, address, phone) {
             currentOrder = { store, item, price, time, itemIndex, origPrice, shopId, address, phone }; 
             let fee = Math.max(5, Math.min(20, Math.round(price * 0.1)));
             
             document.getElementById('sniper-store-name').innerText = store; 
             document.getElementById('sniper-item-name').innerText = item; 
+            
+            // 📍 [關鍵修復]：將門市地址寫入新版的結帳抽屜中
+            document.getElementById('sniper-address').innerText = address || '未提供地址，請見官方LINE'; 
+            
             document.getElementById('price-subtotal').innerText = `$${price}`; 
             document.getElementById('price-fee').innerText = `$${fee}`; 
             document.getElementById('price-total').innerText = `$${price + fee}`; 
