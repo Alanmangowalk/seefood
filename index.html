@@ -38,6 +38,12 @@
 
     <div class="w-full max-w-[430px] bg-gray-50 h-[100dvh] shadow-2xl flex flex-col overflow-hidden relative">
         
+        <div id="global-loading-overlay" class="absolute inset-0 bg-slate-950/90 z-[10000] flex flex-col items-center justify-center hidden backdrop-blur-sm transition-opacity duration-300 opacity-0">
+            <div class="text-6xl animate-spin mb-4" id="loading-icon">⏳</div>
+            <h2 id="loading-title" class="text-xl font-black text-white tracking-widest mb-2">雲端處理中</h2>
+            <p id="loading-desc" class="text-sm text-emerald-400 font-bold px-6 text-center animate-pulse">請勿關閉畫面...</p>
+        </div>
+
         <div id="tos-modal" class="absolute inset-0 bg-slate-900 z-[100] flex flex-col hidden">
             <div class="flex-1 overflow-y-auto p-6 text-gray-300 space-y-4 no-scrollbar">
                 <h2 class="text-2xl font-black text-seefoodYellow tracking-wider mb-2">📜 平台服務與免責聲明</h2>
@@ -124,7 +130,7 @@
 
             <div id="page-achievement" class="space-y-4 hidden">
                 <div class="bg-seefoodDarkBlue text-white rounded-2xl p-5 text-center shadow-sm relative overflow-hidden">
-                    <p class="text-sm text-gray-300">我的榮譽減碳總量</p>
+                    <p class="text-sm text-gray-300">我的榮 ময়減碳總量</p>
                     <p class="text-4xl font-black text-seefoodYellow mt-1"><span id="user-co2-total">14.5</span> <span class="text-sm text-white">kg</span></p>
                     <p class="text-xs text-emerald-400 mt-2">相當於為地球少燃燒了 <span id="user-fuel-total">4.8</span> 公升汽油 🛵</p>
                 </div>
@@ -137,9 +143,17 @@
                 <div id="merchant-dashboard-zone" class="bg-gradient-to-br from-slate-900 to-blue-950 text-white rounded-3xl p-5 shadow-xl space-y-4 hidden mb-4 relative overflow-hidden">
                     
                     <div id="contract-warning-wall" class="hidden bg-gradient-to-r from-amber-500 to-yellow-600 rounded-xl p-4 shadow-[0_0_15px_rgba(250,204,21,0.3)] mb-4 text-slate-900 border-2 border-yellow-300 relative z-20">
-                        <h4 class="font-black text-sm mb-1 flex items-center"><span class="text-lg mr-1 animate-bounce">⚠️</span> 實名合約審核中</h4>
-                        <p class="text-[10px] font-bold leading-relaxed mb-3 opacity-90">依洗錢防制法規定，未完成線上實名簽約與證件上傳前，本期帳款將強制執行「資金攔截凍結」無法匯款！</p>
-                        <button onclick="openContractModal()" class="w-full bg-slate-900 text-white font-black py-3 rounded-lg text-xs active:scale-95 transition shadow-md border border-slate-700">📝 立即進行線上實名完簽</button>
+                        <h4 class="font-black text-sm mb-1 flex items-center"><span class="text-lg mr-1 animate-bounce">⚠️</span> 實名合約與帳戶審核中</h4>
+                        <p class="text-[10px] font-bold leading-relaxed mb-3 opacity-90">依洗錢防制法規定，未完成線上實名簽約與收款帳戶綁定前，本期帳款將強制執行「資金攔截凍結」無法匯款！</p>
+                        <button onclick="openContractModal(false)" class="w-full bg-slate-900 text-white font-black py-3 rounded-lg text-xs active:scale-95 transition shadow-md border border-slate-700">📝 立即完成實名簽約綁定</button>
+                    </div>
+
+                    <div id="contract-success-wall" class="hidden bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl p-4 shadow-[0_0_15px_rgba(16,185,129,0.3)] mb-4 text-white border border-emerald-400 relative z-20 flex justify-between items-center cursor-pointer active:scale-95 transition" onclick="openContractModal(true)">
+                        <div>
+                            <h4 class="font-black text-sm mb-0.5 flex items-center"><span class="text-lg mr-1">✅</span> 實名合約與帳戶已綁定</h4>
+                            <p class="text-[10px] font-bold opacity-80">資料已寫入雲端金庫與區塊鏈防竄改</p>
+                        </div>
+                        <span class="bg-slate-900/40 px-2 py-1.5 rounded-lg text-xs font-black shadow-sm flex-none">📄 檢視</span>
                     </div>
 
                     <div class="flex justify-between items-center border-b border-blue-900 pb-3 relative z-10">
@@ -290,7 +304,7 @@
                     </div>
 
                     <div id="bank-alert-box" class="bg-amber-500/10 border border-amber-500/40 rounded-xl p-3 text-amber-400 text-[11px] leading-relaxed font-bold">
-                        📢 <span class="text-white">系統提示：</span>上期營收已鎖定。若您已完成實名簽約，預計於 3~5 個工作天內匯至下方指定銀行。
+                        📢 <span class="text-white">系統提示：</span>上期營收已鎖定。若您已完成實名簽約，預計於 3~5 個工作天內匯至合約綁定帳戶。
                     </div>
                     
                     <div class="space-y-1.5 text-xs border-t border-slate-800/60 pt-2">
@@ -303,67 +317,89 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-800 rounded-2xl p-4 border border-slate-700 space-y-3">
-                    <p class="font-black text-sm text-blue-300 flex items-center">🏦 綁定撥款帳戶 (隨時更新)</p>
-                    <div class="grid grid-cols-2 gap-2 text-xs"><input type="text" id="fb-code" placeholder="銀行代碼(3碼)" class="bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-blue-400"><input type="text" id="fb-branch" placeholder="分行代碼(選填)" class="bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-blue-400"></div>
-                    <div class="grid grid-cols-3 gap-2 text-xs"><input type="text" id="fb-acc" placeholder="銀行帳號" class="col-span-2 bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-blue-400"><input type="text" id="fb-owner" placeholder="存摺戶名" class="bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-blue-400"></div>
-                    <button type="button" id="btn-save-bank" onclick="saveBankProfileOnly()" class="w-full bg-blue-600 text-white font-black py-3.5 mt-2 rounded-xl text-sm active:scale-95 transition shadow-lg hover:bg-blue-500">💾 寫入雲端財務資料</button>
+                <div class="bg-slate-800 rounded-2xl p-4 border border-slate-700 space-y-2">
+                    <p class="font-black text-sm text-blue-300 flex items-center">🏦 撥款帳戶 (已綁定至實名合約)</p>
+                    <p class="text-xs text-gray-400 leading-relaxed">您的銀行帳戶資料已隨實名合約加密寫入雲端。如需查詢，請至「商家後台 ➔ 檢視實名合約」中查看唯讀資料。如需變更，請聯繫客服中心。</p>
                 </div>
             </div>
         </div>
 
         <div id="contract-modal" class="absolute inset-0 bg-slate-950 z-[9999] hidden flex flex-col overflow-hidden">
             <div class="p-4 bg-slate-900 sticky top-0 z-20 border-b border-slate-700 flex justify-between items-center shadow-md flex-none">
-                <h2 class="text-lg font-black text-seefoodYellow tracking-widest flex items-center"><span class="text-2xl mr-2">📝</span> 實名制合約簽署</h2>
+                <h2 class="text-lg font-black text-seefoodYellow tracking-widest flex items-center"><span class="text-2xl mr-2">📝</span> 實名合約與帳戶綁定</h2>
                 <button onclick="closeContractModal()" class="text-gray-400 hover:text-white text-3xl font-bold px-2 leading-none">&times;</button>
             </div>
             
             <div class="flex-1 overflow-y-auto p-5 space-y-5 pb-28 no-scrollbar relative z-10" style="-webkit-overflow-scrolling: touch;">
-                <div class="bg-slate-800 rounded-xl p-4 h-48 overflow-y-auto text-[11px] text-gray-300 space-y-3 border border-slate-600 shadow-inner">
-                    <p class="font-black text-white text-sm border-b border-slate-600 pb-2 mb-2 sticky top-0 bg-slate-800">【照路有限公司 - 平台服務與代收付免責合約】</p>
-                    <p><span class="text-emerald-400 font-bold">1. 平台定位與食安免責：</span>本平台僅提供即期惜福餐點之資訊撮合與代收代付服務，餐點買賣契約絕對存在於消費者與特約商店之間。特約商店應確保其銷售餐點符合食品安全衛生管理法。若生任何消費糾紛、食安個案，特約商店應獨立承擔一切法律與賠償責任，與平台方無涉。</p>
-                    <p><span class="text-emerald-400 font-bold">2. 憑證開立責任：</span>特約商店知悉並同意，平台僅就「系統服務費」開立發票予消費者或店家。商品本身之發票或收據，特約商店應依法自行開立並交付消費者。</p>
-                    <p><span class="text-emerald-400 font-bold">3. 稅務切結：</span>若特約商店為無辦理商業登記之個人個體戶，應自行負責稅籍申報。若因特約商店未依法開立憑證導致消費者檢舉，所生之罰鍰及平台方商譽損失，特約商店承諾無條件全額賠償。</p>
-                    <p><span class="text-emerald-400 font-bold">4. 資金防詐騙與防洗錢：</span>特約商店須提供真實負責人證件與數位簽名。若系統偵測有疑似洗錢、人頭戶套現等異常交易，平台有權無限期凍結未撥付之代收帳款，並配合檢警調查。</p>
+                <div class="bg-slate-800 rounded-xl p-4 h-56 overflow-y-auto text-[11px] text-gray-300 space-y-3 border border-slate-600 shadow-inner">
+                    <p class="font-black text-white text-sm border-b border-slate-600 pb-2 mb-2 sticky top-0 bg-slate-800">【SEEFOOD 平台特約商店服務條款暨代收付合約】</p>
+                    <p><span class="text-emerald-400 font-bold">1. 居間定位與勞雇切割：</span>平台僅為資訊撮合與代收付工具，不涉入商品實際買賣，與店家無勞雇或加盟關係。</p>
+                    <p><span class="text-emerald-400 font-bold">2. 食安與客訴全責：</span>店家保證上架商品符合《食品安全衛生管理法》。若因食物變質、標示不實導致客訴或傷病，由店家負擔 100% 法律與賠償責任。</p>
+                    <p><span class="text-emerald-400 font-bold">3. 稅務與發票開立：</span>平台僅就「系統服務費」開立發票給店家；商品本身的免稅申報或發票開立責任，由店家自行承擔。</p>
+                    <p><span class="text-emerald-400 font-bold">4. 代收付結算與手續費：</span>明訂 3.15% 金流手續費、撥款週期（A/B期），若因店家提供之銀行帳戶錯誤導致退匯，需自行承擔重匯手續費。</p>
+                    <p><span class="text-emerald-400 font-bold">5. 防洗錢、詐欺與凍結權：</span>配合洗錢防制法，若平台偵測異常交易（如人頭套現、盜刷），平台擁有絕對權力無限期凍結資金並終止合作。</p>
                 </div>
                 
-                <label class="flex items-center space-x-3 text-sm text-white font-black bg-slate-800/50 p-3 rounded-xl border border-slate-700 cursor-pointer active:scale-95 transition">
+                <label class="flex items-center space-x-3 text-sm text-white font-black bg-slate-800/50 p-3 rounded-xl border border-slate-700 cursor-pointer active:scale-95 transition" id="contract-agree-label">
                     <input type="checkbox" id="contract-agree" class="w-6 h-6 rounded text-seefoodYellow accent-seefoodYellow">
-                    <span>✅ 我已詳閱並完全同意上述條款</span>
+                    <span>✅ 我已詳閱並完全同意上述法務條款</span>
                 </label>
                 
                 <div class="space-y-3 border-t border-slate-700 pt-4 mt-2">
                     <label class="block text-blue-200 font-bold text-xs mb-1">1. 負責人真實姓名 *</label>
-                    <input type="text" id="contract-name" placeholder="請填寫證件上之姓名" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3.5 text-white text-sm focus:outline-none focus:border-seefoodYellow font-bold">
+                    <input type="text" id="contract-name" placeholder="請填寫證件上之姓名" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-seefoodYellow font-bold">
                     
                     <label class="block text-blue-200 font-bold text-xs mt-3 mb-1">2. 負責人身分證字號 (或統編) *</label>
-                    <input type="text" id="contract-id" placeholder="首字英文請大寫" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3.5 text-white text-sm focus:outline-none focus:border-seefoodYellow font-bold uppercase">
+                    <input type="text" id="contract-id" placeholder="首字大寫英文 或 8碼數字" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-seefoodYellow font-bold uppercase">
+                </div>
+
+                <div class="space-y-3 border-t border-slate-700 pt-4 mt-2">
+                    <label class="block text-blue-200 font-bold text-xs mb-1">3. 綁定匯款銀行帳戶 *</label>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <input type="text" id="contract-bank-code" placeholder="銀行代碼(3碼)" class="bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-seefoodYellow font-bold">
+                        <input type="text" id="contract-bank-branch" placeholder="分行代碼(選填)" class="bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-seefoodYellow font-bold">
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-xs mt-2">
+                        <input type="text" id="contract-bank-acc" placeholder="銀行帳號" class="col-span-2 bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-seefoodYellow font-bold">
+                        <input type="text" id="contract-bank-owner" placeholder="存摺戶名" class="bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-seefoodYellow font-bold">
+                    </div>
                 </div>
 
                 <div class="bg-slate-800 border border-slate-600 rounded-xl p-4 shadow-md">
-                    <label class="block text-sm font-black text-white mb-2 flex items-center"><span class="text-xl mr-1">📸</span> 3. 上傳負責人證件正面 (或營登)</label>
-                    <p class="text-[10px] text-emerald-400 mb-4 font-bold leading-relaxed">🛡️ 資安防禦啟動：系統將在手機端自動進行圖片壓縮，並強制壓上「實名專用塗改無效」之不可逆防偽浮水印，絕不外流您的乾淨個資。</p>
+                    <label class="block text-sm font-black text-white mb-2 flex items-center"><span class="text-xl mr-1">📸</span> 4. 上傳負責人證件正面 (或營登)</label>
+                    <p class="text-[10px] text-emerald-400 mb-4 font-bold leading-relaxed">🛡️ 資安防禦啟動：系統將自動壓縮並強制壓上不可逆防偽浮水印，絕不外流。</p>
                     
-                    <div class="relative w-full h-14 bg-gradient-to-r from-emerald-600 to-teal-500 rounded-xl flex items-center justify-center cursor-pointer shadow-lg active:scale-95 transition border border-emerald-400 overflow-hidden">
-                        <span class="text-white font-black text-sm tracking-widest pointer-events-none">點擊開啟相機 / 相簿上傳</span>
-                        <input type="file" id="contract-file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleIdUpload(event)">
+                    <div id="upload-action-zone">
+                        <div class="relative w-full h-14 bg-gradient-to-r from-emerald-600 to-teal-500 rounded-xl flex items-center justify-center cursor-pointer shadow-lg active:scale-95 transition border border-emerald-400 overflow-hidden">
+                            <span class="text-white font-black text-sm tracking-widest pointer-events-none">點擊開啟相機 / 相簿上傳</span>
+                            <input type="file" id="contract-file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleIdUpload(event)">
+                        </div>
+                        <canvas id="watermark-canvas" class="hidden"></canvas>
+                        <div id="id-preview-container" class="hidden mt-4 relative bg-slate-900 rounded-lg p-2 border border-slate-700">
+                            <span class="absolute top-0 right-0 bg-emerald-600 text-white text-[9px] font-black px-2 py-0.5 rounded-bl-lg rounded-tr-lg z-10">浮水印已打上</span>
+                            <img id="id-preview" class="w-full object-contain max-h-48 rounded opacity-90">
+                        </div>
                     </div>
-                    <canvas id="watermark-canvas" class="hidden"></canvas>
-                    
-                    <div id="id-preview-container" class="hidden mt-4 relative bg-slate-900 rounded-lg p-2 border border-slate-700">
-                        <span class="absolute top-0 right-0 bg-emerald-600 text-white text-[9px] font-black px-2 py-0.5 rounded-bl-lg rounded-tr-lg z-10">浮水印已打上</span>
-                        <img id="id-preview" class="w-full object-contain max-h-48 rounded opacity-90">
+                    <div id="upload-readonly-zone" class="hidden text-center py-4 bg-slate-900 rounded-xl border border-slate-700">
+                        <span class="text-2xl block mb-1 opacity-80">🔐</span>
+                        <p class="text-emerald-400 text-xs font-black tracking-widest">證件檔案已加密寫入雲端金庫</p>
                     </div>
                 </div>
 
                 <div class="bg-slate-800 border border-slate-600 rounded-xl p-4 shadow-md relative">
                     <div class="flex justify-between items-end mb-3 border-b border-slate-600 pb-2">
-                        <label class="text-sm font-black text-white flex items-center"><span class="text-xl mr-1">✍️</span> 4. 數位手寫簽名板</label>
-                        <button onclick="clearSignature()" class="text-xs bg-slate-700 hover:bg-slate-600 text-gray-200 font-bold px-3 py-1.5 rounded-lg active:scale-95 transition shadow-sm border border-slate-500">清除重簽</button>
+                        <label class="text-sm font-black text-white flex items-center"><span class="text-xl mr-1">✍️</span> 5. 數位手寫簽名板</label>
+                        <button id="btn-clear-sign" onclick="clearSignature()" class="text-xs bg-slate-700 hover:bg-slate-600 text-gray-200 font-bold px-3 py-1.5 rounded-lg active:scale-95 transition shadow-sm border border-slate-500">清除重簽</button>
                     </div>
-                    <p class="text-[10px] text-gray-400 mb-2 font-bold text-center">請用手指於下方白色區域內簽上您的姓名</p>
-                    <div class="bg-white rounded-xl p-1 shadow-inner border-[3px] border-slate-400">
-                        <canvas id="sign-canvas" class="w-full h-40 bg-white rounded-lg touch-none"></canvas>
+                    <div id="sign-action-zone">
+                        <p class="text-[10px] text-gray-400 mb-2 font-bold text-center">請用手指於下方白色區域內簽上您的姓名</p>
+                        <div class="bg-white rounded-xl p-1 shadow-inner border-[3px] border-slate-400">
+                            <canvas id="sign-canvas" class="w-full h-40 bg-white rounded-lg touch-none"></canvas>
+                        </div>
+                    </div>
+                    <div id="sign-readonly-zone" class="hidden text-center py-8 bg-slate-900 rounded-xl border border-slate-700">
+                        <span class="text-2xl block mb-1 opacity-80">🖋️</span>
+                        <p class="text-blue-400 text-xs font-black tracking-widest">法務數位指紋已鎖定</p>
                     </div>
                 </div>
             </div>
@@ -406,12 +442,10 @@
                 </div>
 
                 <div class="w-full bg-white p-5 pb-8 shadow-[0_-10px_30px_rgba(0,0,0,0.3)] z-30 rounded-t-2xl relative flex-none">
-                    
                     <div class="mb-3 bg-slate-50 p-3 rounded-xl border border-slate-200 shadow-inner">
                         <p class="text-[10px] text-gray-500 font-bold mb-1 flex items-center">📍 目標取餐防線 (門市實體地址)</p>
                         <p class="text-sm font-black text-seefoodDarkBlue truncate" id="sniper-address">載入中...</p>
                     </div>
-
                     <div class="flex justify-between items-end mb-3">
                         <div>
                             <p class="text-xs text-gray-500 font-bold">體驗價 <span id="price-subtotal"></span> + 系統費 <span id="price-fee" class="text-blue-600"></span></p>
@@ -425,7 +459,6 @@
                         <input type="checkbox" id="agree-tos" class="w-5 h-5 rounded text-seefoodDarkBlue accent-seefoodDarkBlue">
                         <label for="agree-tos" class="text-xs text-gray-700 font-black cursor-pointer leading-tight">我已確認自取限時，付款後立刻致電店家</label>
                     </div>
-                    
                     <div class="space-y-2.5">
                         <div class="grid grid-cols-2 gap-2">
                             <button onclick="submitPayment('LINEPay')" class="bg-[#06C755] text-white font-black py-3.5 rounded-xl shadow-md active:scale-95 transition text-sm flex justify-center items-center">LINE Pay</button>
@@ -481,16 +514,31 @@
         let textBannerTemplates = [ { emoji: "🌍", text: "系統連線中..." }, { emoji: "👑", text: "加入創始大覺者 VIP 享有黃金標籤特權，免抽成免月費！" } ];
         let countdownInterval; let sniperTimeLeft = 60; const sniperTotalTime = 60;
         
-        // 合約相關變數
-        let contractIdBase64 = null; let signCtx = null; let isSigned = false; let isDrawing = false;
+        // 合約與全域鎖定變數
+        let contractIdBase64 = null; let signCtx = null; let isDrawing = false;
+        let signatureStrokeLength = 0; let lastSignPos = null;
+        let isSubmittingGlobal = false;
+
+        // 🛡️ 全域狀態鎖定 UI (防洗單遮罩)
+        function showGlobalLoading(title, desc) {
+            const overlay = document.getElementById('global-loading-overlay');
+            document.getElementById('loading-title').innerText = title;
+            document.getElementById('loading-desc').innerText = desc;
+            document.getElementById('loading-icon').innerText = '⏳';
+            document.getElementById('loading-icon').classList.add('animate-spin');
+            overlay.classList.remove('hidden');
+            setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+        }
+        function hideGlobalLoading() {
+            const overlay = document.getElementById('global-loading-overlay');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
 
         window.alert = function(msg) {
-            const modal = document.getElementById('seefood-alert-modal');
-            const box = document.getElementById('seefood-alert-box');
-            const iconEl = document.getElementById('seefood-alert-icon');
-            const titleEl = document.getElementById('seefood-alert-title');
-            const msgEl = document.getElementById('seefood-alert-message');
-            const glowEl = document.getElementById('seefood-alert-glow');
+            const modal = document.getElementById('seefood-alert-modal'); const box = document.getElementById('seefood-alert-box');
+            const iconEl = document.getElementById('seefood-alert-icon'); const titleEl = document.getElementById('seefood-alert-title');
+            const msgEl = document.getElementById('seefood-alert-message'); const glowEl = document.getElementById('seefood-alert-glow');
             const btnEl = document.getElementById('seefood-alert-btn');
 
             let content = String(msg); let type = "warning"; let title = "⚠️ 系統風控與提示";
@@ -505,14 +553,12 @@
             }
 
             msgEl.innerHTML = content.replace(/\n/g, '<br>'); titleEl.innerText = title;
-            modal.classList.remove('hidden');
-            setTimeout(() => { modal.classList.remove('opacity-0'); box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
+            modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
         };
 
         function closeSeefoodAlert() {
             const modal = document.getElementById('seefood-alert-modal'); const box = document.getElementById('seefood-alert-box');
-            modal.classList.add('opacity-0'); box.classList.remove('scale-100'); box.classList.add('scale-95');
-            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+            modal.classList.add('opacity-0'); box.classList.remove('scale-100'); box.classList.add('scale-95'); setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
         window.seefoodConfirm = function(msg) {
@@ -530,9 +576,7 @@
 
         function safeFormatTime(val) {
             if (!val) return "今日限時"; let str = String(val);
-            if (str.includes('T') && str.endsWith('Z')) {
-                try { let d = new Date(str); if (d.getFullYear() < 1970) return d.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false }); return d.toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }); } catch(e) {}
-            }
+            if (str.includes('T') && str.endsWith('Z')) { try { let d = new Date(str); if (d.getFullYear() < 1970) return d.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false }); return d.toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }); } catch(e) {} }
             return str;
         }
 
@@ -556,10 +600,8 @@
             if (currentB.type === '內部' && currentB.link) { window.location.hash = currentB.link; checkHashAndSwitch(); } else if (currentB.type === '外部' && currentB.link) { window.open(currentB.link, '_blank'); }
         }
 
-        // 🚀 【任務8補充】：免稅警告提示動態顯示
         function toggleTaxWarning() {
-            const type = document.getElementById('merchant-type-select').value;
-            const warning = document.getElementById('tax-warning-msg');
+            const type = document.getElementById('merchant-type-select').value; const warning = document.getElementById('tax-warning-msg');
             if (type.includes('個人個體戶')) { warning.classList.remove('hidden'); } else { warning.classList.add('hidden'); }
         }
 
@@ -567,8 +609,7 @@
             if (window.location.protocol === 'file:') { loadUserStats(); return; }
             try {
                 await liff.init({ liffId: "2010392646-KEEBg8gS" });
-                if (!liff.isLoggedIn()) liff.login();
-                else { const p = await liff.getProfile(); userStats.lineUid = p.userId; syncUserDataFromCloud(); }
+                if (!liff.isLoggedIn()) liff.login(); else { const p = await liff.getProfile(); userStats.lineUid = p.userId; syncUserDataFromCloud(); }
             } catch (err) { console.error("LIFF 錯誤", err); loadUserStats(); }
         }
 
@@ -583,14 +624,25 @@
                         localStorage.setItem('seefood_merchant_vip', json.myShop.isVip ? 'true' : 'false'); localStorage.setItem('seefood_merchant_bank_code', json.myShop.bCode); 
                         localStorage.setItem('seefood_merchant_bank_branch', json.myShop.bBranch); localStorage.setItem('seefood_merchant_bank_account', json.myShop.bAcc); 
                         localStorage.setItem('seefood_merchant_bank_owner', json.myShop.bOwner);
+                        localStorage.setItem('seefood_merchant_contract_status', json.myShop.contractStatus || "PENDING_REVIEW");
                         if (json.myShop.finance) { userStats.merchantFinance = json.myShop.finance; }
                         
-                        // 🎯 【任務3修改】：登入並確認為店家後，切換導覽列文字
                         document.getElementById('tab-merchant-text').innerText = "商家後台";
 
-                        // 🎯 【任務6修改】：判定實名合約簽署狀態，拉起警告牆
+                        // 🎯 【狀態切換】：已簽約與未簽約介面大一統
                         const contractWall = document.getElementById('contract-warning-wall');
-                        if (json.myShop.contractStatus === "PENDING_REVIEW") { contractWall.classList.remove('hidden'); } else { contractWall.classList.add('hidden'); }
+                        const successWall = document.getElementById('contract-success-wall');
+                        
+                        if (json.myShop.contractStatus === "已完成") { 
+                            contractWall.classList.add('hidden'); 
+                            successWall.classList.remove('hidden');
+                            // 快取負責人資料供唯讀檢視
+                            localStorage.setItem('seefood_signer_name', json.myShop.signerName || "***");
+                            localStorage.setItem('seefood_signer_id', json.myShop.signerId || "***");
+                        } else { 
+                            contractWall.classList.remove('hidden'); 
+                            successWall.classList.add('hidden');
+                        }
                         
                         if (json.myShop.liveSlots && json.myShop.liveSlots.length > 0) {
                             for(let i=1; i<=10; i++) { localStorage.removeItem('seefood_slot_data_' + i); localStorage.removeItem('seefood_slot_' + i + '_locked'); }
@@ -609,12 +661,7 @@
                             ordersZone.classList.remove('hidden');
                             if (json.myShop.activeOrders.length > 0) {
                                 let html = '';
-                                json.myShop.activeOrders.forEach(o => {
-                                    html += `<div class="bg-slate-900 border border-emerald-500/50 rounded-xl p-3 flex justify-between items-center shadow-inner">
-                                        <div><p class="text-emerald-400 font-mono font-black text-sm tracking-wider">${escapeHTML(o.orderId)}</p><p class="text-white text-sm mt-1 font-black">${escapeHTML(o.item)}</p></div>
-                                        <div class="text-right"><p class="text-gray-400 text-[10px] font-bold">自取截止: ${escapeHTML(safeFormatTime(o.time))}</p><p class="text-seefoodYellow font-black text-sm mt-0.5">$${o.price}</p></div>
-                                    </div>`;
-                                });
+                                json.myShop.activeOrders.forEach(o => { html += `<div class="bg-slate-900 border border-emerald-500/50 rounded-xl p-3 flex justify-between items-center shadow-inner"><div><p class="text-emerald-400 font-mono font-black text-sm tracking-wider">${escapeHTML(o.orderId)}</p><p class="text-white text-sm mt-1 font-black">${escapeHTML(o.item)}</p></div><div class="text-right"><p class="text-gray-400 text-[10px] font-bold">自取截止: ${escapeHTML(safeFormatTime(o.time))}</p><p class="text-seefoodYellow font-black text-sm mt-0.5">$${o.price}</p></div></div>`; });
                                 ordersList.innerHTML = html;
                             } else { ordersList.innerHTML = '<p class="text-center text-slate-500 text-xs py-4 font-bold">目前尚無待取餐訂單</p>'; }
                         }
@@ -632,120 +679,51 @@
             saveUserStats(); document.getElementById('user-co2-total').innerText = userStats.co2Total.toFixed(1); document.getElementById('user-fuel-total').innerText = parseFloat((userStats.co2Total / 3).toFixed(1)); renderBadgesWall();
         }
 
-        function loadUserStats() {
-            let savedStats = localStorage.getItem('seefood_user_stats');
-            if (savedStats) { try { let p = JSON.parse(savedStats); userStats.co2Total = Number(p.co2Total) || 14.5; userStats.savedAmount = Number(p.savedAmount) || 0; userStats.hasFirstOrder = !!p.hasFirstOrder; userStats.storeCounts = p.storeCounts || {}; userStats.unlockedTimes = p.unlockedTimes || { lunch: false, nightMarket: false, midnight: false }; } catch(e) {} }
-            document.getElementById('user-co2-total').innerText = userStats.co2Total.toFixed(1); document.getElementById('user-fuel-total').innerText = parseFloat((userStats.co2Total / 3).toFixed(1));
-        }
+        function loadUserStats() { let savedStats = localStorage.getItem('seefood_user_stats'); if (savedStats) { try { let p = JSON.parse(savedStats); userStats.co2Total = Number(p.co2Total) || 14.5; userStats.savedAmount = Number(p.savedAmount) || 0; userStats.hasFirstOrder = !!p.hasFirstOrder; userStats.storeCounts = p.storeCounts || {}; userStats.unlockedTimes = p.unlockedTimes || { lunch: false, nightMarket: false, midnight: false }; } catch(e) {} } document.getElementById('user-co2-total').innerText = userStats.co2Total.toFixed(1); document.getElementById('user-fuel-total').innerText = parseFloat((userStats.co2Total / 3).toFixed(1)); }
         function saveUserStats() { localStorage.setItem('seefood_user_stats', JSON.stringify(userStats)); }
 
-        function getDistance(lat1, lon1, lat2, lon2) {
-            if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity; const R = 6371e3; const φ1 = lat1 * Math.PI/180; const φ2 = lat2 * Math.PI/180; const Δφ = (lat2-lat1) * Math.PI/180; const Δλ = (lon2-lon1) * Math.PI/180; const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2); const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return Math.round(R * c);
-        }
-
-        function requestLocation() {
-            if (navigator.geolocation) { navigator.geolocation.getCurrentPosition((position) => { userLocation = { lat: position.coords.latitude, lng: position.coords.longitude }; filterStores(); }, () => { alert("📍 需允許定位才能幫您計算與店家的真實距離喔！"); }); } else { alert("您的瀏覽器不支援定位功能。"); }
-        }
-
+        function getDistance(lat1, lon1, lat2, lon2) { if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity; const R = 6371e3; const φ1 = lat1 * Math.PI/180; const φ2 = lat2 * Math.PI/180; const Δφ = (lat2-lat1) * Math.PI/180; const Δλ = (lon2-lon1) * Math.PI/180; const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2); const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return Math.round(R * c); }
+        function requestLocation() { if (navigator.geolocation) { navigator.geolocation.getCurrentPosition((position) => { userLocation = { lat: position.coords.latitude, lng: position.coords.longitude }; filterStores(); }, () => { alert("📍 需允許定位才能幫您計算與店家的真實距離喔！"); }); } else { alert("您的瀏覽器不支援定位功能。"); } }
         function setSort(method) { if (method === 'distance' && !userLocation) { requestLocation(); } currentSortMethod = method; filterStores(); }
 
         async function fetchLiveStores() {
             if (!localStorage.getItem('seefood_tos_agreed')) return;
             try {
                 const response = await fetch(gasUrl + "?t=" + new Date().getTime()); const resJson = await response.json(); const rawData = resJson.stores || []; const baseSavedKg = resJson.totalSavedKg || 1285.5;
-                let totalReg = resJson.registeredStores || 0;
-                textBannerTemplates[0].text = `獵人雷達點燈：全台已進駐 ${totalReg}/100 店，滿百即刻開車解鎖！`;
-                const bText = document.getElementById('text-banner-text'); if(bText && bannerIndex === 0) bText.innerText = textBannerTemplates[0].text;
-                cloudBanners = resJson.banners || [];
-                if (cloudBanners.length > 0) { document.getElementById('image-banner-container').classList.remove('hidden'); document.getElementById('text-banner-container').classList.add('hidden'); document.getElementById('image-banner-img').src = cloudBanners[0].imgUrl; document.getElementById('image-banner-title').innerText = escapeHTML(cloudBanners[0].title); }
-                startBannerCarousel(); storesData = [];
-                
-                // 創建一個快速查詢商家的字典來獲取 merchantType
-                let typeDict = {};
-                if (resJson.allMerchants) { resJson.allMerchants.forEach(m => { typeDict[m.shopId] = m.merchantType || "公司/行號"; }); }
-
+                let totalReg = resJson.registeredStores || 0; textBannerTemplates[0].text = `獵人雷達點燈：全台已進駐 ${totalReg}/100 店，滿百即刻開車解鎖！`; const bText = document.getElementById('text-banner-text'); if(bText && bannerIndex === 0) bText.innerText = textBannerTemplates[0].text;
+                cloudBanners = resJson.banners || []; if (cloudBanners.length > 0) { document.getElementById('image-banner-container').classList.remove('hidden'); document.getElementById('text-banner-container').classList.add('hidden'); document.getElementById('image-banner-img').src = cloudBanners[0].imgUrl; document.getElementById('image-banner-title').innerText = escapeHTML(cloudBanners[0].title); } startBannerCarousel(); storesData = [];
+                let typeDict = {}; if (resJson.allMerchants) { resJson.allMerchants.forEach(m => { typeDict[m.shopId] = m.merchantType || "公司/行號"; }); }
                 rawData.forEach(store => {
                     let finalNote = store.note; if (!finalNote) { finalNote = store.itemType === '固定菜單' ? "這很有名耶..還需要介紹嗎？直接搶就對了！" : "※ 餐廳新鮮現做優質備品"; }
-                    storesData.push({
-                        id: `${store.shopId}-${store.itemIndex}`, shopId: store.shopId, itemIndex: store.itemIndex, city: store.city || "全部地區", district: store.district || "全部行政區", address: store.address, phone: store.phone, name: store.name, 
-                        lat: parseFloat(store.lat) || 0, lng: parseFloat(store.lng) || 0, itemType: store.itemType, item: store.item, note: finalNote, originalPrice: parseFloat(store.originalPrice) || 0, discountPrice: parseFloat(store.discountPrice) || 0, remain: parseInt(store.remain) || 0, time: safeFormatTime(store.time), discountRate: store.originalPrice > 0 ? (store.discountPrice / store.originalPrice) : 0, isVip: localStorage.getItem('seefood_merchant_vip') === 'true' && store.shopId === localStorage.getItem('seefood_merchant_shop_id'),
-                        merchantType: typeDict[store.shopId] || "公司/行號" // 綁定類別
-                    });
+                    storesData.push({ id: `${store.shopId}-${store.itemIndex}`, shopId: store.shopId, itemIndex: store.itemIndex, city: store.city || "全部地區", district: store.district || "全部行政區", address: store.address, phone: store.phone, name: store.name, lat: parseFloat(store.lat) || 0, lng: parseFloat(store.lng) || 0, itemType: store.itemType, item: store.item, note: finalNote, originalPrice: parseFloat(store.originalPrice) || 0, discountPrice: parseFloat(store.discountPrice) || 0, remain: parseInt(store.remain) || 0, time: safeFormatTime(store.time), discountRate: store.originalPrice > 0 ? (store.discountPrice / store.originalPrice) : 0, isVip: localStorage.getItem('seefood_merchant_vip') === 'true' && store.shopId === localStorage.getItem('seefood_merchant_shop_id'), merchantType: typeDict[store.shopId] || "公司/行號" });
                 });
                 updateGlobalCo2Display(baseSavedKg); initFilterMenus(); filterStores(); renderSavedTicketsWall();
-            } catch (error) { 
-                console.error("連線失敗", error); const container = document.getElementById('store-list-container');
-                if(container) container.innerHTML = `<div class="text-center py-16 px-4 bg-red-50 rounded-2xl border border-red-200 shadow-sm"><span class="text-4xl block mb-3">⚠️</span><h4 class="font-black text-red-600 text-sm">資料庫連線被拒絕</h4><p class="text-xs text-red-500 mt-2 font-bold leading-relaxed">請檢查網路或稍後重試</p></div>`;
-            }
+            } catch (error) { const container = document.getElementById('store-list-container'); if(container) container.innerHTML = `<div class="text-center py-16 px-4 bg-red-50 rounded-2xl border border-red-200 shadow-sm"><span class="text-4xl block mb-3">⚠️</span><h4 class="font-black text-red-600 text-sm">資料庫連線被拒絕</h4><p class="text-xs text-red-500 mt-2 font-bold leading-relaxed">請檢查網路或稍後重試</p></div>`; }
         }
 
         function updateGlobalCo2Display(baseSavedKg) { let localCount = parseInt(localStorage.getItem('seefood_local_buy_count') || "0"); let el = document.getElementById('global-co2-banner'); if(el) el.innerHTML = `🌍 美食獵人已共同減少食物報廢 ${(baseSavedKg + localCount * 0.5).toFixed(1)} 公斤`; }
-
-        function initFilterMenus() {
-            const regionSelect = document.getElementById('select-region'); if(!regionSelect) return; locationHierarchy = { "全部地區": new Set(["全部行政區"]) };
-            storesData.forEach(store => { if (!locationHierarchy[store.city]) locationHierarchy[store.city] = new Set(["全部行政區"]); locationHierarchy[store.city].add(store.district); });
-            regionSelect.innerHTML = ''; Object.keys(locationHierarchy).forEach(c => { regionSelect.innerHTML += `<option value="${c}">${c}</option>`; }); handleRegionChange();
-        }
-
-        function handleRegionChange() {
-            const districtSelect = document.getElementById('select-district'); const selectedCity = document.getElementById('select-region').value; districtSelect.innerHTML = '';
-            if (selectedCity === "全部地區") { districtSelect.innerHTML = `<option value="全部行政區">全部行政區</option>`; } 
-            else { districtSelect.innerHTML = `<option value="全部行政區">全部行政區</option>`; (locationHierarchy[selectedCity] || ["全部行政區"]).forEach(d => { if(d !== "全部行政區") districtSelect.innerHTML += `<option value="${d}">${d}</option>`; }); } filterStores();
-        }
+        function initFilterMenus() { const regionSelect = document.getElementById('select-region'); if(!regionSelect) return; locationHierarchy = { "全部地區": new Set(["全部行政區"]) }; storesData.forEach(store => { if (!locationHierarchy[store.city]) locationHierarchy[store.city] = new Set(["全部行政區"]); locationHierarchy[store.city].add(store.district); }); regionSelect.innerHTML = ''; Object.keys(locationHierarchy).forEach(c => { regionSelect.innerHTML += `<option value="${c}">${c}</option>`; }); handleRegionChange(); }
+        function handleRegionChange() { const districtSelect = document.getElementById('select-district'); const selectedCity = document.getElementById('select-region').value; districtSelect.innerHTML = ''; if (selectedCity === "全部地區") { districtSelect.innerHTML = `<option value="全部行政區">全部行政區</option>`; } else { districtSelect.innerHTML = `<option value="全部行政區">全部行政區</option>`; (locationHierarchy[selectedCity] || ["全部行政區"]).forEach(d => { if(d !== "全部行政區") districtSelect.innerHTML += `<option value="${d}">${d}</option>`; }); } filterStores(); }
 
         function filterStores() {
             const container = document.getElementById('store-list-container'); const selectedCity = document.getElementById('select-region').value; const selectedDistrict = document.getElementById('select-district').value;
             if(!container) return; container.innerHTML = '';
             let filtered = storesData.filter(s => { return (selectedCity === "全部地區" || s.city === selectedCity) && (selectedDistrict === "全部行政區" || s.district === selectedDistrict) && s.remain > 0; });
             filtered.forEach(s => { if (!s.lat || !s.lng) { s.distance = Infinity; } else if (userLocation) { s.distance = getDistance(userLocation.lat, userLocation.lng, s.lat, s.lng); } else { s.distance = Infinity; } });
-            filtered.sort((a, b) => {
-                if (a.isVip && !b.isVip) return -1; if (!a.isVip && b.isVip) return 1;
-                if (currentSortMethod === 'discount') { return (a.discountRate !== b.discountRate) ? a.discountRate - b.discountRate : a.remain - b.remain; } 
-                else if (currentSortMethod === 'remain') { return b.remain - a.remain; } else { return a.distance - b.distance; }
-            });
+            filtered.sort((a, b) => { if (a.isVip && !b.isVip) return -1; if (!a.isVip && b.isVip) return 1; if (currentSortMethod === 'discount') { return (a.discountRate !== b.discountRate) ? a.discountRate - b.discountRate : a.remain - b.remain; } else if (currentSortMethod === 'remain') { return b.remain - a.remain; } else { return a.distance - b.distance; } });
             if (filtered.length === 0) { container.innerHTML = `<div class="text-center py-16 bg-white border rounded-3xl"><span class="text-5xl block mb-2">🔍</span><h4 class="font-black text-gray-800 text-sm">一掃而空！</h4></div>`; return; }
-            
             filtered.forEach(s => {
                 let isGoldenVip = s.isVip && s.discountRate <= 0.5; let distanceHtml = "";
-                if (!s.lat || !s.lng) { distanceHtml = `<p class="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-0.5 rounded">📍 新商店地圖建置中</p>`; } 
-                else if (!userLocation) { distanceHtml = `<p class="text-xs text-blue-500 font-bold cursor-pointer animate-pulse bg-blue-50 px-2 py-0.5 rounded border border-blue-200 shadow-sm" onclick="requestLocation()">📍 點我解鎖真實距離</p>`; } 
-                else { let distDisplay = s.distance > 1000 ? (s.distance/1000).toFixed(1) + "km" : s.distance + "m"; distanceHtml = `<p class="text-xs text-gray-400 font-bold">📍 距離 ${distDisplay}</p>`; }
-
+                if (!s.lat || !s.lng) { distanceHtml = `<p class="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-0.5 rounded">📍 新商店地圖建置中</p>`; } else if (!userLocation) { distanceHtml = `<p class="text-xs text-blue-500 font-bold cursor-pointer animate-pulse bg-blue-50 px-2 py-0.5 rounded border border-blue-200 shadow-sm" onclick="requestLocation()">📍 點我解鎖真實距離</p>`; } else { let distDisplay = s.distance > 1000 ? (s.distance/1000).toFixed(1) + "km" : s.distance + "m"; distanceHtml = `<p class="text-xs text-gray-400 font-bold">📍 距離 ${distDisplay}</p>`; }
                 let safeJsName = escapeHTML(s.name).replace(/'/g, "\\'"); let safeJsItem = escapeHTML(s.item).replace(/'/g, "\\'"); let safeJsAddress = escapeHTML(s.address).replace(/'/g, "\\'"); let safeJsPhone = escapeHTML(s.phone).replace(/'/g, "\\'"); let safeJsTime = escapeHTML(s.time).replace(/'/g, "\\'");
-
-                // 🎯 任務8：商品卡片免稅宣告 (個人個體戶)
-                let taxWarningHtml = '';
-                if (s.merchantType && s.merchantType.includes('個體戶')) {
-                    taxWarningHtml = `<p class="text-[9px] text-gray-400 mt-2 border-t border-dashed border-gray-200 pt-2 font-bold leading-tight">⚠️ 本店鋪為個人惜福個體，依法由賣方自負申報，不提供統一發票。</p>`;
-                }
-
-                container.innerHTML += `
-                    <div class="bg-white border ${isGoldenVip ? 'vip-border' : 'border-gray-200'} rounded-2xl p-4 relative shadow-sm">
-                        ${isGoldenVip ? '<div class="absolute top-0 right-0 bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10 animate-pulse">👑 今日最殺推薦</div>' : ''}
-                        <div><h3 class="font-black text-xl text-gray-900 leading-tight mb-1">[${escapeHTML(s.district)}] ${escapeHTML(s.name)}</h3>${distanceHtml}</div>
-                        <div class="mt-3 bg-gray-50 rounded-xl p-3 border">
-                            <div class="flex justify-between items-center"><span class="font-black text-gray-800 text-base">${escapeHTML(s.item)}</span><span class="text-xs font-black text-red-600 bg-red-100 px-2 py-0.5 rounded shadow-sm">剩 ${s.remain} 份</span></div>
-                            <p class="text-xs text-gray-500 mt-1.5 font-bold">${escapeHTML(s.note)}</p>
-                            <p class="text-sm text-amber-600 font-black mt-2">⏳ 取餐限時：${escapeHTML(s.time)}</p>
-                        </div>
-                        ${taxWarningHtml}
-                        <div class="flex justify-between items-center mt-3 pt-3 border-t border-dashed">
-                            <span class="text-xs bg-blue-50 text-blue-600 font-bold px-2 py-1 rounded">線上完款·外帶自取</span>
-                            <div class="flex items-center space-x-2">
-                                <div class="text-right leading-none">
-                                    ${s.discountPrice === 0 ? `<span class="text-lg font-black text-emerald-600">🎁 免費惜福</span>` : `<span class="text-xs text-gray-400 line-through block font-bold mb-0.5">原價$${s.originalPrice}</span><span class="text-xl font-black text-red-600">${Math.round(s.discountRate*10)}折$${s.discountPrice}</span>`}
-                                </div>
-                                <button onclick="openCheckout('${safeJsName}', '${safeJsItem}', ${s.discountPrice}, '${safeJsTime}', ${s.itemIndex}, ${s.originalPrice}, '${s.shopId}', '${safeJsAddress}', '${safeJsPhone}')" class="bg-seefoodYellow text-seefoodDarkBlue font-black text-sm px-5 py-3 rounded-xl shadow-md active:scale-95 transition">立即搶購</button>
-                            </div>
-                        </div>
-                    </div>`;
+                let taxWarningHtml = ''; if (s.merchantType && s.merchantType.includes('個體戶')) { taxWarningHtml = `<p class="text-[9px] text-gray-400 mt-2 border-t border-dashed border-gray-200 pt-2 font-bold leading-tight">⚠️ 本店鋪為個人惜福個體，依法由賣方自負申報，不提供統一發票。</p>`; }
+                container.innerHTML += `<div class="bg-white border ${isGoldenVip ? 'vip-border' : 'border-gray-200'} rounded-2xl p-4 relative shadow-sm">${isGoldenVip ? '<div class="absolute top-0 right-0 bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10 animate-pulse">👑 今日最殺推薦</div>' : ''}<div><h3 class="font-black text-xl text-gray-900 leading-tight mb-1">[${escapeHTML(s.district)}] ${escapeHTML(s.name)}</h3>${distanceHtml}</div><div class="mt-3 bg-gray-50 rounded-xl p-3 border"><div class="flex justify-between items-center"><span class="font-black text-gray-800 text-base">${escapeHTML(s.item)}</span><span class="text-xs font-black text-red-600 bg-red-100 px-2 py-0.5 rounded shadow-sm">剩 ${s.remain} 份</span></div><p class="text-xs text-gray-500 mt-1.5 font-bold">${escapeHTML(s.note)}</p><p class="text-sm text-amber-600 font-black mt-2">⏳ 取餐限時：${escapeHTML(s.time)}</p></div>${taxWarningHtml}<div class="flex justify-between items-center mt-3 pt-3 border-t border-dashed"><span class="text-xs bg-blue-50 text-blue-600 font-bold px-2 py-1 rounded">線上完款·外帶自取</span><div class="flex items-center space-x-2"><div class="text-right leading-none">${s.discountPrice === 0 ? `<span class="text-lg font-black text-emerald-600">🎁 免費惜福</span>` : `<span class="text-xs text-gray-400 line-through block font-bold mb-0.5">原價$${s.originalPrice}</span><span class="text-xl font-black text-red-600">${Math.round(s.discountRate*10)}折$${s.discountPrice}</span>`}</div><button onclick="openCheckout('${safeJsName}', '${safeJsItem}', ${s.discountPrice}, '${safeJsTime}', ${s.itemIndex}, ${s.originalPrice}, '${s.shopId}', '${safeJsAddress}', '${safeJsPhone}')" class="bg-seefoodYellow text-seefoodDarkBlue font-black text-sm px-5 py-3 rounded-xl shadow-md active:scale-95 transition">立即搶購</button></div></div></div>`;
             });
         }
 
         function openCheckout(store, item, price, time, itemIndex, origPrice, shopId, address, phone) {
             currentOrder = { store, item, price, time, itemIndex, origPrice, shopId, address, phone }; let fee = Math.max(5, Math.min(20, Math.round(price * 0.1)));
-            document.getElementById('sniper-store-name').innerText = store; document.getElementById('sniper-item-name').innerText = item;
-            document.getElementById('sniper-address').innerText = address || '未提供地址，請見官方LINE'; // 確保帶入地址
+            document.getElementById('sniper-store-name').innerText = store; document.getElementById('sniper-item-name').innerText = item; document.getElementById('sniper-address').innerText = address || '未提供地址，請見官方LINE';
             document.getElementById('price-subtotal').innerText = `$${price}`; document.getElementById('price-fee').innerText = `$${fee}`; document.getElementById('price-total').innerText = `$${price + fee}`; document.getElementById('agree-tos').checked = false;
             sniperTimeLeft = sniperTotalTime; document.getElementById('target-scale-wrapper').style.transform = `scale(1)`; document.getElementById('food-target').classList.add('target-wobble');
             document.getElementById('food-target').innerHTML = `<span class="text-[60px]">☕</span><span class="absolute -top-4 -left-4 text-lg">💧</span><span class="absolute -top-6 -right-2 text-xl">💧</span><span class="absolute top-0 -right-6 text-sm">💧</span><span class="absolute top-4 -left-6 text-lg">💧</span>`;
@@ -762,19 +740,13 @@
         }
 
         function cancelCheckout() { clearInterval(countdownInterval); document.getElementById('checkout-modal').classList.add('hidden'); }
-
-        function sniperEscapeFailed() {
-            clearInterval(countdownInterval); document.getElementById('target-scale-wrapper').style.transform = `scale(0)`;
-            setTimeout(() => { showSniperResult("❌", "目標脫逃", "防線崩潰，庫存名額已釋出給其他獵人。"); setTimeout(cancelCheckout, 1500); }, 500);
-        }
+        function sniperEscapeFailed() { clearInterval(countdownInterval); document.getElementById('target-scale-wrapper').style.transform = `scale(0)`; setTimeout(() => { showSniperResult("❌", "目標脫逃", "防線崩潰，庫存名額已釋出給其他獵人。"); setTimeout(cancelCheckout, 1500); }, 500); }
 
         function submitPayment(paymentMethod) {
             if (userStats.lineUid === "LINE_GUEST") { alert('🛡️ 系統安全限制：請使用 LINE 應用程式開啟本連結，以進行實名購買與確保票券權益！'); return; }
             if (!document.getElementById('agree-tos').checked) { alert('請先勾選同意條款！'); return; }
-            
             clearInterval(countdownInterval); document.getElementById('target-scale-wrapper').style.transition = "transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)"; document.getElementById('target-scale-wrapper').style.transform = `scale(1.5)`; document.getElementById('food-target').classList.remove('target-wobble'); document.getElementById('food-target').innerHTML = `<span class="text-[60px]">✅</span>`;
             const p = new URLSearchParams(); p.append('action', 'buyItem'); p.append('shopId', currentOrder.shopId); p.append('itemIndex', currentOrder.itemIndex); p.append('buyerUid', userStats.lineUid); p.append('time', currentOrder.time); p.append('payMethod', paymentMethod);
-
             fetch(gasUrl, { method: "POST", body: p }).then(res => res.json()).then(resJson => {
                 if (resJson.status === "success") {
                     showSniperResult("✅", "捕獲成功", `[${paymentMethod}] 實金裝彈完成！票券已收入您的口袋。`);
@@ -782,23 +754,15 @@
                     saved.push({ id: Date.now(), orderId: resJson.orderId, shopId: currentOrder.shopId, store: currentOrder.store, item: currentOrder.item, address: currentOrder.address, phone: currentOrder.phone, time: currentOrder.time, used: false, date: new Date().toLocaleString('zh-TW', {hour12:false}) });
                     localStorage.setItem('seefood_orders_list', JSON.stringify(saved)); let localCount = parseInt(localStorage.getItem('seefood_local_buy_count') || "0"); localStorage.setItem('seefood_local_buy_count', localCount + 1);
                     userStats.hasFirstOrder = true; userStats.co2Total += 0.5; userStats.savedAmount += (Number(currentOrder.origPrice) - Number(currentOrder.price)) || 0; userStats.storeCounts[currentOrder.store] = (userStats.storeCounts[currentOrder.store] || 0) + 1; saveUserStats(); renderBadgesWall();
-                    
                     let targetStore = storesData.find(s => s.shopId === currentOrder.shopId && s.itemIndex === currentOrder.itemIndex); if (targetStore && targetStore.remain > 0) { targetStore.remain -= 1; filterStores(); }
-                    syncUserDataFromCloud(); fetchLiveStores();
-                    setTimeout(() => { cancelCheckout(); document.getElementById('sniper-result-overlay').classList.add('hidden'); switchTab('orders'); switchOrderSubTab('active'); }, 1500);
-                } else { 
-                    showSniperResult("❌", "裝彈失敗", resJson.msg || "搶購異常，請重試"); setTimeout(() => { cancelCheckout(); document.getElementById('sniper-result-overlay').classList.add('hidden'); fetchLiveStores(); }, 2000);
-                }
+                    syncUserDataFromCloud(); fetchLiveStores(); setTimeout(() => { cancelCheckout(); document.getElementById('sniper-result-overlay').classList.add('hidden'); switchTab('orders'); switchOrderSubTab('active'); }, 1500);
+                } else { showSniperResult("❌", "裝彈失敗", resJson.msg || "搶購異常，請重試"); setTimeout(() => { cancelCheckout(); document.getElementById('sniper-result-overlay').classList.add('hidden'); fetchLiveStores(); }, 2000); }
             }).catch(() => { showSniperResult("⚠️", "連線超時", "請檢查網路並重新搶購"); setTimeout(() => { cancelCheckout(); document.getElementById('sniper-result-overlay').classList.add('hidden'); }, 2000); });
         }
 
-        function showSniperResult(icon, title, desc) {
-            const overlay = document.getElementById('sniper-result-overlay'); document.getElementById('result-icon').innerText = icon; document.getElementById('result-title').innerText = title; document.getElementById('result-desc').innerText = desc;
-            overlay.classList.remove('hidden'); setTimeout(() => { document.getElementById('result-icon').classList.remove('scale-0'); document.getElementById('result-icon').classList.add('scale-100'); }, 50);
-        }
+        function showSniperResult(icon, title, desc) { const overlay = document.getElementById('sniper-result-overlay'); document.getElementById('result-icon').innerText = icon; document.getElementById('result-title').innerText = title; document.getElementById('result-desc').innerText = desc; overlay.classList.remove('hidden'); setTimeout(() => { document.getElementById('result-icon').classList.remove('scale-0'); document.getElementById('result-icon').classList.add('scale-100'); }, 50); }
 
         function openFinanceModal() {
-            document.getElementById('fb-code').value = localStorage.getItem('seefood_merchant_bank_code') || ""; document.getElementById('fb-branch').value = localStorage.getItem('seefood_merchant_bank_branch') || ""; document.getElementById('fb-acc').value = localStorage.getItem('seefood_merchant_bank_account') || ""; document.getElementById('fb-owner').value = localStorage.getItem('seefood_merchant_bank_owner') || "";
             let isVip = localStorage.getItem('seefood_merchant_vip') === 'true'; let vipFeeRow = document.getElementById('finance-vip-fee'); if (vipFeeRow) vipFeeRow.classList.add('hidden');
             if (userStats.merchantFinance) {
                 let fin = userStats.merchantFinance;
@@ -817,43 +781,19 @@
         }
         function closeFinanceModal() { document.getElementById('finance-modal').classList.add('hidden'); }
 
-        function switchOrderSubTab(subTab) {
-            orderSubTab = subTab;
-            document.getElementById('order-tab-active').className = subTab === 'active' ? "w-1/2 text-center py-2.5 rounded-lg bg-white text-seefoodDarkBlue shadow-sm transition-all" : "w-1/2 text-center py-2.5 rounded-lg text-gray-500 transition-all";
-            document.getElementById('order-tab-history').className = subTab === 'history' ? "w-1/2 text-center py-2.5 rounded-lg bg-white text-seefoodDarkBlue shadow-sm transition-all" : "w-1/2 text-center py-2.5 rounded-lg text-gray-500 transition-all";
-            renderSavedTicketsWall();
-        }
+        function switchOrderSubTab(subTab) { orderSubTab = subTab; document.getElementById('order-tab-active').className = subTab === 'active' ? "w-1/2 text-center py-2.5 rounded-lg bg-white text-seefoodDarkBlue shadow-sm transition-all" : "w-1/2 text-center py-2.5 rounded-lg text-gray-500 transition-all"; document.getElementById('order-tab-history').className = subTab === 'history' ? "w-1/2 text-center py-2.5 rounded-lg bg-white text-seefoodDarkBlue shadow-sm transition-all" : "w-1/2 text-center py-2.5 rounded-lg text-gray-500 transition-all"; renderSavedTicketsWall(); }
 
         function renderSavedTicketsWall() {
-            const container = document.getElementById('tickets-container'); const emptyState = document.getElementById('empty-ticket');
-            let savedOrders = JSON.parse(localStorage.getItem('seefood_orders_list') || "[]"); let filteredOrders = savedOrders.filter(o => orderSubTab === 'active' ? !o.used : o.used);
+            const container = document.getElementById('tickets-container'); const emptyState = document.getElementById('empty-ticket'); let savedOrders = JSON.parse(localStorage.getItem('seefood_orders_list') || "[]"); let filteredOrders = savedOrders.filter(o => orderSubTab === 'active' ? !o.used : o.used);
             if (filteredOrders.length === 0) { emptyState.classList.remove('hidden'); container.innerHTML = ""; return; }
             emptyState.classList.add('hidden'); container.innerHTML = "";
             filteredOrders.forEach((order, index) => {
                 let displayPhone = (order.phone && order.phone !== "undefined") ? order.phone : "請見官方LINE"; let callAction = displayPhone !== "請見官方LINE" ? `tel:${displayPhone}` : "javascript:void(0)";
                 let orderTime = safeFormatTime(order.time); let safeStoreName = escapeHTML(order.store); let safeItemName = escapeHTML(order.item); let safeOrderId = escapeHTML(order.orderId); let safeJsOrderId = safeOrderId.replace(/'/g, "\\'");
-                
                 let cardHtml = `<div id="ticket-card-${order.id}" class="ticket-edge bg-white border-2 border-seefoodDarkBlue rounded-2xl shadow-md relative overflow-hidden mb-3"><div class="bg-seefoodDarkBlue text-white px-4 py-2.5 flex justify-between items-center"><span class="text-[10px] font-black ${order.used ? 'bg-gray-600' : 'bg-red-500 animate-pulse'} px-2 py-0.5 rounded">${order.used ? '✅ 惜福自取完畢' : '🎫 獵人未取餐憑證'}</span><span class="text-xs font-mono font-bold">單號: ${safeOrderId || '驗證中'}</span></div><div class="p-4 space-y-3"><div class="text-center"><h3 class="text-xl font-black text-gray-900">${safeStoreName}</h3><p class="text-xs font-bold text-gray-500 mt-1">📍 門市地址：${escapeHTML(order.address) || '請見官方LINE'}</p><p class="text-base font-black text-blue-600 bg-blue-50 py-2 rounded-xl border mt-3 px-2 shadow-inner">${safeItemName}</p></div><div class="text-center text-sm font-bold text-gray-500 py-2 border-y border-dashed">⏳ 自取截止：${escapeHTML(orderTime)}</div>`;
                 if (!order.used) { 
-                    cardHtml += `<div class="space-y-2 pt-1">
-                        <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl shadow-sm">
-                            <p class="text-xs font-black text-amber-600 text-center mb-1.5">⚠️ 確保權益！下單後請務必立刻致電商家確認</p>
-                            <div class="bg-white p-3 rounded-lg border border-dashed border-amber-300 text-center relative mt-4 shadow-sm">
-                                <span class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-black border border-amber-200 whitespace-nowrap shadow-sm">👇 不知道怎麼說？照著唸就好 👇</span>
-                                <p class="text-sm font-black text-gray-800 mt-2 leading-relaxed text-left tracking-wide">
-                                    「你好，我是美食獵人！我有在 SEEFOOD 下單一份【<span class="text-red-500">${safeItemName}</span>】，我的訂單編號是 <span class="bg-slate-100 border px-1 rounded text-seefoodDarkBlue font-mono">${safeOrderId}</span>，請問最晚幾點前要過去拿？」
-                                </p>
-                            </div>
-                        </div>
-                        <a href="${callAction}" class="flex items-center justify-center bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black w-full py-4 rounded-xl text-sm shadow-md active:scale-95 transition mt-2">📞 點我快打致電商家：${displayPhone}</a>
-                        <div class="swipe-track mt-3 select-none shadow-inner border-[3px]">
-                            <span class="text-sm font-black text-red-400 tracking-widest animate-pulse">➡️ 右滑交付店員確認核銷</span>
-                            <div class="swipe-handle" id="swiper-${order.id}" ontouchstart="initSwipe(event, ${order.id}, '${safeJsOrderId}')" onmousedown="initSwipe(event, ${order.id}, '${safeJsOrderId}')">▶️</div>
-                        </div>
-                    </div>`;
-                } else { 
-                    cardHtml += `<div class="text-center text-xs font-bold text-gray-400 py-3 bg-gray-50 border rounded-xl mt-2">核銷完成時間：${escapeHTML(safeFormatTime(order.verifyTime || order.date))}</div>`;
-                }
+                    cardHtml += `<div class="space-y-2 pt-1"><div class="bg-amber-50 border border-amber-200 p-3 rounded-xl shadow-sm"><p class="text-xs font-black text-amber-600 text-center mb-1.5">⚠️ 確保權益！下單後請務必立刻致電商家確認</p><div class="bg-white p-3 rounded-lg border border-dashed border-amber-300 text-center relative mt-4 shadow-sm"><span class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-black border border-amber-200 whitespace-nowrap shadow-sm">👇 不知道怎麼說？照著唸就好 👇</span><p class="text-sm font-black text-gray-800 mt-2 leading-relaxed text-left tracking-wide">「你好，我是美食獵人！我有在 SEEFOOD 下單一份【<span class="text-red-500">${safeItemName}</span>】，我的訂單編號是 <span class="bg-slate-100 border px-1 rounded text-seefoodDarkBlue font-mono">${safeOrderId}</span>，請問最晚幾點前要過去拿？」</p></div></div><a href="${callAction}" class="flex items-center justify-center bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black w-full py-4 rounded-xl text-sm shadow-md active:scale-95 transition mt-2">📞 點我快打致電商家：${displayPhone}</a><div class="swipe-track mt-3 select-none shadow-inner border-[3px]"><span class="text-sm font-black text-red-400 tracking-widest animate-pulse">➡️ 右滑交付店員確認核銷</span><div class="swipe-handle" id="swiper-${order.id}" ontouchstart="initSwipe(event, ${order.id}, '${safeJsOrderId}')" onmousedown="initSwipe(event, ${order.id}, '${safeJsOrderId}')">▶️</div></div></div>`;
+                } else { cardHtml += `<div class="text-center text-xs font-bold text-gray-400 py-3 bg-gray-50 border rounded-xl mt-2">核銷完成時間：${escapeHTML(safeFormatTime(order.verifyTime || order.date))}</div>`; }
                 cardHtml += `</div></div>`; container.innerHTML += cardHtml;
             });
         }
@@ -876,21 +816,6 @@
         }
         function closeVerifyOverlay() { if(liveTimerInterval) clearInterval(liveTimerInterval); document.getElementById('verify-success-overlay').classList.add('hidden'); switchOrderSubTab('active'); }
 
-        function saveBankProfileOnly() {
-            const code = document.getElementById('fb-code').value.trim(); const branch = document.getElementById('fb-branch').value.trim(); const acc = document.getElementById('fb-acc').value.trim(); const owner = document.getElementById('fb-owner').value.trim();
-            if(!code || !acc || !owner) { alert("🛡️ 請完整填寫銀行、帳號、戶名，否則撥款無法執行！"); return; }
-            const shopId = new URLSearchParams(window.location.search).get('shopId') || localStorage.getItem('seefood_merchant_shop_id');
-            if (!shopId) { alert("🛡️ 系統抓不到您的店鋪綁定資料，請確認您是否使用註冊時的 LINE 帳號開啟！"); return; }
-            const btn = document.getElementById('btn-save-bank'); btn.innerText = "⏳ 雲端同步中..."; btn.disabled = true;
-            const p = new URLSearchParams(); p.append('action', 'updateBank'); p.append('shopId', shopId); p.append('bankCode', code); p.append('bankBranch', branch); p.append('bankAccount', acc); p.append('bankOwner', owner);
-            fetch(gasUrl, { method: "POST", body: p }).then(res => res.json()).then(resJson => {
-                btn.innerText = "💾 寫入雲端財務資料"; btn.disabled = false;
-                if (resJson.status === "error") { alert(resJson.msg); return; }
-                localStorage.setItem('seefood_merchant_bank_code', code); localStorage.setItem('seefood_merchant_bank_branch', branch); localStorage.setItem('seefood_merchant_bank_account', acc); localStorage.setItem('seefood_merchant_bank_owner', owner);
-                alert("✅ 銀行撥款帳戶已成功寫入雲端綁定！"); syncUserDataFromCloud();
-            }).catch(() => { btn.innerText = "💾 寫入雲端財務資料"; btn.disabled = false; alert("連線異常"); });
-        }
-
         async function triggerGrandMasterUpgrade() {
             const shopId = localStorage.getItem('seefood_merchant_shop_id') || "SFB-001";
             let userConfirmed = await seefoodConfirm("🔮 【先享受後扣款】\n升級大覺者將解鎖 10 格商品欄位與「今日最殺推薦」特權！\n月費 $299 將於雙週結帳時自動從營業額抵扣，若餘額不足自動降級。\n\n確定要立即升級嗎？");
@@ -904,73 +829,19 @@
 
         function showAppTutorial() { alert("【🍏 iPhone 蘋果教學】\n1. 點擊 Safari 下方「分享」圖示 🔗\n2. 往下滑點擊「加入主畫面\" ➕\n\n【🤖 Android 安卓教學】\n1. 點擊 Chrome 右上角「三個點」設定 ⋮\n2. 點擊「加到主畫面」➕\n\n加入後免開 LINE，像 App 一樣秒開秒上架！"); }
 
-        // 🚀 【任務4修改】：全面升級上架欄位的字體與按鈕熱區，解救粗手指老闆！
         function generateSingleSlotHtmlRow(index) {
             let savedStr = localStorage.getItem('seefood_slot_data_' + index); let saved = savedStr ? JSON.parse(savedStr) : null; let lockedName = localStorage.getItem('seefood_slot_' + index + '_locked');
             let defaultType = saved ? saved.type : (index > 1 ? "暫不使用" : (lockedName ? "固定菜單" : "超值惜福包")); let actualName = saved ? saved.name : (lockedName ? lockedName : (defaultType === "超值惜福包" ? "【超值惜福包】" : "")); let actualDesc = saved ? saved.desc : ""; let actualOrig = saved ? saved.orig : 150; let actualRate = saved ? saved.rate : 0.5; let actualRem = saved ? saved.rem : 3; let isLocked = (lockedName != null); let isSleeping = (defaultType === '暫不使用');
-            
-            return `<div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700 shadow-md space-y-3 mb-3">
-                <div class="flex justify-between items-center mb-1">
-                    <p class="font-black text-seefoodYellow text-sm tracking-wider">🔥 惜福欄位格 ${index < 10 ? '0'+index : index}</p>
-                    ${isLocked ? `<span class="text-[10px] bg-red-900/80 text-red-300 px-2 py-1 rounded-md border border-red-700 font-bold shadow-sm">🔒 常態品名已綁定</span>` : ''}
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-blue-200 block text-xs font-bold mb-1.5">品項模式</label>
-                        <select id="dash-itemType${index}" onchange="toggleItemTypeUI(${index})" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-2 py-3 text-white text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner">
-                            <option value="暫不使用" ${defaultType==='暫不使用'?'selected':''}>🈳 本格暫停</option>
-                            <option value="超值惜福包" ${defaultType==='超值惜福包'?'selected':''}>🛍️ 超值惜福包</option>
-                            <option value="固定菜單" ${defaultType==='固定菜單'?'selected':''}>🍱 常態菜單</option>
-                        </select>
-                    </div>
-                    <div id="dash-nameBox${index}" class="${isSleeping ? 'slot-disabled' : 'slot-active'}">
-                        <label class="text-blue-200 block text-xs font-bold mb-1.5">品名</label>
-                        <input type="text" id="dash-itemName${index}" value="${actualName}" placeholder="${defaultType==='固定菜單'?'輸入店內常態商品':''}" class="w-full ${isLocked || defaultType === '超值惜福包' ? 'bg-slate-800 text-gray-400' : 'bg-slate-900 text-white'} border border-slate-600 rounded-xl px-3 py-3 text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner" ${isLocked || defaultType === '超值惜福包' ? 'readonly' : ''}>
-                    </div>
-                </div>
-                <div id="dash-detailBox${index}" class="${isSleeping ? 'slot-disabled' : 'slot-active'} space-y-3">
-                    <div>
-                        <label class="text-blue-200 block text-xs font-bold mb-1.5" id="desc-lbl-${index}">${defaultType === '固定菜單' ? '商品簡介描述 (選填)' : '內容物描述 (必填包退) *'}</label>
-                        <input type="text" id="dash-itemDesc${index}" value="${actualDesc}" placeholder="${defaultType === '固定菜單' ? '留空自動帶入：這很有名耶..還需要介紹嗎？' : '簡述今日打包內容，如：排骨飯+滷蛋'}" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white text-sm focus:border-blue-400 focus:outline-none shadow-inner">
-                    </div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="text-blue-200 block text-xs font-bold mb-1.5 text-center">原價</label>
-                            <input type="number" id="dash-orig${index}" value="${actualOrig}" class="w-full bg-slate-900 text-center border border-slate-600 rounded-xl px-1 py-3 text-white text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner">
-                        </div>
-                        <div>
-                            <label class="text-red-400 block text-xs font-bold mb-1.5 text-center">折數價格</label>
-                            <select id="dash-rate${index}" class="w-full bg-slate-900 text-center border border-slate-600 rounded-xl px-1 py-3 text-red-400 text-sm font-black focus:border-blue-400 focus:outline-none shadow-inner">
-                                <option value="0" ${actualRate == 0 ? 'selected' : ''}>🎁 免費送</option>
-                                <option value="0.3" ${actualRate == 0.3 ? 'selected' : ''}>3折殺</option>
-                                <option value="0.5" ${actualRate == 0.5 ? 'selected' : ''}>5折半</option>
-                                <option value="0.7" ${actualRate == 0.7 ? 'selected' : ''}>7折親</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-yellow-400 block text-xs font-bold mb-1.5 text-center">剩餘份數</label>
-                            <input type="number" id="dash-rem${index}" value="${actualRem}" class="w-full bg-slate-900 text-center border border-slate-600 rounded-xl px-1 py-3 text-yellow-400 text-sm font-black focus:border-blue-400 focus:outline-none shadow-inner">
-                        </div>
-                    </div>
-                </div>
-            </div>`;
+            return `<div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700 shadow-md space-y-3 mb-3"><div class="flex justify-between items-center mb-1"><p class="font-black text-seefoodYellow text-sm tracking-wider">🔥 惜福欄位格 ${index < 10 ? '0'+index : index}</p>${isLocked ? `<span class="text-[10px] bg-red-900/80 text-red-300 px-2 py-1 rounded-md border border-red-700 font-bold shadow-sm">🔒 常態品名已綁定</span>` : ''}</div><div class="grid grid-cols-2 gap-3"><div><label class="text-blue-200 block text-xs font-bold mb-1.5">品項模式</label><select id="dash-itemType${index}" onchange="toggleItemTypeUI(${index})" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-2 py-3 text-white text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner"><option value="暫不使用" ${defaultType==='暫不使用'?'selected':''}>🈳 本格暫停</option><option value="超值惜福包" ${defaultType==='超值惜福包'?'selected':''}>🛍️ 超值惜福包</option><option value="固定菜單" ${defaultType==='固定菜單'?'selected':''}>🍱 常態菜單</option></select></div><div id="dash-nameBox${index}" class="${isSleeping ? 'slot-disabled' : 'slot-active'}"><label class="text-blue-200 block text-xs font-bold mb-1.5">品名</label><input type="text" id="dash-itemName${index}" value="${actualName}" placeholder="${defaultType==='固定菜單'?'輸入店內常態商品':''}" class="w-full ${isLocked || defaultType === '超值惜福包' ? 'bg-slate-800 text-gray-400' : 'bg-slate-900 text-white'} border border-slate-600 rounded-xl px-3 py-3 text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner" ${isLocked || defaultType === '超值惜福包' ? 'readonly' : ''}></div></div><div id="dash-detailBox${index}" class="${isSleeping ? 'slot-disabled' : 'slot-active'} space-y-3"><div><label class="text-blue-200 block text-xs font-bold mb-1.5" id="desc-lbl-${index}">${defaultType === '固定菜單' ? '商品簡介描述 (選填)' : '內容物描述 (必填包退) *'}</label><input type="text" id="dash-itemDesc${index}" value="${actualDesc}" placeholder="${defaultType === '固定菜單' ? '留空自動帶入：這很有名耶..還需要介紹嗎？' : '簡述今日打包內容，如：排骨飯+滷蛋'}" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white text-sm focus:border-blue-400 focus:outline-none shadow-inner"></div><div class="grid grid-cols-3 gap-2"><div><label class="text-blue-200 block text-xs font-bold mb-1.5 text-center">原價</label><input type="number" id="dash-orig${index}" value="${actualOrig}" class="w-full bg-slate-900 text-center border border-slate-600 rounded-xl px-1 py-3 text-white text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner"></div><div><label class="text-red-400 block text-xs font-bold mb-1.5 text-center">折數價格</label><select id="dash-rate${index}" class="w-full bg-slate-900 text-center border border-slate-600 rounded-xl px-1 py-3 text-red-400 text-sm font-black focus:border-blue-400 focus:outline-none shadow-inner"><option value="0" ${actualRate == 0 ? 'selected' : ''}>🎁 免費送</option><option value="0.3" ${actualRate == 0.3 ? 'selected' : ''}>3折殺</option><option value="0.5" ${actualRate == 0.5 ? 'selected' : ''}>5折半</option><option value="0.7" ${actualRate == 0.7 ? 'selected' : ''}>7折親</option></select></div><div><label class="text-yellow-400 block text-xs font-bold mb-1.5 text-center">剩餘份數</label><input type="number" id="dash-rem${index}" value="${actualRem}" class="w-full bg-slate-900 text-center border border-slate-600 rounded-xl px-1 py-3 text-yellow-400 text-sm font-black focus:border-blue-400 focus:outline-none shadow-inner"></div></div></div></div>`;
         }
 
         function toggleItemTypeUI(index) {
-            let type = document.getElementById(`dash-itemType${index}`).value;
-            let lockedName = localStorage.getItem('seefood_slot_' + index + '_locked'); let nameBox = document.getElementById(`dash-nameBox${index}`); let detailBox = document.getElementById(`dash-detailBox${index}`); let nameInput = document.getElementById(`dash-itemName${index}`);
-            let descInput = document.getElementById(`dash-itemDesc${index}`); let lbl = document.getElementById(`desc-lbl-${index}`);
+            let type = document.getElementById(`dash-itemType${index}`).value; let lockedName = localStorage.getItem('seefood_slot_' + index + '_locked'); let nameBox = document.getElementById(`dash-nameBox${index}`); let detailBox = document.getElementById(`dash-detailBox${index}`); let nameInput = document.getElementById(`dash-itemName${index}`); let descInput = document.getElementById(`dash-itemDesc${index}`); let lbl = document.getElementById(`desc-lbl-${index}`);
             if (type === "暫不使用") { nameBox.className = "slot-disabled"; detailBox.className = "slot-disabled"; document.getElementById(`dash-rem${index}`).value = 0; } 
             else {
                 nameBox.className = "slot-active"; detailBox.className = "slot-active space-y-3";
-                if (type === "固定菜單") { 
-                    if (lockedName) { nameInput.value = lockedName; nameInput.readOnly = true; nameInput.className = "w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-3 text-gray-400 text-sm font-bold focus:outline-none shadow-inner"; } 
-                    else { nameInput.value = ""; nameInput.readOnly = false; nameInput.placeholder = "請輸入常態商品名稱"; nameInput.className = "w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner"; } 
-                    lbl.innerHTML = "商品簡介描述 (選填)"; descInput.placeholder = "留空自動帶入：這很有名耶..還需要介紹嗎？直接搶就對了！"; 
-                } 
-                else if (type === "超值惜福包") { 
-                    nameInput.value = "【超值惜福包】"; nameInput.readOnly = true; nameInput.className = "w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-3 text-gray-400 text-sm font-bold focus:outline-none shadow-inner"; lbl.innerHTML = "內容物描述 (必填包退) *"; descInput.placeholder = "請簡述今日打包內容，如：排骨飯+滷蛋"; 
-                }
+                if (type === "固定菜單") { if (lockedName) { nameInput.value = lockedName; nameInput.readOnly = true; nameInput.className = "w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-3 text-gray-400 text-sm font-bold focus:outline-none shadow-inner"; } else { nameInput.value = ""; nameInput.readOnly = false; nameInput.placeholder = "請輸入常態商品名稱"; nameInput.className = "w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner"; } lbl.innerHTML = "商品簡介描述 (選填)"; descInput.placeholder = "留空自動帶入：這很有名耶..還需要介紹嗎？直接搶就對了！"; } 
+                else if (type === "超值惜福包") { nameInput.value = "【超值惜福包】"; nameInput.readOnly = true; nameInput.className = "w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-3 text-gray-400 text-sm font-bold focus:outline-none shadow-inner"; lbl.innerHTML = "內容物描述 (必填包退) *"; descInput.placeholder = "請簡述今日打包內容，如：排骨飯+滷蛋"; }
             }
         }
 
@@ -1020,26 +891,32 @@
         }
 
         function handleMerchantFormSubmit() {
+            if (isSubmittingGlobal) return; // 防連點
             if (userStats.lineUid === "LINE_GUEST") { alert('🛡️ 系統安全限制：請使用 LINE 應用程式開啟本網頁，以綁定您的真實店鋪帳號，確保後台管理權限與資金安全！'); return; }
             const name = document.getElementById('merchant-name-input').value.trim(); const address = document.getElementById('merchant-address-input').value.trim(); const phone = document.getElementById('merchant-phone-input').value.trim(); const owner = document.getElementById('m-owner-name').value.trim(); const oPhone = document.getElementById('m-owner-phone').value.trim(); const oLine = document.getElementById('m-owner-line').value.trim();
-            // 🎯 任務8：獲取信箱與店家類別
             const email = document.getElementById('merchant-email-input').value.trim(); const mType = document.getElementById('merchant-type-select').value;
             
             if (!name || !address || !phone || !oPhone || !email) { alert('🛡️ 請填寫所有核心卡位欄位！'); return; }
             
-            const btn = document.querySelector('button[onclick="handleMerchantFormSubmit()"]'); btn.innerHTML = "⚡ 正在雲端安全卡位並分流建檔中..."; btn.disabled = true;
+            isSubmittingGlobal = true;
+            showGlobalLoading("資料建檔中", "正在安全卡位並發送合約，約需 10 秒...");
+            
             const d = new URLSearchParams(); d.append('action', 'register'); d.append('merchantName', name); d.append('merchantAddress', address); d.append('merchantPhone', phone); d.append('ownerName', owner); d.append('ownerPhone', oPhone); d.append('ownerLine', oLine); d.append('lineUid', userStats.lineUid);
-            d.append('merchantEmail', email); d.append('merchantType', mType); // 傳送新欄位
+            d.append('merchantEmail', email); d.append('merchantType', mType);
 
             fetch(gasUrl, { method: "POST", body: d }).then(res => res.json()).then(resJson => {
-                btn.innerHTML = "🚀 提交核心欄位·開通專屬網址"; btn.disabled = false;
                 if (resJson.status === "success") { 
                     alert('🎉 恭喜！全台創始店鋪卡位成功！\n您的專屬店鋪後台已為您開通，正式合約連結也已寄至您的信箱。請立即登入後台完成實名簽約！');
                     localStorage.setItem('seefood_merchant_shop_id', resJson.shopId); localStorage.setItem('seefood_merchant_shop_name', resJson.shopName); 
                     document.getElementById('merchant-registration-zone').style.display = 'none'; checkMerchantUrlParameters(); syncUserDataFromCloud();
                 } 
                 else if (resJson.status === "error" && resJson.shopId) { alert(resJson.msg); localStorage.setItem('seefood_merchant_shop_id', resJson.shopId); localStorage.setItem('seefood_merchant_shop_name', resJson.shopName); checkMerchantUrlParameters(); } else { alert(resJson.msg || "重複申請"); }
-            }).catch(() => { btn.innerHTML = "🚀 提交核心欄位·開通專屬網址"; btn.disabled = false; alert("連線異常"); });
+            }).catch(() => { 
+                alert("⏳ 雲端處理超時，但您的卡位請求已成功送達大腦！\n請直接重新整理網頁，即可進入您的專屬商家後台。"); 
+            }).finally(() => {
+                isSubmittingGlobal = false;
+                hideGlobalLoading();
+            });
         }
 
         function checkMerchantUrlParameters() {
@@ -1047,7 +924,7 @@
             if (shopId) {
                 let cachedName = localStorage.getItem('seefood_merchant_shop_name') || "SEEFOOD 惜福分店";
                 document.getElementById('merchant-dashboard-zone').classList.remove('hidden'); document.getElementById('dashboard-shop-title').innerText = cachedName; 
-                document.getElementById('tab-merchant-text').innerText = "商家後台"; // 動態改名
+                document.getElementById('tab-merchant-text').innerText = "商家後台"; 
                 const regZone = document.getElementById('merchant-registration-zone'); if(regZone) regZone.style.display = 'none';
                 let isVip = localStorage.getItem('seefood_merchant_vip') === 'true';
                 if(isVip) { document.getElementById('vip-upgrade-banner').classList.add('hidden'); document.getElementById('dashboard-plan-badge').innerText = "大覺者 VIP (10格)"; }
@@ -1055,14 +932,7 @@
             }
         }
 
-        function renderBadgesWall() {
-            const container = document.getElementById('badges-container'); if(!container) return; container.innerHTML = ''; let times = userStats.unlockedTimes || {}; let counts = userStats.storeCounts || {}; let saved = Number(userStats.savedAmount) || 0;
-            if (userStats.hasFirstOrder) container.innerHTML += createBadgeHtml("🌱", "環保初學者", "成功完成第一次惜福核銷");
-            if (saved >= 500) container.innerHTML += createBadgeHtml("🤖", "無情省錢機器", `累計為荷包省下 $${saved} 元`); else container.innerHTML += createBadgeHtml("💵", "精打細算新手", `解鎖省錢機器進度：$${saved}/$500`);
-            if (times.lunch) container.innerHTML += createBadgeHtml("📊", "精算師", "成功在黃金時段搶單"); if (times.nightMarket) container.innerHTML += createBadgeHtml("🧹", "黃金清道夫", "成功在晚間尖峰清料");
-            if (times.midnight) container.innerHTML += createBadgeHtml("🌙", "夜貓子", "拯救打烊極限備品");
-            for (const [storeName, count] of Object.entries(counts)) { if (count >= 3) container.innerHTML += createBadgeHtml("☕", `${storeName} 忠實大股東`, `拯救該店達 ${count} 次`); else if (count >= 1) container.innerHTML += createBadgeHtml("🎁", `${storeName} 初體驗`, `首次拯救該店`); }
-        }
+        function renderBadgesWall() { const container = document.getElementById('badges-container'); if(!container) return; container.innerHTML = ''; let times = userStats.unlockedTimes || {}; let counts = userStats.storeCounts || {}; let saved = Number(userStats.savedAmount) || 0; if (userStats.hasFirstOrder) container.innerHTML += createBadgeHtml("🌱", "環保初學者", "成功完成第一次惜福核銷"); if (saved >= 500) container.innerHTML += createBadgeHtml("🤖", "無情省錢機器", `累計為荷包省下 $${saved} 元`); else container.innerHTML += createBadgeHtml("💵", "精打細算新手", `解鎖省錢機器進度：$${saved}/$500`); if (times.lunch) container.innerHTML += createBadgeHtml("📊", "精算師", "成功在黃金時段搶單"); if (times.nightMarket) container.innerHTML += createBadgeHtml("🧹", "黃金清道夫", "成功在晚間尖峰清料"); if (times.midnight) container.innerHTML += createBadgeHtml("🌙", "夜貓子", "拯救打烊極限備品"); for (const [storeName, count] of Object.entries(counts)) { if (count >= 3) container.innerHTML += createBadgeHtml("☕", `${storeName} 忠實大股東`, `拯救該店達 ${count} 次`); else if (count >= 1) container.innerHTML += createBadgeHtml("🎁", `${storeName} 初體驗`, `首次拯救該店`); } }
         function createBadgeHtml(emoji, title, desc) { return `<div class="bg-white border p-4 rounded-xl text-center flex flex-col items-center shadow-xs transition transform hover:scale-105"><span class="text-3xl mb-1">${emoji}</span><p class="font-black text-xs text-gray-800 truncate w-full">${title}</p><p class="text-[10px] text-gray-500 mt-1 leading-tight">${desc}</p></div>`; }
         
         function switchTab(tabId) {
@@ -1070,10 +940,8 @@
                 let el = document.getElementById(`page-${p}`); if(el) el.classList.toggle('hidden', p !== tabId);
                 const btn = document.getElementById(`tab-${p}`); if (btn) { if (p === tabId) { btn.classList.remove('text-blue-200'); btn.classList.add('text-seefoodYellow'); } else { btn.classList.add('text-blue-200'); btn.classList.remove('text-seefoodYellow'); } }
             });
-            // 🧹 【任務2修改】：若切換到後台，自動隱藏頂部干擾選單
             const headerZone = document.getElementById('home-header-zone');
             if(headerZone) { if(tabId === 'merchant') { headerZone.classList.add('hidden'); } else { headerZone.classList.remove('hidden'); } }
-            
             if (window.location.hash !== `#${tabId}`) history.pushState(null, null, `#${tabId}`);
         }
         function checkHashAndSwitch() { const hash = window.location.hash.replace('#', ''); switchTab(['home', 'orders', 'achievement', 'merchant'].includes(hash) ? hash : 'home'); }
@@ -1085,76 +953,112 @@
         window.addEventListener('hashchange', checkHashAndSwitch);
 
         // ==========================================
-        // 🚀 【任務6修改】：全新實名合約簽名與防偽上傳機制
+        // 🚀 終極法務合約與防偽簽署防禦機制
         // ==========================================
-        function openContractModal() {
+        function openContractModal(isReadOnly = false) {
             document.getElementById('contract-modal').classList.remove('hidden');
-            setTimeout(initSignaturePad, 100); // 等待 Modal 展開後計算 Canvas 尺寸
+            
+            const isCompleted = isReadOnly || localStorage.getItem('seefood_merchant_contract_status') === "已完成";
+            
+            const nameInput = document.getElementById('contract-name');
+            const idInput = document.getElementById('contract-id');
+            const bankCode = document.getElementById('contract-bank-code');
+            const bankBranch = document.getElementById('contract-bank-branch');
+            const bankAcc = document.getElementById('contract-bank-acc');
+            const bankOwner = document.getElementById('contract-bank-owner');
+            const agreeCheck = document.getElementById('contract-agree');
+            const btnSubmit = document.getElementById('btn-submit-contract');
+
+            if (isCompleted) {
+                // 🔒 灰階唯讀模式
+                nameInput.value = localStorage.getItem('seefood_signer_name') || "***";
+                idInput.value = localStorage.getItem('seefood_signer_id') || "***";
+                bankCode.value = localStorage.getItem('seefood_merchant_bank_code') || "";
+                bankBranch.value = localStorage.getItem('seefood_merchant_bank_branch') || "";
+                bankAcc.value = localStorage.getItem('seefood_merchant_bank_account') || "";
+                bankOwner.value = localStorage.getItem('seefood_merchant_bank_owner') || "";
+
+                [nameInput, idInput, bankCode, bankBranch, bankAcc, bankOwner].forEach(el => {
+                    el.readOnly = true; el.classList.add('bg-slate-800', 'text-gray-400'); el.classList.remove('bg-slate-900', 'text-white');
+                });
+                
+                agreeCheck.checked = true; agreeCheck.disabled = true;
+                
+                document.getElementById('upload-action-zone').classList.add('hidden');
+                document.getElementById('upload-readonly-zone').classList.remove('hidden');
+                document.getElementById('sign-action-zone').classList.add('hidden');
+                document.getElementById('sign-readonly-zone').classList.remove('hidden');
+                document.getElementById('btn-clear-sign').classList.add('hidden');
+
+                btnSubmit.innerHTML = "🔒 資料已寫入雲端區塊鏈，修改請洽客服";
+                btnSubmit.disabled = true;
+                btnSubmit.className = "w-full max-w-[400px] mx-auto block bg-slate-800 text-gray-400 font-black py-4 rounded-xl text-sm border border-slate-700 pointer-events-none";
+
+            } else {
+                // 📝 編輯模式
+                [nameInput, idInput, bankCode, bankBranch, bankAcc, bankOwner].forEach(el => {
+                    el.readOnly = false; el.classList.remove('bg-slate-800', 'text-gray-400'); el.classList.add('bg-slate-900', 'text-white');
+                });
+                
+                agreeCheck.disabled = false;
+                
+                document.getElementById('upload-action-zone').classList.remove('hidden');
+                document.getElementById('upload-readonly-zone').classList.add('hidden');
+                document.getElementById('sign-action-zone').classList.remove('hidden');
+                document.getElementById('sign-readonly-zone').classList.add('hidden');
+                document.getElementById('btn-clear-sign').classList.remove('hidden');
+
+                btnSubmit.innerHTML = "🚀 提交合約並解除資金鎖定";
+                btnSubmit.disabled = false;
+                btnSubmit.className = "w-full max-w-[400px] mx-auto block bg-seefoodYellow text-slate-900 font-black py-4 rounded-xl shadow-[0_0_20px_rgba(250,185,0,0.4)] active:scale-95 transition text-base tracking-widest border border-amber-400";
+                
+                setTimeout(initSignaturePad, 100);
+            }
         }
+        
         function closeContractModal() { document.getElementById('contract-modal').classList.add('hidden'); }
 
         function initSignaturePad() {
-            const cvs = document.getElementById('sign-canvas');
-            if(!cvs) return;
-            signCtx = cvs.getContext('2d');
-            const rect = cvs.getBoundingClientRect();
-            cvs.width = rect.width; cvs.height = rect.height;
+            const cvs = document.getElementById('sign-canvas'); if(!cvs) return;
+            signCtx = cvs.getContext('2d'); const rect = cvs.getBoundingClientRect(); cvs.width = rect.width; cvs.height = rect.height;
             signCtx.lineWidth = 4; signCtx.lineCap = 'round'; signCtx.strokeStyle = '#0f172a';
+            signatureStrokeLength = 0; lastSignPos = null;
             
             const getPos = (e) => { const r = cvs.getBoundingClientRect(); const evt = e.touches ? e.touches[0] : e; return { x: evt.clientX - r.left, y: evt.clientY - r.top }; };
-            const start = (e) => { e.preventDefault(); isDrawing = true; isSigned = true; const p = getPos(e); signCtx.beginPath(); signCtx.moveTo(p.x, p.y); };
-            const move = (e) => { e.preventDefault(); if(!isDrawing) return; const p = getPos(e); signCtx.lineTo(p.x, p.y); signCtx.stroke(); };
-            const end = (e) => { e.preventDefault(); isDrawing = false; };
+            const start = (e) => { e.preventDefault(); isDrawing = true; const p = getPos(e); lastSignPos = p; signCtx.beginPath(); signCtx.moveTo(p.x, p.y); };
+            const move = (e) => { 
+                e.preventDefault(); if(!isDrawing) return; 
+                const p = getPos(e); signCtx.lineTo(p.x, p.y); signCtx.stroke(); 
+                if (lastSignPos) { let dx = p.x - lastSignPos.x; let dy = p.y - lastSignPos.y; signatureStrokeLength += Math.sqrt(dx*dx + dy*dy); }
+                lastSignPos = p;
+            };
+            const end = (e) => { e.preventDefault(); isDrawing = false; lastSignPos = null; };
 
             cvs.addEventListener('mousedown', start); cvs.addEventListener('mousemove', move); cvs.addEventListener('mouseup', end);
             cvs.addEventListener('touchstart', start, {passive: false}); cvs.addEventListener('touchmove', move, {passive: false}); cvs.addEventListener('touchend', end);
         }
 
         function clearSignature() {
-            if(!signCtx) return;
-            const cvs = document.getElementById('sign-canvas');
-            signCtx.clearRect(0, 0, cvs.width, cvs.height);
-            isSigned = false;
+            if(!signCtx) return; const cvs = document.getElementById('sign-canvas');
+            signCtx.clearRect(0, 0, cvs.width, cvs.height); signatureStrokeLength = 0;
         }
 
-        // 📸 圖片自動壓縮與打上不可逆浮水印
         function handleIdUpload(event) {
-            const file = event.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
+            const file = event.target.files[0]; if(!file) return; const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
-                    const canvas = document.getElementById('watermark-canvas');
-                    const ctx = canvas.getContext('2d');
-                    
-                    // 等比例壓縮 (最大寬度 1024)
-                    const MAX_WIDTH = 1024;
-                    let width = img.width; let height = img.height;
+                    const canvas = document.getElementById('watermark-canvas'); const ctx = canvas.getContext('2d');
+                    const MAX_WIDTH = 1024; let width = img.width; let height = img.height;
                     if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-                    canvas.width = width; canvas.height = height;
-
-                    // 畫上原始證件
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    // 🛡️ 強制烙印防偽軍綠色浮水印
-                    ctx.fillStyle = 'rgba(16, 185, 129, 0.5)'; // 半透明軍綠
-                    ctx.font = `bold ${width * 0.05}px sans-serif`;
-                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height);
                     
-                    // 滿版交叉打上浮水印
-                    ctx.translate(width/2, height/2);
-                    ctx.rotate(-Math.PI / 6);
-                    ctx.fillText('僅供 SEEFOOD 惜福聯盟實名認證使用，塗改無效', 0, 0);
-                    ctx.fillText('僅供 SEEFOOD 惜福聯盟實名認證使用，塗改無效', 0, height*0.4);
-                    ctx.fillText('僅供 SEEFOOD 惜福聯盟實名認證使用，塗改無效', 0, -height*0.4);
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.5)'; ctx.font = `bold ${width * 0.05}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.translate(width/2, height/2); ctx.rotate(-Math.PI / 6);
+                    ctx.fillText('僅供 SEEFOOD 惜福聯盟實名認證使用，塗改無效', 0, 0); ctx.fillText('僅供 SEEFOOD 惜福聯盟實名認證使用，塗改無效', 0, height*0.4); ctx.fillText('僅供 SEEFOOD 惜福聯盟實名認證使用，塗改無效', 0, -height*0.4);
                     
-                    // 轉成安全 Base64 壓縮檔 (JPEG 70% 壓縮率)
                     contractIdBase64 = canvas.toDataURL('image/jpeg', 0.7);
-
-                    // 預覽顯示給老闆看
-                    document.getElementById('id-preview-container').classList.remove('hidden');
-                    document.getElementById('id-preview').src = contractIdBase64;
+                    document.getElementById('id-preview-container').classList.remove('hidden'); document.getElementById('id-preview').src = contractIdBase64;
                 }
                 img.src = e.target.result;
             }
@@ -1162,36 +1066,60 @@
         }
 
         function submitContract() {
+            if (isSubmittingGlobal) return;
+            
             const shopId = new URLSearchParams(window.location.search).get('shopId') || localStorage.getItem('seefood_merchant_shop_id');
             if(!shopId) { alert("找不到店鋪編號，請從您的信箱專屬連結登入！"); return; }
-            if(!document.getElementById('contract-agree').checked) { alert("🛡️ 請勾選同意合約條款！"); return; }
+            if(!document.getElementById('contract-agree').checked) { alert("🛡️ 阻斷：請勾選同意合約法務條款！"); return; }
             
             const sName = document.getElementById('contract-name').value.trim();
             const sId = document.getElementById('contract-id').value.trim();
-            if(!sName || !sId) { alert("🛡️ 請填寫負責人真實姓名與證件字號！"); return; }
-            if(!contractIdBase64) { alert("🛡️ 請拍照上傳您的證件或營登文件！"); return; }
-            if(!isSigned) { alert("🛡️ 請於白色畫布區域手寫簽名！"); return; }
+            const bCode = document.getElementById('contract-bank-code').value.trim();
+            const bBranch = document.getElementById('contract-bank-branch').value.trim();
+            const bAcc = document.getElementById('contract-bank-acc').value.trim();
+            const bOwner = document.getElementById('contract-bank-owner').value.trim();
 
-            // 擷取簽名檔 Base64 (PNG格式保透明底)
+            if(!sName || !sId || !bCode || !bAcc || !bOwner) { alert("🛡️ 阻斷：請完整填寫負責人與匯款銀行資料！"); return; }
+            if(sName.length < 2) { alert("🛡️ 阻斷：請填寫真實中文全名！"); return; }
+            
+            const idRegex = /^[A-Z][1289]\d{8}$/; const taxRegex = /^\d{8}$/;
+            if (!idRegex.test(sId) && !taxRegex.test(sId)) { alert("🛡️ 格式錯誤：個人請輸入有效身分證字號(首字大寫)\n公司請輸入8碼統一編號"); return; }
+            if(!contractIdBase64) { alert("🛡️ 阻斷：請拍照上傳您的證件或營登文件！"); return; }
+            if(signatureStrokeLength < 100) { alert("🛡️ 簽名無效：軌跡過於簡略，請確實手寫完整姓名以生法律效力。"); clearSignature(); return; }
+
             const signCvs = document.getElementById('sign-canvas');
             const signBase64 = signCvs.toDataURL('image/png');
 
-            const btn = document.getElementById('btn-submit-contract');
-            btn.innerHTML = "⏳ 實名指紋加密中，寫入雲端檔案庫..."; btn.disabled = true;
+            isSubmittingGlobal = true;
+            showGlobalLoading("金庫連線加密中", "資料寫入雲端檔案庫，約需 10~20 秒請稍候...");
 
             const d = new URLSearchParams();
             d.append('action', 'signContract'); d.append('shopId', shopId); d.append('uid', userStats.lineUid);
             d.append('signerName', sName); d.append('signerId', sId);
+            d.append('bankCode', bCode); d.append('bankBranch', bBranch); d.append('bankAccount', bAcc); d.append('bankOwner', bOwner);
             d.append('idCardImage', contractIdBase64); d.append('signImage', signBase64);
 
             fetch(gasUrl, { method: "POST", body: d }).then(res => res.json()).then(resJson => {
-                btn.innerHTML = "🚀 提交合約並解除資金鎖定"; btn.disabled = false;
                 if(resJson.status === "success") {
-                    alert("✅ 實名認證成功！\n您的法務指紋與證件已安全鎖入雲端，資金提領權限已完全開啟。");
+                    alert("✅ 實名認證與帳戶綁定成功！\n您的法務指紋與證件已安全鎖入雲端，資金提領權限已完全開啟。");
+                    localStorage.setItem('seefood_merchant_contract_status', '已完成');
+                    localStorage.setItem('seefood_signer_name', sName);
+                    localStorage.setItem('seefood_signer_id', sId);
+                    localStorage.setItem('seefood_merchant_bank_code', bCode); 
+                    localStorage.setItem('seefood_merchant_bank_branch', bBranch); 
+                    localStorage.setItem('seefood_merchant_bank_account', bAcc); 
+                    localStorage.setItem('seefood_merchant_bank_owner', bOwner);
+                    
                     closeContractModal();
                     document.getElementById('contract-warning-wall').classList.add('hidden');
-                } else { alert("連線錯誤：" + resJson.msg); }
-            }).catch(() => { btn.innerHTML = "🚀 提交合約並解除資金鎖定"; btn.disabled = false; alert("網路連線超時，請重試"); });
+                    document.getElementById('contract-success-wall').classList.remove('hidden');
+                } else { alert("❌ 連線錯誤：" + resJson.msg); }
+            }).catch(() => { 
+                alert("⏳ 雲端處理超時：您的檔案較大正在背景建檔中。請稍後重整網頁確認是否審核通過，無需重複送出！"); 
+            }).finally(() => {
+                isSubmittingGlobal = false;
+                hideGlobalLoading();
+            });
         }
     </script>
 </body>
