@@ -27,10 +27,12 @@
         
         .standby-marker { background: #facc15; border-radius: 50%; position: relative; width: 8px; height: 8px; box-shadow: 0 0 8px rgba(250,204,21,0.6); opacity: 0.9; }
 
-        .leaflet-popup-content-wrapper { background-color: #0f172a; color: #e2e8f0; border: 1px solid #10b981; border-radius: 12px; font-family: inherit; box-shadow: 0 0 15px rgba(16,185,129,0.3); }
+        /* 🛡️ 解決 Popup 破版與溢出的關鍵 CSS */
+        .leaflet-popup-content-wrapper { background-color: #0f172a; color: #e2e8f0; border: 1px solid #10b981; border-radius: 12px; font-family: inherit; box-shadow: 0 0 15px rgba(16,185,129,0.3); overflow: hidden; }
         .leaflet-popup-tip { background-color: #0f172a; border: 1px solid #10b981; }
         .leaflet-popup-close-button { display: none !important; }
-        .leaflet-popup-content { margin: 12px; }
+        .leaflet-popup-content { width: 240px !important; margin: 12px !important; }
+        
         .tactical-card { position: relative; border: 1px solid #1e293b; background-color: rgba(15, 23, 42, 0.5); backdrop-blur-sm; cursor: pointer; transition: all 0.2s ease-out; }
         .tactical-card:hover { border-color: #10b981; transform: scale(1.02); background-color: rgba(15, 23, 42, 0.8); }
         .tactical-card::before, .tactical-card::after { content: ""; position: absolute; width: 10px; height: 10px; border-color: #10b981; border-style: solid; opacity: 0.5; }
@@ -116,14 +118,9 @@
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { className: 'dark-map-tiles', maxZoom: 19 }).addTo(map);
         }
 
-        // 🎯 GPS 定位飛入邏輯
         function zoomToUserLocation() {
             if (!navigator.geolocation) { alert("🛡️ 阻斷：您的瀏覽器拒絕提供安全定位權限！"); return; }
-            
-            const btnText = document.getElementById('gps-text');
-            const originalText = btnText.innerText;
-            btnText.innerText = "LOCATING...";
-            
+            const btnText = document.getElementById('gps-text'); const originalText = btnText.innerText; btnText.innerText = "LOCATING...";
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const lat = position.coords.latitude; const lng = position.coords.longitude;
@@ -141,7 +138,18 @@
         function processRadarData(allMerchants, activeStores) {
             let uniqueShops = {};
             let activeShopIds = new Set();
-            activeStores.forEach(s => activeShopIds.add(s.shopId));
+            
+            // 🎯 預先處理所有上線商品的 tags 與情報
+            let storeDynamicData = {};
+            activeStores.forEach(item => {
+                activeShopIds.add(item.shopId);
+                if (!storeDynamicData[item.shopId]) {
+                    storeDynamicData[item.shopId] = { tags: new Set(), streak: item.streak || 0, lastOnline: item.lastOnline };
+                }
+                if (item.tags) item.tags.forEach(t => storeDynamicData[item.shopId].tags.add(t));
+                if (item.lastOnline) storeDynamicData[item.shopId].lastOnline = item.lastOnline;
+                if (item.streak > storeDynamicData[item.shopId].streak) storeDynamicData[item.shopId].streak = item.streak;
+            });
             
             let tickerMsgs = []; let allMarkers = []; districtDataMap = {};
             allMerchants.forEach(s => { if (!uniqueShops[s.shopId]) { uniqueShops[s.shopId] = s; } });
@@ -152,53 +160,50 @@
                 let dKey = `${cityClean}_${districtClean}`;
                 
                 if (!districtDataMap[dKey]) { 
-                    // 🎯 初始化區域統計變數，加入營業中與整備中計數
-                    districtDataMap[dKey] = { 
-                        city: cityClean, district: districtClean, 
-                        total: 0, validNodes: 0, activeCount: 0, standbyCount: 0, 
-                        names: [], markers: [] 
-                    }; 
+                    districtDataMap[dKey] = { city: cityClean, district: districtClean, total: 0, validNodes: 0, activeCount: 0, standbyCount: 0, names: [], markers: [] }; 
                 }
                 
-                let dObj = districtDataMap[dKey]; 
-                dObj.total++; 
-                dObj.names.push(s.name);
-                
-                let typeClean = s.merchantType ? (s.merchantType.split(' ')[1] || s.merchantType) : '特約商店';
-                let isIgnited = (s.lat && s.lng); 
-                let isActive = activeShopIds.has(s.shopId);
+                let dObj = districtDataMap[dKey]; dObj.total++; dObj.names.push(s.name);
+                let isIgnited = (s.lat && s.lng); let isActive = activeShopIds.has(s.shopId);
 
-                // 🎯 統計區域戰況
-                if (isActive) dObj.activeCount++;
-                else dObj.standbyCount++;
+                if (isActive) dObj.activeCount++; else dObj.standbyCount++;
 
                 if (isIgnited) {
                     dObj.validNodes++; 
-                    
                     let iconHtml = isActive ? '<div class="sonar-marker"></div>' : '<div class="standby-marker"></div>';
                     let statusText = isActive ? '<span class="text-radarGreen font-black animate-pulse">🟢 營業發車中</span>' : '<span class="text-yellow-400 font-bold">🟡 未上架整備中</span>';
                     
-                    // 🛡️ 單一店家 PopUp 的標籤強化 (圖2)
+                    // 🛡️ 單店情報卡大軍集結 (統編、VIP、實名、連售戰績)
+                    let dynData = storeDynamicData[s.shopId] || { tags: new Set(), streak: 0, lastOnline: null };
+                    let typeClean = s.merchantType ? (s.merchantType.split(' ')[1] || s.merchantType) : '特約商店';
                     let mTypeColor = typeClean.includes('個體戶') ? 'text-amber-400 border-amber-400/50 bg-amber-900/30' : 'text-emerald-400 border-emerald-400/50 bg-emerald-900/30';
-                    let tagsArray = s.tags || []; 
                     
-                    let tagsHtml = `<div class="flex flex-wrap justify-center gap-1 mt-2 mb-1">
-                        <span class="border text-[10px] px-2 py-0.5 rounded-md font-bold shadow-sm whitespace-nowrap ${mTypeColor}">${typeClean}</span>
-                        ${tagsArray.map(t => `<span class="bg-slate-800 border border-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-md text-seefoodYellow shadow-sm whitespace-nowrap">${t}</span>`).join('')}
-                    </div>`;
+                    let badgesHtml = `<span class="border text-[10px] px-1.5 py-0.5 rounded font-bold shadow-sm whitespace-nowrap ${mTypeColor}">${typeClean}</span>`;
                     
-                    let lastOnlineText = s.lastOnline ? `<span class="text-emerald-400 font-bold">最後動作: ${s.lastOnline}</span>` : `<span class="text-gray-500">尚未留下作戰紀錄</span>`;
+                    // VIP 大覺者勳章
+                    if (s.isVip) badgesHtml += `<span class="bg-gradient-to-r from-yellow-600 to-yellow-400 text-black border border-yellow-300 text-[10px] font-black px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap">👑 大覺者</span>`;
+                    // 實名認證勳章
+                    if (s.contractStatus === '已完成') badgesHtml += `<span class="bg-blue-600/30 text-blue-300 border border-blue-500/50 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap">✅ 實名認證</span>`;
+                    // 優質商家勳章 (連續完售大於等於3)
+                    if (dynData.streak >= 3) badgesHtml += `<span class="bg-red-900/40 text-red-400 border border-red-500/50 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap">🏆 優質商家</span>`;
+
+                    // GAS 拋出的戰況標籤 (孤勇者、秒殺等)
+                    dynData.tags.forEach(t => { badgesHtml += `<span class="bg-slate-800 border border-slate-600 text-[10px] font-bold px-1.5 py-0.5 rounded text-seefoodYellow shadow-sm whitespace-nowrap">${t}</span>`; });
+
+                    let lastOnlineText = dynData.lastOnline ? `<span class="text-emerald-400 font-bold">最後作戰: ${dynData.lastOnline}</span>` : `<span class="text-gray-500">尚未留下作戰紀錄</span>`;
 
                     let myIcon = L.divIcon({ className: isActive ? 'custom-sonar-icon' : 'custom-standby-icon', html: iconHtml, iconSize: [10, 10], iconAnchor: [5, 5] });
                     
-                    // 🎯 單店情報卡 UI 更新
+                    // 🎯 情報卡 UI 寬度鎖定與自動換行佈局，解決溢出破版問題
                     let popupContent = `
-                        <div class="text-center min-w-[170px] p-1">
-                            <p class="text-sm font-black text-white mb-0.5 tracking-wide leading-tight">📍 ${s.name}</p>
-                            ${tagsHtml}
-                            <div class="bg-slate-800/80 rounded-lg p-2.5 mt-2.5 border border-slate-700 shadow-inner">
+                        <div class="text-center w-full px-1 flex flex-col items-center">
+                            <p class="text-sm font-black text-white mb-2 tracking-wide leading-tight break-words w-full px-2">${s.name}</p>
+                            <div class="flex flex-wrap justify-center gap-1.5 mb-1.5 w-full">
+                                ${badgesHtml}
+                            </div>
+                            <div class="bg-slate-800/80 rounded-lg p-2.5 mt-2 border border-slate-700 shadow-inner w-full">
                                 <p class="text-[11px] mb-1.5">${statusText}</p>
-                                <p class="text-[9px] font-mono tracking-tighter border-t border-slate-600/50 pt-1.5">${lastOnlineText}</p>
+                                <p class="text-[9px] font-mono tracking-tighter border-t border-slate-600/50 pt-1.5 text-gray-400">${lastOnlineText}</p>
                             </div>
                         </div>`;
 
@@ -216,7 +221,6 @@
 
             const container = document.getElementById('district-container'); container.innerHTML = '';
             
-            // 🚀 核心升級：依照該區「營業中」的店數由大到小優先排序，其次才是總店數！
             let sortedDistricts = Object.values(districtDataMap).sort((a, b) => {
                 if (b.activeCount !== a.activeCount) return b.activeCount - a.activeCount;
                 return b.total - a.total;
@@ -224,31 +228,20 @@
 
             sortedDistricts.forEach(d => {
                 let dKey = `${d.city}_${d.district}`;
-                // 只要有店家就展現
                 if (d.total > 0) {
                     let isHunting = d.activeCount > 0;
                     if (isHunting) tickerMsgs.push(`⚔️ [${d.district}] 獵場開放！${d.activeCount} 家營業中！`);
 
                     container.innerHTML += `
-                        <div onclick="focusDistrict('${dKey}', ${d.validNodes})" class="tactical-card ${isHunting ? 'hunting-zone' : ''} rounded-2xl p-4 overflow-hidden mb-4">
+                        <div onclick="focusDistrict('${dKey}', ${d.total})" class="tactical-card ${isHunting ? 'hunting-zone' : ''} rounded-2xl p-4 overflow-hidden mb-4">
                             <div class="flex justify-between items-start mb-2.5">
-                                <div>
-                                    <h3 class="font-black text-lg text-white ${isHunting ? 'glow-text-green' : ''} mb-1">[${d.city}] ${d.district}</h3>
-                                </div>
+                                <div><h3 class="font-black text-lg text-white ${isHunting ? 'glow-text-green' : ''} mb-1">[${d.city}] ${d.district}</h3></div>
                                 ${isHunting ? `<div class="flex items-center space-x-1.5 mt-0.5"><span class="text-xl">🔥</span><span class="text-xs font-black bg-red-600 text-white px-2 py-0.5 rounded shadow-md animate-pulse tracking-wide whitespace-nowrap">獵場開放</span></div>` : `<div class="flex items-center mt-0.5"><span class="text-[10px] font-black bg-slate-700 text-gray-300 px-2 py-1 rounded shadow-md tracking-wide whitespace-nowrap border border-slate-600">全區整備中</span></div>`}
                             </div>
-                            
                             <div class="flex space-x-4 mb-3 bg-slate-900/50 px-3 py-2 rounded-lg border border-slate-700/50 w-max">
-                                <div class="flex items-center text-xs font-bold">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-radarGreen mr-1.5 animate-pulse shadow-[0_0_5px_#10b981]"></span>
-                                    <span class="text-gray-400">上線: <span class="text-white ml-0.5">${d.activeCount}</span></span>
-                                </div>
-                                <div class="flex items-center text-xs font-bold border-l border-slate-700 pl-3">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-400 mr-1.5 opacity-80"></span>
-                                    <span class="text-gray-400">整備: <span class="text-gray-300 ml-0.5">${d.standbyCount}</span></span>
-                                </div>
+                                <div class="flex items-center text-xs font-bold"><span class="w-2.5 h-2.5 rounded-full bg-radarGreen mr-1.5 animate-pulse shadow-[0_0_5px_#10b981]"></span><span class="text-gray-400">上線: <span class="text-white ml-0.5">${d.activeCount}</span></span></div>
+                                <div class="flex items-center text-xs font-bold border-l border-slate-700 pl-3"><span class="w-2.5 h-2.5 rounded-full bg-yellow-400 mr-1.5 opacity-80"></span><span class="text-gray-400">整備: <span class="text-gray-300 ml-0.5">${d.standbyCount}</span></span></div>
                             </div>
-
                             <div class="flex justify-between items-center border-t border-slate-800/60 pt-3">
                                 <p class="text-[10px] text-slate-400 font-bold">📡 在地進駐：共 <span class="text-seefoodYellow text-sm">${d.total}</span> 家</p>
                                 <span class="text-[9px] text-slate-500 truncate w-1/2 text-right">最新：${d.names.slice(-2).join("、")}</span>
@@ -272,10 +265,16 @@
                     let center = group.getBounds().getCenter();
                     L.popup({ closeButton: false, autoClose: false, className: 'custom-popup' })
                         .setLatLng(center)
-                        .setContent(`<div class="text-center min-w-[130px] p-1">
+                        .setContent(`<div class="text-center min-w-[150px] p-1 flex flex-col items-center">
                             <p class="text-red-500 font-black mb-1.5 tracking-wider text-sm">⚔️ 獵場全面開放</p>
-                            <p class="text-[10px] text-gray-300 mb-3 leading-tight">目前已集結 ${dObj.total} 家店<br>單店即可發車，即刻開搶！</p>
-                            <button onclick="joinNow()" class="w-full bg-seefoodYellow text-slate-900 text-xs px-2 py-2 rounded-lg font-black active:scale-95 transition">我要卡位吃肉</button>
+                            <p class="text-[10px] text-gray-300 mb-3 leading-tight">目前已集結 ${dObj.total} 家店<br>立刻加入戰場清空庫存！</p>
+                            
+                            <!-- 🎯 核彈級誘因轉換按鈕 -->
+                            <button onclick="joinNow()" class="w-full bg-gradient-to-r from-seefoodYellow to-yellow-500 text-slate-900 text-[12px] px-1 py-2.5 rounded-lg font-black active:scale-95 transition shadow-[0_0_15px_rgba(250,185,0,0.4)] border border-yellow-300">
+                                點擊獲取免費曝光！<br>
+                                <span class="text-[10px] font-bold bg-black/10 px-1.5 py-0.5 rounded mt-1 inline-block">0元開賣 60秒火速進場！</span>
+                            </button>
+                            
                         </div>`).openOn(map);
                 }, 1600); 
             } else { alert(`⚠️ 【${dObj.city} ${dObj.district}】已有店家申請入場，但尚未確立官方雷達座標。\n\n您現在立刻卡位，有機率搶下本區「孤勇者首發勳章」！`); joinNow(); }
