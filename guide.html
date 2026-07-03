@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SEEFOOD 惜福聯盟 - 作戰戰術指南</title>
+    <title>SEEFOOD 惜福聯盟 - 運營作戰戰術指南</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { theme: { extend: { colors: { radarGreen: '#10b981', seefoodYellow: '#FAB900', tacticalOrange: '#f97316' } } } }
@@ -11,146 +11,201 @@
     <style>
         body { background-color: #020617; background-image: linear-gradient(rgba(16,185,129,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.02) 1px, transparent 1px); background-size: 20px 20px; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .glow-border { box-shadow: 0 0 15px rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.3); }
         .glow-text-yellow { text-shadow: 0 0 10px rgba(250,185,0,0.3); }
+        .tab-active { color: #FAB900; border-color: #FAB900; background-color: rgba(250,185,0,0.05); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col pb-24 no-scrollbar overflow-y-auto">
 
-    <header class="p-6 text-center border-b border-slate-800 bg-slate-950/80 sticky top-0 z-50 backdrop-blur-md">
-        <h1 class="text-xl font-black text-seefoodYellow tracking-widest glow-text-yellow">🎯 SEEFOOD 雷達作戰戰術指南</h1>
-        <p class="text-[10px] text-radarGreen font-mono mt-1">>> MANUAL VERSION 2.6 // 拒絕浪費 · 遍地開花</p>
+    <!-- 🚀 戰術標題 -->
+    <header class="p-6 text-center border-b border-slate-800 bg-slate-950/80 sticky top-0 z-50 backdrop-blur-md flex-none">
+        <h1 class="text-xl font-black text-seefoodYellow tracking-widest glow-text-yellow">🎯 SEEFOOD 雷達運營作戰指南</h1>
+        <p class="text-[10px] text-radarGreen font-mono mt-1">>> PLATFORM COVENANT VERSION 3.0 // 實事求是 · 公開透明</p>
     </header>
 
-    <main class="flex-1 max-w-md mx-auto w-full px-4 pt-6 space-y-8">
-
+    <!-- 🌍 平台核心世界觀與環境理念 -->
+    <section class="max-w-md mx-auto w-full px-4 pt-6 flex-none">
         <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-5 relative overflow-hidden shadow-xl">
-            <div class="absolute top-0 right-0 bg-red-600/20 text-red-400 text-[9px] font-black font-mono px-2.5 py-1 rounded-bl-xl border-l border-b border-red-500/30">核心條款</div>
-            <h2 class="text-base font-black text-white flex items-center mb-2">🌍 什麼是 SEEFOOD 惜福雷達？</h2>
-            <p class="text-xs text-gray-400 leading-relaxed">
-                我們是全台首創<span class="text-white font-bold">「無差別即期變現系統」</span>。我們砍掉了沉重且高抽成的外送物流，<span class="text-seefoodYellow font-black">死守「純自取」天條</span>。
+            <h2 class="text-base font-black text-white flex items-center mb-2">🌱 什麼是 SEEFOOD 惜福雷達？</h2>
+            <p class="text-xs text-gray-400 leading-relaxed mb-3">
+                SEEFOOD 惜福雷達是專為改善食物浪費而生的「無差別安全庫存變現系統」。全平台商品嚴格規定<span class="text-seefoodYellow font-black">僅能上架「0元（免費贈與）以及 3折、5折、7折」之超值優惠價</span>，將多餘的高品質安全庫存精準導流至有需求的消費者，在保護商家獨立通路尊嚴的同時，完美達成惜福、減碳與綠色環保理念。
             </p>
-            <blockquote class="border-l-2 border-radarGreen bg-slate-950/60 p-2.5 rounded-r-lg text-[11px] text-radarGreen font-mono mt-3">
-                沒有外送員限制、沒有行政區邊界。全台灣任何一個角落，不論賣什麼，只要有網路，1分鐘內一鍵上架開賣！
-            </blockquote>
+            <div class="bg-slate-950/80 border border-red-500/30 rounded-xl p-3 text-[11px] text-red-400 font-bold leading-normal">
+                🚨 核心營運天條：為保障現場出餐流程、並完全不干擾店家既有的正價餐點交易，本平台「100% 僅開放線上付款、並由買家前往店面自取」。最極致的惜福回饋，僅留給最環保且勤勞的綠色獵人！
+            </div>
+        </div>
+    </section>
+
+    <!-- 🎛️ 雙模式戰術切換面板 (Tabs) -->
+    <div class="max-w-md mx-auto w-full px-4 mt-6 flex-none">
+        <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex shadow-inner">
+            <button id="tab-hunter" onclick="switchMode('hunter')" class="w-1/2 text-center py-3 rounded-lg text-sm font-black transition-all duration-200 flex items-center justify-center space-x-1.5 tab-active">
+                <span>🎒</span> <span>美食獵人模式</span>
+            </button>
+            <button id="tab-merchant" onclick="switchMode('merchant')" class="w-1/2 text-center py-3 rounded-lg text-sm font-black text-gray-400 hover:text-gray-200 transition-all duration-200 flex items-center justify-center space-x-1.5">
+                <span>🏪</span> <span>獵場主人模式</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 📖 核心內容區 -->
+    <main class="flex-1 max-w-md mx-auto w-full px-4 mt-6">
+
+        <!-- =================🎒 美食獵人模式內文 =================-->
+        <div id="content-hunter" class="space-y-6">
+            
+            <!-- 🚨 鐵律宣導看板 -->
+            <div class="bg-amber-950/30 border-2 border-dashed border-tacticalOrange/60 rounded-2xl p-4 shadow-md">
+                <h3 class="text-tacticalOrange font-black text-sm flex items-center mb-2">📢【大腦安全宣告：正確狩獵三步驟】</h3>
+                <ol class="text-xs text-gray-300 space-y-2 font-bold list-decimal pl-4 leading-normal">
+                    <li><span class="text-white">線上尋飽下單：</span>利用地圖鎖定周圍店家，直接於線上完成交易下單。</li>
+                    <li><span class="text-seefoodYellow">致電商家告知：</span><span class="underline decoration-wavy decoration-red-500 font-black text-white">下單後請務必立刻撥打電話給商家，主動告知您的「訂單單號」與「預計前往取餐的時間」！</span></li>
+                    <li><span class="text-white">前往取餐完成：</span>於約定時間抵達店面，出示 LINE 畫面由店家完成一秒核銷。</li>
+                </ol>
+                <p class="text-[10px] text-gray-400 mt-2.5 italic">※ 未履行第 2 步致電義務而逕行前往者，若遇品項因打烊下架或現場調度問題，需自行承擔交易延遲風險。</p>
+            </div>
+
+            <!-- 詳細步驟指引 -->
+            <div class="space-y-4">
+                <h3 class="text-white font-black text-base border-l-4 border-radarGreen pl-2">🛠️ 獵人詳細操作步驟</h3>
+                
+                <div class="space-y-3">
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3">
+                        <span class="bg-radarGreen/20 text-radarGreen font-mono font-black text-xs px-2 py-1 rounded-md">01</span>
+                        <div class="text-xs text-gray-400">
+                            <h5 class="text-white font-bold mb-1 text-sm">定位與尋寶</h5>
+                            <p>點擊雷達介面的「MY GPS」獲取當前座標，地圖會立即顯示綠色（營業發車中）與黃色（整備中）的惜福點燈。下方列表會自動依據「營業中店家數量」由多到少進行分區排序。</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3">
+                        <span class="bg-radarGreen/20 text-radarGreen font-mono font-black text-xs px-2 py-1 rounded-md">02</span>
+                        <div class="text-xs text-gray-400">
+                            <h5 class="text-white font-bold mb-1 text-sm">解鎖勳章情報</h5>
+                            <p>點擊地圖圓點，可拉出全面升級的「單店情報卡」。您可以即時查閱該店的登記類別（公司/個體户）、是否已通過「實名認證」、是否具備「👑大覺者 VIP」身份，以及該店「連續完售天數」等歷史戰績戰功，鎖定優質商家。</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3">
+                        <span class="bg-radarGreen/20 text-radarGreen font-mono font-black text-xs px-2 py-1 rounded-md">03</span>
+                        <div class="text-xs text-gray-400">
+                            <h5 class="text-white font-bold mb-1 text-sm">下單付款與核銷</h5>
+                            <p>挑選完 0元或 3/5/7 折商品後，完成線上金流代收。下單後必須立刻「致電商家」約定取餐，並於店家打烊前抵達實體地址，出示條碼由老闆點擊驗證，即可火速提餐離場。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 金流與風控防線 -->
+            <div class="space-y-4">
+                <h3 class="text-white font-black text-base border-l-4 border-radarGreen pl-2">🛡️ 獵人金流配額與風控公約</h3>
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-gray-400 space-y-3 leading-normal">
+                    <p>📌 <span class="text-white font-bold">代收服務費公式</span>：買家實付總額為「店家惜福價 + 平台代收服務費」[cite: 2]。服務費固定為商品售價之 10%，並設有底線與天花板：<span class="text-radarGreen font-bold">單筆最低收取 $5 元，最高上限僅收 $20 元</span>[cite: 2]。</p>
+                    <p>📌 <span class="text-white font-bold">1分鐘高頻限速鎖</span>：為防止惡意自動化程式洗單，單一帳戶 <span class="text-amber-400 font-bold">1 分鐘內上限最多結帳 3 筆訂單</span>，超過者大腦將自動阻斷 60 秒[cite: 2]。</p>
+                    <p>📌 <span class="text-white font-bold">24小時交易安全線</span>：單一帳戶在 <span class="text-amber-400 font-bold">24 小時內累積抢購總額天花板為 $3,000 元 新台幣</span>，超過此配額者，在額度重置前雷達將自動對其關閉交易功能[cite: 2]。</p>
+                </div>
+            </div>
         </div>
 
-        <section class="space-y-4">
-            <div class="flex items-center space-x-2 border-b border-radarGreen/30 pb-2">
-                <span class="text-xl">🎒</span>
-                <h2 class="text-lg font-black text-white">美食獵人篇（消費者指南）</h2>
-            </div>
+
+        <!-- =================🏪 獵場主人模式內文 =================-->
+        <div id="content-merchant" class="space-y-6 hidden">
             
-            <p class="text-xs text-gray-400">每天看著超商即期品被搶光而扼腕？打開雷達，全台灣獨立店家的私房惜福品正在等你全面狙擊：</p>
-
-            <div class="space-y-3">
-                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3 hover:border-radarGreen/40 transition">
-                    <span class="bg-radarGreen/20 text-radarGreen font-mono font-black text-xs px-2 py-1 rounded-lg">STEP 1</span>
-                    <div>
-                        <h4 class="text-sm font-black text-white mb-1">精準雷達對齊</h4>
-                        <p class="text-xs text-gray-400 leading-normal">點擊戰情室的 <span class="text-lime-400 font-bold">🎯 MY GPS</span> 鎖定你當前位置。雷達將以你為中心，無差別掃描周圍所有特約店家的隱藏惜福包。</p>
-                    </div>
-                </div>
-
-                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3 hover:border-radarGreen/40 transition">
-                    <span class="bg-radarGreen/20 text-radarGreen font-mono font-black text-xs px-2 py-1 rounded-lg">STEP 2</span>
-                    <div>
-                        <h4 class="text-sm font-black text-white mb-1">孤勇者與秒殺突襲</h4>
-                        <p class="text-xs text-gray-400 leading-normal">若看到區域卡片顯示 <span class="text-red-400 font-bold">🔥 獵場開放</span>，代表該區有店家上線上架！請立刻點入搶購，因為全區的乞丐幫小資族都在盯著這僅存的限量份數，不拼手速瞬間就會被秒殺！</p>
-                    </div>
-                </div>
-
-                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3 hover:border-radarGreen/40 transition">
-                    <span class="bg-radarGreen/20 text-radarGreen font-mono font-black text-xs px-2 py-1 rounded-lg">STEP 3</span>
-                    <div>
-                        <h4 class="text-sm font-black text-white mb-1">原地自取與實名核銷</h4>
-                        <p class="text-xs text-gray-400 leading-normal">線上完成無痛下單後，在店家指定的時間內抵達店面自取。出示手機核銷條碼，由老闆完成 1 秒核銷，即可抱回大餐吃肉！</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            <div class="flex items-center space-x-2 border-b border-seefoodYellow/30 pb-2">
-                <span class="text-xl">🏪</span>
-                <h2 class="text-lg font-black text-white">特約頭家篇（商家變現指南）</h2>
+            <!-- 商家五大核心利多 -->
+            <div class="bg-gradient-to-r from-emerald-950/20 to-slate-900 border border-emerald-500/30 rounded-2xl p-5 shadow-xl">
+                <h3 class="text-emerald-400 font-black text-sm flex items-center mb-3">💎 SEEFOOD 給特約店家的創始五大權益</h3>
+                <ul class="text-xs text-gray-300 space-y-2.5 font-bold list-disc pl-4 leading-normal">
+                    <li><span class="text-white">獨立變現通路：</span>專屬的即期惜福變現窗口，與常態正價商品完美隔離，完全不傷害原有的品牌獨立價值。</li>
+                    <li><span class="text-white">多元免費流量：</span>即將發動的高爆發短影音行銷流量將無痛注入，直接為您的店面帶來極高的在地實體到店客流。</li>
+                    <li><span class="text-white">單店即可發車：</span>打破傳統平台的區域邊界，不受別家店進駐進度的拖累，您的一間店，就是該區唯一的綠色焦點！</li>
+                    <li><span class="text-seefoodYellow">0元月費0%抽成：</span>創始一期店家承諾永久免收系統月租費、免收平台利潤抽成費[cite: 2]！</li>
+                    <li><span class="text-radarGreen">註冊30秒開賣：</span>極致輕量化系統架構，免下載繁瑣 App，利用 LINE 即可在 30 秒內極速完成建檔卡位[cite: 2]。</li>
+                </ul>
             </div>
 
-            <p class="text-xs text-gray-400">每天打烊看著倒掉的剩餘成本滴血？被大平台 35% 的血汗抽成逼入絕境？SEEFOOD 給你全台最暴力的自我拯救基礎建設：</p>
-
-            <div class="space-y-3">
-                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3 hover:border-seefoodYellow/40 transition">
-                    <span class="bg-seefoodYellow/20 text-seefoodYellow font-mono font-black text-xs px-2 py-1 rounded-lg">30秒</span>
-                    <div>
-                        <h4 class="text-sm font-black text-white mb-1">極速卡位，不限行業形式</h4>
-                        <p class="text-xs text-gray-400 leading-normal">便當、手搖飲、麵包烘焙，甚至黃昏攤位、個人工作室、鮮花即期寵物飼料，通通無差別歡迎！不需精緻裝潢，只要有網路，填完資料大腦 30 秒自動建檔！</p>
+            <!-- 詳細步驟指引 -->
+            <div class="space-y-4">
+                <h3 class="text-white font-black text-base border-l-4 border-seefoodYellow pl-2">🛠️ 店家詳細操作與開通防線</h3>
+                
+                <div class="space-y-3">
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3">
+                        <span class="bg-seefoodYellow/20 text-seefoodYellow font-mono font-black text-xs px-2 py-1 rounded-md">01</span>
+                        <div class="text-xs text-gray-400">
+                            <h5 class="text-white font-bold mb-1 text-sm">LINE 線上即時卡位</h5>
+                            <p>點擊「我要入場卡位」表單，輸入您的店鋪名稱、實體地址與基本通訊資料。送出後大腦將在 30 秒內全自動完成雷達經緯度標記，並立即開通後台格位[cite: 2]。</p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3 hover:border-seefoodYellow/40 transition">
-                    <span class="bg-seefoodYellow/20 text-seefoodYellow font-mono font-black text-xs px-2 py-1 rounded-lg">0門檻</span>
-                    <div>
-                        <h4 class="text-sm font-black text-white mb-1">獨享全區流量，原地引爆秒殺</h4>
-                        <p class="text-xs text-gray-400 leading-normal">不用等大軍集結，<span class="text-white font-bold">「單店即可原地發車」</span>！如果你的行政區目前只有你一間店，你將獨佔該區數萬即期族的雷達焦點。今天上架、今天賣光，用秒殺數據逼隔壁同業眼紅！</p>
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3">
+                        <span class="bg-seefoodYellow/20 text-seefoodYellow font-mono font-black text-xs px-2 py-1 rounded-md">02</span>
+                        <div class="text-xs text-gray-400">
+                            <h5 class="text-white font-bold mb-1 text-sm">電子合約實名完簽 (核心解鎖)</h5>
+                            <p>建檔完成後，系統會同步發送一份「創始店家線上實名制合約」至您的電子信箱[cite: 2]。請用手機直接開啟連結，<span class="text-white font-bold">上傳身分證件/統編圖檔，並填寫正確的銀行代碼與撥款帳號，最後以手指完成數位簽名</span>[cite: 2]。未完簽之店家，其應得款項將會被大腦財務攔截線暫時鎖定[cite: 2]。</p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3 hover:border-seefoodYellow/40 transition">
-                    <span class="bg-seefoodYellow/20 text-seefoodYellow font-mono font-black text-xs px-2 py-1 rounded-lg">100%</span>
-                    <div>
-                        <h4 class="text-sm font-black text-white mb-1">實名完簽，金流風控解鎖</h4>
-                        <p class="text-xs text-gray-400 leading-normal">創始店家享有 <span class="text-emerald-400 font-bold">0 月費、0% 平台抽成</span> 利多！註冊後系統會自動發送線上電子合約信，手機手指滑動完簽並填妥收款帳戶，即可永久解鎖安全匯款防線。</p>
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3">
+                        <span class="bg-seefoodYellow/20 text-seefoodYellow font-mono font-black text-xs px-2 py-1 rounded-md">03</span>
+                        <div class="text-xs text-gray-400">
+                            <h5 class="text-white font-bold mb-1 text-sm">日常管理與無痛出餐</h5>
+                            <p>打開專屬後台即可管理上架品項（基礎店鋪提供 10 格商品欄位）[cite: 2]。當接到獵人的核銷電話與現場自取請求時，於後台勾選該單號點擊確認，金流即清算入帳[cite: 2]。</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="pt-2">
-                <table class="w-full text-xs text-left border border-slate-800 rounded-xl overflow-hidden shadow-md">
-                    <thead class="bg-slate-950 text-gray-400 uppercase font-mono text-[10px] tracking-wider">
-                        <tr>
-                            <th class="p-3">費用項目</th>
-                            <th class="p-3">傳統外送平台</th>
-                            <th class="p-3 text-seefoodYellow">SEEFOOD 創始店</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-800/60 bg-slate-900/40 font-bold">
-                        <tr>
-                            <td class="p-3 text-white">平台抽成費</td>
-                            <td class="p-3 text-red-400">30% ~ 35%</td>
-                            <td class="p-3 text-radarGreen">0%（創始店限定）</td>
-                        </tr>
-                        <tr>
-                            <td class="p-3 text-white">系統上架月租</td>
-                            <td class="p-3 text-gray-500">有（各式隱藏費）</td>
-                            <td class="p-3 text-radarGreen">0 元 / 月</td>
-                        </tr>
-                        <tr>
-                            <td class="p-3 text-white">基本金流清算費</td>
-                            <td class="p-3 text-gray-400">內扣抽成中</td>
-                            <td class="p-3 text-amber-400">3.15%（僅扣代收手續）</td>
-                        </tr>
-                        <tr>
-                            <td class="p-3 text-white">配送範圍限制</td>
-                            <td class="p-3 text-red-400">受外送員地區死綁</td>
-                            <td class="p-3 text-radarGreen">❌ 無邊界（純到店自取）</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- 商家硬核物理配額死線 -->
+            <div class="space-y-4">
+                <h3 class="text-white font-black text-base border-l-4 border-seefoodYellow pl-2">🛡️ 店家大腦物理限制與風控天條</h3>
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-gray-400 space-y-3 leading-normal">
+                    <p>📌 <span class="text-white font-bold">基本代收清算費</span>：雖然我們不收取任何系統費與利潤抽成，但金流商收取的 <span class="text-seefoodYellow font-bold">3.15% 基本第三方金流清算手續費</span> 需由店家撥款中扣除自付[cite: 2]。</p>
+                    <p>📌 <span class="text-white font-bold">🚨 千元商品防洗安全線</span>：單一品項的「折扣後惜福價」若<span class="text-amber-400 font-bold">超過 $1,000 元 新台幣</span>，大腦會基於防洗錢條例自動將該品項轉為 PENDING_REVIEW（暫時隱藏送人工審查），其餘千元以下品項則維持正常發車不受影響[cite: 2]。</p>
+                    <p>📌 <span class="text-white font-bold">🚨 萬元代收打烊鎖</span>：單一店鋪在<span class="text-amber-400 font-bold">單日累積代收營業額若達到 $10,000 元 新台幣</span>，系統大腦會強制介入並啟動歇業保護（狀態強制轉 OFF），直到隔日自動重置開放，防止出現惡意洗單異常交易[cite: 2]。</p>
+                    <p>📌 <span class="text-white font-bold">🚨 8小時自動清掃防線</span>：為確保消費者在雷達地圖上看到的都是最即時的情報，商品上架（狀態轉 ON）後，若<span class="text-amber-400 font-bold">整整 8 小時未有任何手動更新動作，大腦清掃器會物理強制將庫存全數清零並下架關店</span>，避免忘記關店引發客訴[cite: 2]。</p>
+                </div>
             </div>
-        </section>
+        </div>
 
-        <footer class="bg-slate-950/60 border border-slate-900 rounded-2xl p-4 text-[11px] text-gray-500 leading-relaxed text-center font-mono">
+        <!-- 🛡️ 法律隔離與誠信切結安全艙 -->
+        <footer class="bg-slate-950/60 border border-slate-900 rounded-2xl p-4 text-[11px] text-gray-500 leading-relaxed text-center font-mono mt-8">
             <p>本平台技術大腦與合約對帳清算系統由【照路有限公司】風控法務艙嚴格監管。</p>
-            <p class="mt-1">特約商店之食品安全衛生、稅務開票責任，皆已於數位合約中完成法律隔離隔離。禁止任何洗錢、洗單或嘗試上架非即期特價品之異常高頻交易，違者系統將自動觸發 PENDING_REVIEW 鎖定資金並報司法機關物理查封。</p>
+            <p class="mt-1">特約商店之食品安全衛生、稅務開票責任，皆已於數位合約中完成法律隔離。禁止任何嘗試上架非即期特價品之異常高頻交易，違者系統將自動觸發資金鎖定並報司法機關物理查封。</p>
         </footer>
 
     </main>
 
+    <!-- 🔙 底部返回戰情室主功能列 -->
     <div class="fixed bottom-0 left-0 w-full bg-slate-950/90 backdrop-blur-lg border-t border-slate-800 p-4 z-50 flex pb-7 justify-center shadow-[0_-10px_30px_rgba(0,0,0,0.6)]">
         <button onclick="window.history.back()" class="w-full max-w-md bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 text-white font-black py-3.5 rounded-xl border border-slate-700 shadow-md active:scale-95 transition text-sm tracking-widest flex items-center justify-center">
             📡 返回全台點燈戰情室雷達
         </button>
     </div>
 
+    <script>
+        function switchMode(mode) {
+            const btnHunter = document.getElementById('tab-hunter');
+            const btnMerchant = document.getElementById('tab-merchant');
+            const contentHunter = document.getElementById('content-hunter');
+            const contentMerchant = document.getElementById('content-merchant');
+
+            if (mode === 'hunter') {
+                btnHunter.classList.add('tab-active');
+                btnHunter.classList.remove('text-gray-400');
+                btnMerchant.classList.remove('tab-active');
+                btnMerchant.classList.add('text-gray-400');
+                
+                contentHunter.classList.remove('hidden');
+                contentMerchant.classList.add('hidden');
+            } else {
+                btnMerchant.classList.add('tab-active');
+                btnMerchant.classList.remove('text-gray-400');
+                btnHunter.classList.remove('tab-active');
+                btnHunter.classList.add('text-gray-400');
+                
+                contentMerchant.classList.remove('hidden');
+                contentHunter.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 </html>
