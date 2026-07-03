@@ -25,7 +25,6 @@
         .sonar-marker { background: #10b981; border-radius: 50%; position: relative; width: 10px; height: 10px; box-shadow: 0 0 10px #10b981; }
         .sonar-marker::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #10b981; border-radius: 50%; animation: sonar-ripple 2s ease-out infinite; }
         
-        /* 🎯 任務5：將整備中改成醒目的黃色 */
         .standby-marker { background: #facc15; border-radius: 50%; position: relative; width: 8px; height: 8px; box-shadow: 0 0 8px rgba(250,204,21,0.6); opacity: 0.9; }
 
         .leaflet-popup-content-wrapper { background-color: #0f172a; color: #e2e8f0; border: 1px solid #10b981; border-radius: 12px; font-family: inherit; box-shadow: 0 0 15px rgba(16,185,129,0.3); }
@@ -57,8 +56,8 @@
                 RECEIVING L-UID GPS...
             </div>
             <div class="absolute bottom-2 left-2 bg-black/70 text-gray-300 text-[9px] px-2.5 py-1 rounded-sm z-[400] pointer-events-none font-bold tracking-wide flex space-x-2">
-                <span>🟢 營業中</span>
-                <span class="text-yellow-400">🟡 整備中</span>
+                <span>🟢 上線營業中</span>
+                <span class="text-yellow-400">🟡 未上架整備中</span>
             </div>
         </div>
     </div>
@@ -82,18 +81,17 @@
         <div class="w-full max-w-lg flex space-x-2.5">
             <button onclick="joinNow()" class="w-1/2 bg-seefoodYellow text-slate-900 font-black py-4 rounded-xl shadow-lg active:scale-95 transition text-sm flex flex-col items-center leading-none justify-center border border-seefoodYellow/50">
                 <span class="text-base">🤝 我要入場卡位</span>
-                <span class="text-[10px] mt-1.5 opacity-90 font-bold">30秒提交 0月費0抽成</span>
+                <span class="text-[10px] mt-1.5 opacity-90 font-bold">單店即發車 0月費0抽成</span>
             </button>
             <button onclick="shareToPeers()" class="w-1/2 bg-gradient-to-br from-slate-800 to-slate-900 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition text-sm flex flex-col items-center leading-none justify-center border border-slate-700">
                 <span class="text-base text-emerald-400">📢 號召獵人點燈</span>
-                <span class="text-[10px] mt-1.5 opacity-80 text-gray-400">集結同業 解鎖本地區</span>
+                <span class="text-[10px] mt-1.5 opacity-80 text-gray-400">招募同業 享全區流量</span>
             </button>
         </div>
     </div>
 
     <script>
         const gasUrl = "https://script.google.com/macros/s/AKfycbxOsS40qejUGDKjp0kQFn76CeM0DBiTN41HHorYJ6gBa9qK1fTEP3xDRbn7CgXo3C4Z9g/exec";
-        const thresholdRules = { "台中市_西屯區": 100, "台北市_大安區": 100, "台中市_烏日區": 50, "台中市_南屯區": 80 };
         let map; let districtDataMap = {};
 
         window.addEventListener('DOMContentLoaded', async () => {
@@ -136,72 +134,88 @@
                     let isActive = activeShopIds.has(s.shopId);
                     
                     let iconHtml = isActive ? '<div class="sonar-marker"></div>' : '<div class="standby-marker"></div>';
-                    let statusText = isActive ? '<span class="text-radarGreen font-black animate-pulse">🟢 營業發車中</span>' : '<span class="text-yellow-400 font-bold">🟡 雷達整備中</span>';
+                    let statusText = isActive ? '<span class="text-radarGreen font-black animate-pulse">🟢 營業發車中</span>' : '<span class="text-yellow-400 font-bold">🟡 未上架整備中</span>';
                     
+                    // 🛡️ 戰鬥標籤與時間情報解析 (待 GAS 後端餵入資料)
+                    let tagsArray = s.tags || []; 
+                    let tagsHtml = tagsArray.length > 0 ? `<div class="flex flex-wrap justify-center gap-1 mt-1.5 mb-1">${tagsArray.map(t => `<span class="bg-slate-800 border border-slate-600 text-[9px] px-1.5 py-0.5 rounded text-seefoodYellow shadow-sm whitespace-nowrap">${t}</span>`).join('')}</div>` : '';
+                    let lastOnlineText = s.lastOnline ? `<span class="text-emerald-400">最後動作: ${s.lastOnline}</span>` : `<span class="text-gray-500">尚未留下作戰紀錄</span>`;
+
                     let myIcon = L.divIcon({ className: isActive ? 'custom-sonar-icon' : 'custom-standby-icon', html: iconHtml, iconSize: [10, 10], iconAnchor: [5, 5] });
-                    let marker = L.marker([s.lat, s.lng], { icon: myIcon }).addTo(map).bindPopup(`<div class="text-center"><p class="text-xs font-black text-white mb-1.5 tracking-wide">📍 ${s.name}</p><p class="text-[10px]">${statusText}</p></div>`);
+                    
+                    // 🗺️ 地圖 Popup 資訊擴充
+                    let popupContent = `
+                        <div class="text-center min-w-[150px] p-1">
+                            <p class="text-xs font-black text-white mb-0.5 tracking-wide leading-tight">📍 ${s.name}</p>
+                            ${tagsHtml}
+                            <p class="text-[10px] mt-1.5 mb-1.5">${statusText}</p>
+                            <p class="text-[9px] font-mono border-t border-slate-700 pt-1.5 mt-0.5 tracking-tighter">${lastOnlineText}</p>
+                        </div>`;
+
+                    let marker = L.marker([s.lat, s.lng], { icon: myIcon }).addTo(map).bindPopup(popupContent);
                     
                     dObj.markers.push(marker); allMarkers.push(marker);
                 }
 
                 if (isIgnited) {
                     if (activeShopIds.has(s.shopId)) { tickerMsgs.push(`[${districtClean}] 獵場發車中：${s.name}`); } 
-                    else { tickerMsgs.push(`[${districtClean}] 座標鎖定 整備中：${s.name}`); }
+                    else { tickerMsgs.push(`[${districtClean}] 新血加入 準備中：${s.name}`); }
                 }
             });
 
             if (allMarkers.length > 0) { let group = new L.featureGroup(allMarkers); map.fitBounds(group.getBounds().pad(0.2)); }
 
             const container = document.getElementById('district-container'); container.innerHTML = '';
-            let sortedDistricts = Object.values(districtDataMap).sort((a, b) => {
-                let aKey = `${a.city}_${a.district}`; let bKey = `${b.city}_${b.district}`;
-                let aT = thresholdRules[aKey] || 50; let bT = thresholdRules[bKey] || 50;
-                return (b.validNodes / bT) - (a.validNodes / aT); 
-            });
+            
+            // 單店即發車：依照該區店家數量降序排列
+            let sortedDistricts = Object.values(districtDataMap).sort((a, b) => b.validNodes - a.validNodes);
 
             sortedDistricts.forEach(d => {
-                let dKey = `${d.city}_${d.district}`; let threshold = thresholdRules[dKey] || 50; let percent = Math.min(100, Math.round((d.validNodes / threshold) * 100)); let isHunting = d.validNodes >= threshold;
-                let statusHtml = isHunting ? `<div class="flex items-center space-x-1.5"><span class="text-xl">🔥</span><span class="text-xs font-black bg-red-600 text-white px-2 py-0.5 rounded shadow-md animate-pulse tracking-wide">獵場開放</span></div>` : `<span class="text-xs font-bold text-slate-400 bg-slate-900 px-2 py-1 rounded">集結中 ${d.validNodes}/${threshold}</span>`;
-                let progressColor = isHunting ? 'bg-red-500 shadow-[0_0_15px_#ef4444]' : 'bg-radarGreen shadow-[0_0_15px_#10b981]';
-                let cardClass = isHunting ? 'tactical-card hunting-zone' : 'tactical-card';
-
-                if (!isHunting && percent >= 80) tickerMsgs.push(`🚨 [${d.district}] 集結度達 ${percent}%，雷達即將通電！`);
-                if (isHunting) tickerMsgs.push(`⚔️ [${d.district}] 獵場已解鎖！0抽成特權開啟！持續招募中！`);
-
-                container.innerHTML += `
-                    <div onclick="focusDistrict('${dKey}', ${isHunting}, ${percent}, ${threshold}, ${d.validNodes})" class="${cardClass} rounded-2xl p-4 overflow-hidden mb-4">
-                        <div class="flex justify-between items-center mb-3"><h3 class="font-black text-lg text-white glow-text-green">[${d.city}] ${d.district}</h3>${statusHtml}</div>
-                        <div class="w-full bg-slate-950 rounded-full h-3 mb-1 overflow-hidden border border-slate-700/50 shadow-inner"><div class="${progressColor} h-3 rounded-full transition-all duration-1000" style="width: ${percent}%"></div></div>
-                        <div class="flex justify-between items-center mt-2.5"><p class="text-[9px] text-slate-400 truncate w-3/4">📡 最新卡位：${d.names.slice(-2).join("、")}...</p><span class="text-[9px] font-mono text-radarGreen opacity-70">${percent}% LOCKED</span></div>
-                    </div>`;
+                let dKey = `${d.city}_${d.district}`;
+                // 只要有節點就是獵場開放 (拔除門檻)
+                if (d.validNodes > 0) {
+                    tickerMsgs.push(`⚔️ [${d.district}] 獵場全線開放！單店發車持續招募中！`);
+                    container.innerHTML += `
+                        <div onclick="focusDistrict('${dKey}', ${d.validNodes})" class="tactical-card hunting-zone rounded-2xl p-4 overflow-hidden mb-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-black text-lg text-white glow-text-green">[${d.city}] ${d.district}</h3>
+                                <div class="flex items-center space-x-1.5"><span class="text-xl">🔥</span><span class="text-xs font-black bg-red-600 text-white px-2 py-0.5 rounded shadow-md animate-pulse tracking-wide">獵場開放</span></div>
+                            </div>
+                            <div class="flex justify-between items-center mt-2.5">
+                                <p class="text-[10px] text-slate-300 font-bold">📡 在地進駐：共 <span class="text-seefoodYellow text-sm">${d.validNodes}</span> 家</p>
+                                <span class="text-[9px] text-slate-400 truncate w-1/2 text-right">最新：${d.names.slice(-2).join("、")}...</span>
+                            </div>
+                        </div>`;
+                }
             });
 
             if (sortedDistricts.length === 0) {
                 container.innerHTML = '<div class="text-center py-12"><p class="text-slate-500 text-sm">目前全台獵場寂靜... 立刻搶下首位入場勳章！</p></div>';
-                tickerMsgs.push("🌍 美食獵人全線號召：全台創始店家限量卡位，30秒開通立即上架！");
+                tickerMsgs.push("🌍 美食獵人全線號召：全台創始店家限量卡位，單店即刻上架發車！");
             }
             tickerMsgs = tickerMsgs.sort(() => 0.5 - Math.random()).slice(0, 15); document.getElementById('news-ticker').innerText = tickerMsgs.join(" ｜ ") + " ｜ ";
         }
 
-        function focusDistrict(dKey, isHunting, percent, threshold, validNodes) {
+        function focusDistrict(dKey, validNodes) {
             let dObj = districtDataMap[dKey];
             if (dObj.markers && dObj.markers.length > 0) {
                 let group = new L.featureGroup(dObj.markers); map.flyToBounds(group.getBounds().pad(0.3), { duration: 1.5 });
                 setTimeout(() => {
                     let center = group.getBounds().getCenter();
-                    if (isHunting) {
-                        L.popup({ closeButton: false, autoClose: false, className: 'custom-popup' }).setLatLng(center).setContent(`<div class="text-center min-w-[130px] p-1"><p class="text-red-500 font-black mb-1.5 tracking-wider text-sm">⚔️ 獵場全面開放</p><p class="text-[10px] text-gray-300 mb-2 leading-tight">目前已集結 ${validNodes} 家<br>流量雷達已全線通電</p><button onclick="joinNow()" class="w-full bg-seefoodYellow text-slate-900 text-xs px-2 py-2 rounded-lg font-black active:scale-95 transition">立即入場吃肉</button></div>`).openOn(map);
-                    } else {
-                        let remain = threshold - validNodes;
-                        L.popup({ closeButton: false, autoClose: false, className: 'custom-popup' }).setLatLng(center).setContent(`<div class="text-center min-w-[150px] p-1"><p class="text-seefoodYellow font-black mb-1.5 tracking-wider text-sm">🚧 雷達集結中 (${percent}%)</p><p class="text-[10px] text-gray-300 mb-2 leading-tight">還差 <span class="text-red-400 font-bold">${remain}</span> 家店就能解鎖<br>0抽成外帶雷達！</p><button onclick="shareToPeers()" class="w-full bg-gradient-to-br from-emerald-600 to-teal-500 text-white text-xs px-2 py-2 rounded-lg font-black active:scale-95 transition shadow-lg border border-emerald-500/50">📢 號召在地同行加入</button></div>`).openOn(map);
-                    }
+                    L.popup({ closeButton: false, autoClose: false, className: 'custom-popup' })
+                        .setLatLng(center)
+                        .setContent(`<div class="text-center min-w-[130px] p-1">
+                            <p class="text-red-500 font-black mb-1.5 tracking-wider text-sm">⚔️ 獵場全面開放</p>
+                            <p class="text-[10px] text-gray-300 mb-3 leading-tight">目前已集結 ${validNodes} 家店<br>單店即可發車，即刻開搶！</p>
+                            <button onclick="joinNow()" class="w-full bg-seefoodYellow text-slate-900 text-xs px-2 py-2 rounded-lg font-black active:scale-95 transition">我要卡位吃肉</button>
+                        </div>`).openOn(map);
                 }, 1600); 
-            } else { alert(`⚠️ 【${dObj.city} ${dObj.district}】已有店家申請入場，但尚未確立官方雷達座標。\n\n您現在立刻卡位，有機率搶下本區「創始首發勳章」！`); joinNow(); }
+            } else { alert(`⚠️ 【${dObj.city} ${dObj.district}】已有店家申請入場，但尚未確立官方雷達座標。\n\n您現在立刻卡位，有機率搶下本區「孤勇者首發勳章」！`); joinNow(); }
         }
 
         function joinNow() { window.location.href = "https://seefood.mangowalkers.workers.dev/#merchant"; }
         function shareToPeers() {
-            const shareText = "🔥 SEEFOOD 惜福聯盟：全台獵場點亮中！我們區還差一點就能解鎖「0月費0抽成」外帶雷達！餐飲老闆們快來免費入場卡位流量！👉 " + window.location.href;
+            const shareText = "🔥 SEEFOOD 惜福聯盟：全台獵場點亮中！單店即發車，餐飲老闆們快來免費入場卡位流量！👉 " + window.location.href;
             if (navigator.share) { navigator.share({ title: '全台點燈戰情室', text: shareText, url: window.location.href }).catch(console.error); } else { navigator.clipboard.writeText(shareText).then(() => alert("✅ 號召文案已複製到剪貼簿！快去丟到商圈群組吧！")); }
         }
     </script>
