@@ -53,7 +53,6 @@
         <div class="border border-radarGreen/40 rounded-xl overflow-hidden shadow-[0_0_30px_rgba(16,185,129,0.15)] relative p-1 bg-slate-900">
             <div id="radar-map" class="h-56 w-full rounded-lg relative z-0"></div>
             
-            <!-- 🎯 新增的 GPS 狙擊定位按鈕 -->
             <button onclick="zoomToUserLocation()" class="absolute bottom-10 right-2 bg-slate-900/90 border border-lime-500/50 hover:border-lime-400 text-lime-400 p-2.5 rounded-xl shadow-[0_0_15px_rgba(132,204,22,0.4)] active:scale-95 transition z-[400] flex items-center justify-center">
                 🎯 <span id="gps-text" class="text-[9px] font-mono ml-1 font-black tracking-widest">MY GPS</span>
             </button>
@@ -62,8 +61,8 @@
                 RECEIVING L-UID GPS...
             </div>
             <div class="absolute bottom-2 left-2 bg-black/70 text-gray-300 text-[9px] px-2.5 py-1 rounded-sm z-[400] pointer-events-none font-bold tracking-wide flex space-x-2">
-                <span>🟢 上線營業中</span>
-                <span class="text-yellow-400">🟡 未上架整備中</span>
+                <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-radarGreen mr-1 animate-pulse shadow-[0_0_5px_#10b981]"></span>上線營業中</span>
+                <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-yellow-400 mr-1 opacity-80"></span>未上架整備中</span>
             </div>
         </div>
     </div>
@@ -117,12 +116,9 @@
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { className: 'dark-map-tiles', maxZoom: 19 }).addTo(map);
         }
 
-        // 🎯 執行定位並飛入地圖中心
+        // 🎯 GPS 定位飛入邏輯
         function zoomToUserLocation() {
-            if (!navigator.geolocation) {
-                alert("🛡️ 阻斷：您的瀏覽器拒絕提供安全定位權限！");
-                return;
-            }
+            if (!navigator.geolocation) { alert("🛡️ 阻斷：您的瀏覽器拒絕提供安全定位權限！"); return; }
             
             const btnText = document.getElementById('gps-text');
             const originalText = btnText.innerText;
@@ -130,21 +126,14 @@
             
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    
+                    const lat = position.coords.latitude; const lng = position.coords.longitude;
                     if (typeof map !== 'undefined' && map !== null) {
                         map.flyTo([lat, lng], 15, { animate: true, duration: 1.5 });
-                        // 加上一個綠色光圈代表獵人目前位置
                         L.circle([lat, lng], { radius: 150, color: '#10b981', fillColor: '#10b981', fillOpacity: 0.2 }).addTo(map);
                     }
-                    
                     btnText.innerText = originalText;
                 },
-                (error) => {
-                    btnText.innerText = originalText;
-                    alert("📍 提示：請開啟手機 GPS 定位功能，才能順利跳轉座標喔！");
-                },
+                (error) => { btnText.innerText = originalText; alert("📍 提示：請開啟手機 GPS 定位功能，才能順利跳轉座標喔！"); },
                 { enableHighAccuracy: true, timeout: 7000 }
             );
         }
@@ -163,53 +152,62 @@
                 let dKey = `${cityClean}_${districtClean}`;
                 
                 if (!districtDataMap[dKey]) { 
-                    districtDataMap[dKey] = { city: cityClean, district: districtClean, total: 0, validNodes: 0, names: [], markers: [], merchantTypes: new Set() }; 
+                    // 🎯 初始化區域統計變數，加入營業中與整備中計數
+                    districtDataMap[dKey] = { 
+                        city: cityClean, district: districtClean, 
+                        total: 0, validNodes: 0, activeCount: 0, standbyCount: 0, 
+                        names: [], markers: [] 
+                    }; 
                 }
                 
                 let dObj = districtDataMap[dKey]; 
                 dObj.total++; 
                 dObj.names.push(s.name);
                 
-                // 收集該區的所有店家類別標籤
                 let typeClean = s.merchantType ? (s.merchantType.split(' ')[1] || s.merchantType) : '特約商店';
-                dObj.merchantTypes.add(typeClean);
-                
                 let isIgnited = (s.lat && s.lng); 
+                let isActive = activeShopIds.has(s.shopId);
+
+                // 🎯 統計區域戰況
+                if (isActive) dObj.activeCount++;
+                else dObj.standbyCount++;
+
                 if (isIgnited) {
                     dObj.validNodes++; 
-                    let isActive = activeShopIds.has(s.shopId);
                     
                     let iconHtml = isActive ? '<div class="sonar-marker"></div>' : '<div class="standby-marker"></div>';
                     let statusText = isActive ? '<span class="text-radarGreen font-black animate-pulse">🟢 營業發車中</span>' : '<span class="text-yellow-400 font-bold">🟡 未上架整備中</span>';
                     
-                    // 🛡️ 單一店家 PopUp 的標籤顏色動態判斷
+                    // 🛡️ 單一店家 PopUp 的標籤強化 (圖2)
                     let mTypeColor = typeClean.includes('個體戶') ? 'text-amber-400 border-amber-400/50 bg-amber-900/30' : 'text-emerald-400 border-emerald-400/50 bg-emerald-900/30';
                     let tagsArray = s.tags || []; 
                     
-                    let tagsHtml = `<div class="flex flex-wrap justify-center gap-1 mt-1.5 mb-1">
-                        <span class="border text-[9px] px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap ${mTypeColor}">${typeClean}</span>
-                        ${tagsArray.map(t => `<span class="bg-slate-800 border border-slate-600 text-[9px] px-1.5 py-0.5 rounded text-seefoodYellow shadow-sm whitespace-nowrap">${t}</span>`).join('')}
+                    let tagsHtml = `<div class="flex flex-wrap justify-center gap-1 mt-2 mb-1">
+                        <span class="border text-[10px] px-2 py-0.5 rounded-md font-bold shadow-sm whitespace-nowrap ${mTypeColor}">${typeClean}</span>
+                        ${tagsArray.map(t => `<span class="bg-slate-800 border border-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-md text-seefoodYellow shadow-sm whitespace-nowrap">${t}</span>`).join('')}
                     </div>`;
                     
-                    let lastOnlineText = s.lastOnline ? `<span class="text-emerald-400">最後動作: ${s.lastOnline}</span>` : `<span class="text-gray-500">尚未留下作戰紀錄</span>`;
+                    let lastOnlineText = s.lastOnline ? `<span class="text-emerald-400 font-bold">最後動作: ${s.lastOnline}</span>` : `<span class="text-gray-500">尚未留下作戰紀錄</span>`;
 
                     let myIcon = L.divIcon({ className: isActive ? 'custom-sonar-icon' : 'custom-standby-icon', html: iconHtml, iconSize: [10, 10], iconAnchor: [5, 5] });
                     
+                    // 🎯 單店情報卡 UI 更新
                     let popupContent = `
-                        <div class="text-center min-w-[150px] p-1">
-                            <p class="text-xs font-black text-white mb-0.5 tracking-wide leading-tight">📍 ${s.name}</p>
+                        <div class="text-center min-w-[170px] p-1">
+                            <p class="text-sm font-black text-white mb-0.5 tracking-wide leading-tight">📍 ${s.name}</p>
                             ${tagsHtml}
-                            <p class="text-[10px] mt-1.5 mb-1.5">${statusText}</p>
-                            <p class="text-[9px] font-mono border-t border-slate-700 pt-1.5 mt-0.5 tracking-tighter">${lastOnlineText}</p>
+                            <div class="bg-slate-800/80 rounded-lg p-2.5 mt-2.5 border border-slate-700 shadow-inner">
+                                <p class="text-[11px] mb-1.5">${statusText}</p>
+                                <p class="text-[9px] font-mono tracking-tighter border-t border-slate-600/50 pt-1.5">${lastOnlineText}</p>
+                            </div>
                         </div>`;
 
                     let marker = L.marker([s.lat, s.lng], { icon: myIcon }).addTo(map).bindPopup(popupContent);
-                    
                     dObj.markers.push(marker); allMarkers.push(marker);
                 }
 
                 if (isIgnited) {
-                    if (activeShopIds.has(s.shopId)) { tickerMsgs.push(`[${districtClean}] 獵場發車中：${s.name}`); } 
+                    if (isActive) { tickerMsgs.push(`[${districtClean}] 獵場發車中：${s.name}`); } 
                     else { tickerMsgs.push(`[${districtClean}] 新血加入 準備中：${s.name}`); }
                 }
             });
@@ -218,36 +216,42 @@
 
             const container = document.getElementById('district-container'); container.innerHTML = '';
             
-            // 🚀 核心升級：依照該區「總進駐店家數量」由多到少無情排序！
-            let sortedDistricts = Object.values(districtDataMap).sort((a, b) => b.total - a.total);
+            // 🚀 核心升級：依照該區「營業中」的店數由大到小優先排序，其次才是總店數！
+            let sortedDistricts = Object.values(districtDataMap).sort((a, b) => {
+                if (b.activeCount !== a.activeCount) return b.activeCount - a.activeCount;
+                return b.total - a.total;
+            });
 
             sortedDistricts.forEach(d => {
                 let dKey = `${d.city}_${d.district}`;
-                // 只要有任何店家註冊，就展現區域戰情 (遍地開花)
+                // 只要有店家就展現
                 if (d.total > 0) {
-                    if (d.validNodes > 0) tickerMsgs.push(`⚔️ [${d.district}] 獵場全線開放！單店發車持續招募中！`);
-                    
-                    // 組合區域店家標籤
-                    let regionTagsHtml = '';
-                    if (d.merchantTypes && d.merchantTypes.size > 0) {
-                        Array.from(d.merchantTypes).slice(0, 2).forEach(type => {
-                            let badgeColor = type.includes('個體戶') ? 'bg-amber-500/20 text-amber-400 border-amber-500/50' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50';
-                            regionTagsHtml += `<span class="text-[10px] ${badgeColor} border px-2 py-0.5 rounded-md font-bold tracking-wide mr-1">${type}</span>`;
-                        });
-                    }
+                    let isHunting = d.activeCount > 0;
+                    if (isHunting) tickerMsgs.push(`⚔️ [${d.district}] 獵場開放！${d.activeCount} 家營業中！`);
 
                     container.innerHTML += `
-                        <div onclick="focusDistrict('${dKey}', ${d.validNodes})" class="tactical-card ${d.validNodes > 0 ? 'hunting-zone' : ''} rounded-2xl p-4 overflow-hidden mb-4">
-                            <div class="flex justify-between items-start mb-3">
+                        <div onclick="focusDistrict('${dKey}', ${d.validNodes})" class="tactical-card ${isHunting ? 'hunting-zone' : ''} rounded-2xl p-4 overflow-hidden mb-4">
+                            <div class="flex justify-between items-start mb-2.5">
                                 <div>
-                                    <h3 class="font-black text-lg text-white glow-text-green mb-1.5">[${d.city}] ${d.district}</h3>
-                                    <div class="flex flex-wrap">${regionTagsHtml}</div>
+                                    <h3 class="font-black text-lg text-white ${isHunting ? 'glow-text-green' : ''} mb-1">[${d.city}] ${d.district}</h3>
                                 </div>
-                                ${d.validNodes > 0 ? `<div class="flex items-center space-x-1.5 mt-1"><span class="text-xl">🔥</span><span class="text-xs font-black bg-red-600 text-white px-2 py-0.5 rounded shadow-md animate-pulse tracking-wide whitespace-nowrap">獵場開放</span></div>` : `<div class="flex items-center mt-1"><span class="text-[10px] font-black bg-slate-700 text-gray-300 px-2 py-1 rounded shadow-md tracking-wide whitespace-nowrap border border-slate-600">雷達座標建置中</span></div>`}
+                                ${isHunting ? `<div class="flex items-center space-x-1.5 mt-0.5"><span class="text-xl">🔥</span><span class="text-xs font-black bg-red-600 text-white px-2 py-0.5 rounded shadow-md animate-pulse tracking-wide whitespace-nowrap">獵場開放</span></div>` : `<div class="flex items-center mt-0.5"><span class="text-[10px] font-black bg-slate-700 text-gray-300 px-2 py-1 rounded shadow-md tracking-wide whitespace-nowrap border border-slate-600">全區整備中</span></div>`}
                             </div>
-                            <div class="flex justify-between items-center mt-2.5 border-t border-slate-800/60 pt-3">
-                                <p class="text-[10px] text-slate-300 font-bold">📡 在地進駐：共 <span class="text-seefoodYellow text-sm">${d.total}</span> 家</p>
-                                <span class="text-[9px] text-slate-400 truncate w-1/2 text-right">最新：${d.names.slice(-2).join("、")}</span>
+                            
+                            <div class="flex space-x-4 mb-3 bg-slate-900/50 px-3 py-2 rounded-lg border border-slate-700/50 w-max">
+                                <div class="flex items-center text-xs font-bold">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-radarGreen mr-1.5 animate-pulse shadow-[0_0_5px_#10b981]"></span>
+                                    <span class="text-gray-400">上線: <span class="text-white ml-0.5">${d.activeCount}</span></span>
+                                </div>
+                                <div class="flex items-center text-xs font-bold border-l border-slate-700 pl-3">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-400 mr-1.5 opacity-80"></span>
+                                    <span class="text-gray-400">整備: <span class="text-gray-300 ml-0.5">${d.standbyCount}</span></span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center border-t border-slate-800/60 pt-3">
+                                <p class="text-[10px] text-slate-400 font-bold">📡 在地進駐：共 <span class="text-seefoodYellow text-sm">${d.total}</span> 家</p>
+                                <span class="text-[9px] text-slate-500 truncate w-1/2 text-right">最新：${d.names.slice(-2).join("、")}</span>
                             </div>
                         </div>`;
                 }
@@ -270,7 +274,7 @@
                         .setLatLng(center)
                         .setContent(`<div class="text-center min-w-[130px] p-1">
                             <p class="text-red-500 font-black mb-1.5 tracking-wider text-sm">⚔️ 獵場全面開放</p>
-                            <p class="text-[10px] text-gray-300 mb-3 leading-tight">目前已集結 ${validNodes} 家店<br>單店即可發車，即刻開搶！</p>
+                            <p class="text-[10px] text-gray-300 mb-3 leading-tight">目前已集結 ${dObj.total} 家店<br>單店即可發車，即刻開搶！</p>
                             <button onclick="joinNow()" class="w-full bg-seefoodYellow text-slate-900 text-xs px-2 py-2 rounded-lg font-black active:scale-95 transition">我要卡位吃肉</button>
                         </div>`).openOn(map);
                 }, 1600); 
