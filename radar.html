@@ -52,6 +52,12 @@
     <div class="px-4 w-full max-w-lg mx-auto relative z-10 my-3 flex-none">
         <div class="border border-radarGreen/40 rounded-xl overflow-hidden shadow-[0_0_30px_rgba(16,185,129,0.15)] relative p-1 bg-slate-900">
             <div id="radar-map" class="h-56 w-full rounded-lg relative z-0"></div>
+            
+            <!-- 🎯 新增的 GPS 狙擊定位按鈕 -->
+            <button onclick="zoomToUserLocation()" class="absolute bottom-10 right-2 bg-slate-900/90 border border-lime-500/50 hover:border-lime-400 text-lime-400 p-2.5 rounded-xl shadow-[0_0_15px_rgba(132,204,22,0.4)] active:scale-95 transition z-[400] flex items-center justify-center">
+                🎯 <span id="gps-text" class="text-[9px] font-mono ml-1 font-black tracking-widest">MY GPS</span>
+            </button>
+
             <div class="absolute top-2 right-2 bg-black/70 text-radarGreen text-[9px] font-mono px-2 py-0.5 rounded-sm border border-radarGreen/30 z-[400] pointer-events-none animate-pulse">
                 RECEIVING L-UID GPS...
             </div>
@@ -111,6 +117,38 @@
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { className: 'dark-map-tiles', maxZoom: 19 }).addTo(map);
         }
 
+        // 🎯 執行定位並飛入地圖中心
+        function zoomToUserLocation() {
+            if (!navigator.geolocation) {
+                alert("🛡️ 阻斷：您的瀏覽器拒絕提供安全定位權限！");
+                return;
+            }
+            
+            const btnText = document.getElementById('gps-text');
+            const originalText = btnText.innerText;
+            btnText.innerText = "LOCATING...";
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    if (typeof map !== 'undefined' && map !== null) {
+                        map.flyTo([lat, lng], 15, { animate: true, duration: 1.5 });
+                        // 加上一個綠色光圈代表獵人目前位置
+                        L.circle([lat, lng], { radius: 150, color: '#10b981', fillColor: '#10b981', fillOpacity: 0.2 }).addTo(map);
+                    }
+                    
+                    btnText.innerText = originalText;
+                },
+                (error) => {
+                    btnText.innerText = originalText;
+                    alert("📍 提示：請開啟手機 GPS 定位功能，才能順利跳轉座標喔！");
+                },
+                { enableHighAccuracy: true, timeout: 7000 }
+            );
+        }
+
         function processRadarData(allMerchants, activeStores) {
             let uniqueShops = {};
             let activeShopIds = new Set();
@@ -124,9 +162,17 @@
                 let districtClean = s.district || "全部行政區";
                 let dKey = `${cityClean}_${districtClean}`;
                 
-                if (!districtDataMap[dKey]) { districtDataMap[dKey] = { city: cityClean, district: districtClean, total: 0, validNodes: 0, names: [], markers: [] }; }
+                if (!districtDataMap[dKey]) { 
+                    districtDataMap[dKey] = { city: cityClean, district: districtClean, total: 0, validNodes: 0, names: [], markers: [], merchantTypes: new Set() }; 
+                }
                 
-                let dObj = districtDataMap[dKey]; dObj.total++; dObj.names.push(s.name);
+                let dObj = districtDataMap[dKey]; 
+                dObj.total++; 
+                dObj.names.push(s.name);
+                
+                // 收集該區的所有店家類別標籤
+                let typeClean = s.merchantType ? (s.merchantType.split(' ')[1] || s.merchantType) : '特約商店';
+                dObj.merchantTypes.add(typeClean);
                 
                 let isIgnited = (s.lat && s.lng); 
                 if (isIgnited) {
@@ -136,14 +182,19 @@
                     let iconHtml = isActive ? '<div class="sonar-marker"></div>' : '<div class="standby-marker"></div>';
                     let statusText = isActive ? '<span class="text-radarGreen font-black animate-pulse">🟢 營業發車中</span>' : '<span class="text-yellow-400 font-bold">🟡 未上架整備中</span>';
                     
-                    // 🛡️ 戰鬥標籤與時間情報解析 (待 GAS 後端餵入資料)
+                    // 🛡️ 單一店家 PopUp 的標籤顏色動態判斷
+                    let mTypeColor = typeClean.includes('個體戶') ? 'text-amber-400 border-amber-400/50 bg-amber-900/30' : 'text-emerald-400 border-emerald-400/50 bg-emerald-900/30';
                     let tagsArray = s.tags || []; 
-                    let tagsHtml = tagsArray.length > 0 ? `<div class="flex flex-wrap justify-center gap-1 mt-1.5 mb-1">${tagsArray.map(t => `<span class="bg-slate-800 border border-slate-600 text-[9px] px-1.5 py-0.5 rounded text-seefoodYellow shadow-sm whitespace-nowrap">${t}</span>`).join('')}</div>` : '';
+                    
+                    let tagsHtml = `<div class="flex flex-wrap justify-center gap-1 mt-1.5 mb-1">
+                        <span class="border text-[9px] px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap ${mTypeColor}">${typeClean}</span>
+                        ${tagsArray.map(t => `<span class="bg-slate-800 border border-slate-600 text-[9px] px-1.5 py-0.5 rounded text-seefoodYellow shadow-sm whitespace-nowrap">${t}</span>`).join('')}
+                    </div>`;
+                    
                     let lastOnlineText = s.lastOnline ? `<span class="text-emerald-400">最後動作: ${s.lastOnline}</span>` : `<span class="text-gray-500">尚未留下作戰紀錄</span>`;
 
                     let myIcon = L.divIcon({ className: isActive ? 'custom-sonar-icon' : 'custom-standby-icon', html: iconHtml, iconSize: [10, 10], iconAnchor: [5, 5] });
                     
-                    // 🗺️ 地圖 Popup 資訊擴充
                     let popupContent = `
                         <div class="text-center min-w-[150px] p-1">
                             <p class="text-xs font-black text-white mb-0.5 tracking-wide leading-tight">📍 ${s.name}</p>
@@ -167,23 +218,36 @@
 
             const container = document.getElementById('district-container'); container.innerHTML = '';
             
-            // 單店即發車：依照該區店家數量降序排列
-            let sortedDistricts = Object.values(districtDataMap).sort((a, b) => b.validNodes - a.validNodes);
+            // 🚀 核心升級：依照該區「總進駐店家數量」由多到少無情排序！
+            let sortedDistricts = Object.values(districtDataMap).sort((a, b) => b.total - a.total);
 
             sortedDistricts.forEach(d => {
                 let dKey = `${d.city}_${d.district}`;
-                // 只要有節點就是獵場開放 (拔除門檻)
-                if (d.validNodes > 0) {
-                    tickerMsgs.push(`⚔️ [${d.district}] 獵場全線開放！單店發車持續招募中！`);
+                // 只要有任何店家註冊，就展現區域戰情 (遍地開花)
+                if (d.total > 0) {
+                    if (d.validNodes > 0) tickerMsgs.push(`⚔️ [${d.district}] 獵場全線開放！單店發車持續招募中！`);
+                    
+                    // 組合區域店家標籤
+                    let regionTagsHtml = '';
+                    if (d.merchantTypes && d.merchantTypes.size > 0) {
+                        Array.from(d.merchantTypes).slice(0, 2).forEach(type => {
+                            let badgeColor = type.includes('個體戶') ? 'bg-amber-500/20 text-amber-400 border-amber-500/50' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50';
+                            regionTagsHtml += `<span class="text-[10px] ${badgeColor} border px-2 py-0.5 rounded-md font-bold tracking-wide mr-1">${type}</span>`;
+                        });
+                    }
+
                     container.innerHTML += `
-                        <div onclick="focusDistrict('${dKey}', ${d.validNodes})" class="tactical-card hunting-zone rounded-2xl p-4 overflow-hidden mb-4">
-                            <div class="flex justify-between items-center mb-3">
-                                <h3 class="font-black text-lg text-white glow-text-green">[${d.city}] ${d.district}</h3>
-                                <div class="flex items-center space-x-1.5"><span class="text-xl">🔥</span><span class="text-xs font-black bg-red-600 text-white px-2 py-0.5 rounded shadow-md animate-pulse tracking-wide">獵場開放</span></div>
+                        <div onclick="focusDistrict('${dKey}', ${d.validNodes})" class="tactical-card ${d.validNodes > 0 ? 'hunting-zone' : ''} rounded-2xl p-4 overflow-hidden mb-4">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="font-black text-lg text-white glow-text-green mb-1.5">[${d.city}] ${d.district}</h3>
+                                    <div class="flex flex-wrap">${regionTagsHtml}</div>
+                                </div>
+                                ${d.validNodes > 0 ? `<div class="flex items-center space-x-1.5 mt-1"><span class="text-xl">🔥</span><span class="text-xs font-black bg-red-600 text-white px-2 py-0.5 rounded shadow-md animate-pulse tracking-wide whitespace-nowrap">獵場開放</span></div>` : `<div class="flex items-center mt-1"><span class="text-[10px] font-black bg-slate-700 text-gray-300 px-2 py-1 rounded shadow-md tracking-wide whitespace-nowrap border border-slate-600">雷達座標建置中</span></div>`}
                             </div>
-                            <div class="flex justify-between items-center mt-2.5">
-                                <p class="text-[10px] text-slate-300 font-bold">📡 在地進駐：共 <span class="text-seefoodYellow text-sm">${d.validNodes}</span> 家</p>
-                                <span class="text-[9px] text-slate-400 truncate w-1/2 text-right">最新：${d.names.slice(-2).join("、")}...</span>
+                            <div class="flex justify-between items-center mt-2.5 border-t border-slate-800/60 pt-3">
+                                <p class="text-[10px] text-slate-300 font-bold">📡 在地進駐：共 <span class="text-seefoodYellow text-sm">${d.total}</span> 家</p>
+                                <span class="text-[9px] text-slate-400 truncate w-1/2 text-right">最新：${d.names.slice(-2).join("、")}</span>
                             </div>
                         </div>`;
                 }
