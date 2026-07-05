@@ -136,7 +136,7 @@
                         1285.5 <span class="text-base text-gray-400 font-bold ml-0.5">kg</span>
                     </h2>
                     <p id="global-fuel-total" class="text-[11px] text-radarGreen font-bold flex items-center justify-center bg-slate-950/60 py-1.5 px-3 rounded-lg border border-radarGreen/20 w-max mx-auto">
-                        🍃 相當於為地球集體少燃燒了 424.2 公延汽油 🛰️
+                        🍃 相當於為地球集體少燃燒了 424.2 公升汽油 🛰️
                     </p>
                 </div>
 
@@ -151,7 +151,7 @@
                     </p>
                     <div class="bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 font-bold text-[11px] text-gray-500 flex justify-between items-center shadow-inner">
                         <span>🔥 獵人實時戰報：</span>
-                        <span class="text-tacticalOrange font-black animate-pulse">您已擊敗全台 87% 的美食獵人！</span>
+                        <span class="text-tacticalOrange font-black animate-pulse">您已擊敗全台 87% 的環境守護者！</span>
                     </div>
                 </div>
 
@@ -227,7 +227,7 @@
 
                     <div class="text-xs relative z-10 border-t border-slate-700 pt-4 mt-2">
                         <label class="block text-blue-200 mb-1.5 font-bold text-sm">⏳ 顧客取餐截止限時</label>
-                        <input type="text" id="dash-time" value="今日打烊前" placeholder="範例：6/17 21:00前" class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-400">
+                        <input type="text" id="dash-time" value="今日打烊前" placeholder="範例：21:00前" class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-400">
                         <p class="text-[10px] text-gray-400 mt-1.5">💡 建議填寫明確時間，例如：21:00前</p>
                     </div>
 
@@ -284,7 +284,7 @@
 
         <div class="flex-none bg-seefoodDarkBlue text-white border-t border-blue-950 z-40 relative">
             <div class="grid grid-cols-4 text-center py-2.5 text-[10px] font-bold">
-                <button onclick="switchTab('home')" id="tab-home" class="flex flex-col items-center justify-center text-seefoodYellow cursor-pointer transition"><span class="text-xl mb-0.5">🛍️</span><span>尋飽開搶</span></button>
+                <button onclick="switchTab('home')" id="tab-home" class="flex flex-col items-center justify-center text-seefoodYellow cursor-pointer transition"><span class="text-xl mb-0.5">🛍️</span><span>尋尋飽開搶</span></button>
                 <button onclick="switchTab('orders')" id="tab-orders" class="flex flex-col items-center justify-center text-blue-200 relative cursor-pointer transition"><span class="text-xl mb-0.5">🎫</span><span>我的票券</span><div id="badge" class="absolute top-1 right-6 w-2 h-2 bg-red-500 rounded-full hidden shadow-sm"></div></button>
                 <button onclick="switchTab('achievement')" id="tab-achievement" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition"><span class="text-xl mb-0.5">🌱</span><span>減碳成就</span></button>
                 <button onclick="switchTab('merchant')" id="tab-merchant" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition"><span class="text-xl mb-0.5">🤝</span><span id="tab-merchant-text">優質招商</span></button>
@@ -310,7 +310,7 @@
                     </div>
                 </div>
                 <div class="bg-gradient-to-br from-slate-800/70 to-slate-900 rounded-2xl p-4 border border-slate-700 shadow-md relative overflow-hidden opacity-90 space-y-3">
-                    <div class="absolute top-0 right-0 bg-emerald-700 text-white text-[9px] font-black px-2.5 py-0.5 rounded-bl font-mono tracking-wider">AUDITING / 对帳中</div>
+                    <div class="absolute top-0 right-0 bg-emerald-700 text-white text-[9px] font-black px-2.5 py-0.5 rounded-bl font-mono tracking-wider">AUDITING / 對帳中</div>
                     <div>
                         <p class="text-emerald-400 text-xs font-bold mb-0.5">📦 上期已關帳核算</p>
                         <p id="history-period-title" class="text-gray-300 font-black text-sm font-mono">載入中... <span class="text-[10px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-800/60 ml-1">對帳中</span></p>
@@ -540,7 +540,7 @@
             } else if (content.includes("❌") || content.includes("🚨") || content.includes("🔴")) {
                 type = "error"; title = "🚨 阻斷與警告"; iconEl.innerText = "🛑"; glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-red-500/20 rounded-full blur-3xl pointer-events-none"; btnEl.className = "mt-5 w-full bg-red-600 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition text-base tracking-widest";
             } else if (content.includes("🛡️")) {
-                type = "shield"; title = "🛡️ 平台防禦機制"; iconEl.innerText = "👁️‍🗨️"; glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"; btnEl.className = "mt-5 w-full bg-seefoodDarkBlue text-white border border-blue-500/50 font-black py-4 rounded-xl shadow-lg active:scale-95 transition text-base tracking-widest";
+                type = "shield"; title = "🛡️ 平台防禦機制"; iconEl.innerText = "👁️‍羊"; glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"; btnEl.className = "mt-5 w-full bg-seefoodDarkBlue text-white border border-blue-500/50 font-black py-4 rounded-xl shadow-lg active:scale-95 transition text-base tracking-widest";
             } else {
                 iconEl.innerText = "💡"; title = "💡 系統情報"; glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-seefoodYellow/20 rounded-full blur-3xl pointer-events-none"; btnEl.className = "mt-5 w-full bg-seefoodYellow text-slate-900 font-black py-4 rounded-xl shadow-lg active:scale-95 transition text-base tracking-widest";
             }
@@ -656,7 +656,6 @@
             } catch (e) { console.error("同步失敗", e); loadUserStats(); renderBadgesWall(); }
         }
 
-        // 🧠 實時精算群體+個人成就數據
         function recalculateUserStats(orders) {
             userStats.co2Total = orders.length * 0.5;
             userStats.savedAmount = 0; userStats.storeCounts = {}; userStats.hasFirstOrder = orders.length > 0;
@@ -703,10 +702,27 @@
                     storesData.push({ id: `${store.shopId}-${store.itemIndex}`, shopId: store.shopId, itemIndex: store.itemIndex, city: store.city || "全部地區", district: store.district || "全部行政區", address: store.address, phone: store.phone, name: store.name, lat: parseFloat(store.lat) || 0, lng: parseFloat(store.lng) || 0, itemType: store.itemType, item: store.item, note: finalNote, originalPrice: parseFloat(store.originalPrice) || 0, discountPrice: parseFloat(store.discountPrice) || 0, remain: parseInt(store.remain) || 0, time: safeFormatTime(store.time), discountRate: store.originalPrice > 0 ? (store.discountPrice / store.originalPrice) : 0, isVip: store.isVip || false, merchantType: typeDict[store.shopId] || "公司/行號" });
                 });
                 updateGlobalCo2Display(baseSavedKg); initFilterMenus(); filterStores(); renderSavedTicketsWall();
+                
+                // 📡 戰情室穿透開搶定位解鎖
+                const urlParams = new URLSearchParams(window.location.search);
+                const targetShopId = urlParams.get('targetShopId');
+                if (targetShopId) {
+                    // 清除網址的參數，避免重整時反覆觸發
+                    window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+                    // 執行前端篩選並高亮
+                    setTimeout(() => {
+                        const targetStore = storesData.find(s => s.shopId === targetShopId);
+                        if (targetStore) {
+                            document.getElementById('select-region').value = targetStore.city;
+                            handleRegionChange();
+                            document.getElementById('select-district').value = targetStore.district;
+                            filterStores();
+                        }
+                    }, 300);
+                }
             } catch (error) { const container = document.getElementById('store-list-container'); if(container) container.innerHTML = `<div class="text-center py-16 px-4 bg-red-50 rounded-2xl border border-red-200 shadow-sm"><span class="text-4xl block mb-3">⚠️</span><h4 class="font-black text-red-600 text-sm">資料庫連線被拒絕</h4><p class="text-xs text-red-500 mt-2 font-bold leading-relaxed">請檢查網路或稍後重試</p></div>`; }
         }
 
-        // 實時鎖定大腦更新全台累積減碳量與汽油效益
         function updateGlobalCo2Display(baseSavedKg) {
             let globalTotal = parseFloat(baseSavedKg) || 1285.5;
             let globalFuel = globalTotal * 0.33;
@@ -759,10 +775,9 @@
         function cancelCheckout() { clearInterval(countdownInterval); document.getElementById('checkout-modal').classList.add('hidden'); }
         function sniperEscapeFailed() { clearInterval(countdownInterval); document.getElementById('target-scale-wrapper').style.transform = `scale(0)`; setTimeout(() => { showSniperResult("❌", "目標脫逃", "防線崩潰，庫存名額已釋出給其他獵人。"); setTimeout(cancelCheckout, 1500); }, 500); }
 
-        // 🎯 核心重構：打獵按鈕對接官方正式環境分流與秒級跳轉
         function submitPayment(paymentMethod) {
             if (userStats.lineUid === "LINE_GUEST") { alert('🛡️ 系統安全限制：請使用 LINE 應用程式開啟本連結，以進行實名購買與確保票券權益！'); return; }
-            if (!document.getElementById('agree-tos').checked) { alert('請先勾選確認自取限時，付款後立刻致電商家之切結！'); return; }
+            if (!document.getElementById('agree-tos').checked) { alert('請先勾選確認自取限時，付款後立刻致電店家之切結！'); return; }
             
             clearInterval(countdownInterval);
             document.getElementById('target-scale-wrapper').style.transition = "transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)"; document.getElementById('target-scale-wrapper').style.transform = `scale(1.5)`; document.getElementById('food-target').classList.remove('target-wobble'); document.getElementById('food-target').innerHTML = `<span class="text-[60px]">✅</span>`;
@@ -776,7 +791,6 @@
                 if (resJson.status === "success" && resJson.ecpayParams) {
                     showSniperResult("✅", "捕獲成功", `[${paymentMethod}] 授權通過！安全通道建立中...`);
                     
-                    // 建立隱藏 Form 表單
                     const form = document.createElement("form");
                     form.method = "POST"; form.action = resJson.ecpayUrl; form.style.display = "none";
                     
@@ -787,7 +801,7 @@
                     });
                     
                     document.body.appendChild(form);
-                    setTimeout(() => { form.submit(); }, 400); // 留 0.4 秒讓獵人看完捕獲動畫，隨即發車跳轉！
+                    setTimeout(() => { form.submit(); }, 400); 
                 } else { 
                     showSniperResult("❌", "裝彈失敗", resJson.msg || "搶購異常，請重新返回獵場");
                     setTimeout(() => { cancelCheckout(); document.getElementById('sniper-result-overlay').classList.add('hidden'); fetchLiveStores(); }, 2000); 
@@ -924,7 +938,7 @@
 
         function handleMerchantFormSubmit() {
             if (isSubmittingGlobal) return;
-            if (userStats.lineUid === "LINE_GUEST") { alert('🛡️ 系統安全限制：請使用 LINE 應用程式開啟本網頁，以綁定您的真實店鋪帳號，確保後台管理權權限與資金安全！'); return; }
+            if (userStats.lineUid === "LINE_GUEST") { alert('🛡️ 系統安全限制：請使用 LINE 應用程式開啟本網頁，以綁定您的真實店鋪帳號，確保後台管理權限與資金安全！'); return; }
             const name = document.getElementById('merchant-name-input').value.trim(); const address = document.getElementById('merchant-address-input').value.trim(); const phone = document.getElementById('merchant-phone-input').value.trim(); const owner = document.getElementById('m-owner-name').value.trim(); const oPhone = document.getElementById('m-owner-phone').value.trim(); const oLine = document.getElementById('m-owner-line').value.trim(); const email = document.getElementById('merchant-email-input').value.trim(); const mType = document.getElementById('merchant-type-select').value;
             if (!name || !address || !phone || !oPhone || !email) { alert('🛡️ 請填寫所有核心卡位欄位！'); return; }
             isSubmittingGlobal = true; showGlobalLoading("資料建檔中", "正在安全卡位並發送合約，約需 10 秒...");
@@ -936,13 +950,24 @@
             }).catch(() => { alert("⏳ 雲端處理超時，但您的卡位請求已成功送達大腦！\n請直接重新整理網頁，即可進入您的專屬商家後台。"); }).finally(() => { isSubmittingGlobal = false; hideGlobalLoading(); });
         }
 
+        // 🎯 終極修復：物理拔除無情強行切分頁的 switchTab 毒瘤代碼[cite: 3]
         function checkMerchantUrlParameters() {
-            const shopId = new URLSearchParams(window.location.search).get('shopId') || localStorage.getItem('seefood_merchant_shop_id');
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlShopId = urlParams.get('shopId');
+            const cachedShopId = localStorage.getItem('seefood_merchant_shop_id');
+            const shopId = urlShopId || cachedShopId;
+            
             if (shopId) {
                 let cachedName = localStorage.getItem('seefood_merchant_shop_name') || "SEEFOOD 惜福分店";
                 document.getElementById('merchant-dashboard-zone').classList.remove('hidden'); document.getElementById('dashboard-shop-title').innerText = cachedName; document.getElementById('tab-merchant-text').innerText = "商家後台"; const regZone = document.getElementById('merchant-registration-zone'); if(regZone) regZone.style.display = 'none';
                 let isVip = localStorage.getItem('seefood_merchant_vip') === 'true'; if(isVip) { document.getElementById('vip-upgrade-banner').classList.add('hidden'); document.getElementById('dashboard-plan-badge').innerText = "大覺者 VIP (10格)"; }
-                renderDashboardSlots(); switchTab('merchant');
+                renderDashboardSlots(); 
+                
+                // 🛡️ 只有在網址明確帶有 shopId 參數註冊，或是目前 hash 本來就是 #merchant 時才允許切換！
+                // 絕不允許在背景非同步對帳同步時，把正在下單、核銷的獵人強行一槍踢到後台！
+                if (urlShopId || window.location.hash === '#merchant') {
+                    switchTab('merchant');
+                }
             }
         }
 
@@ -1032,7 +1057,7 @@
         }
     </script>
     
-    <a href="https://line.me/R/ti/p/@您的LINE官方帳號ID" target="_blank" rel="noopener noreferrer" 
+    <a href="https://line.me/R/ti/p/@398ndwec" target="_blank" rel="noopener noreferrer" 
        class="fixed bottom-32 right-4 z-[999] bg-slate-900/95 border-2 border-seefoodYellow text-seefoodYellow p-3.5 rounded-full shadow-[0_0_20px_rgba(250,185,0,0.4)] hover:shadow-[0_0_30px_rgba(250,185,0,0.6)] active:scale-95 hover:border-white hover:text-white transition-all duration-300 flex items-center justify-center group animate-pulse">
         <span class="absolute top-0 right-0 flex h-3 w-3">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
