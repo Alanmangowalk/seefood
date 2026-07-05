@@ -292,7 +292,7 @@
 
         function joinNow() { window.location.href = "https://seefood.mangowalkers.workers.dev/#merchant"; }
         function shareToPeers() {
-            const shareText = "🔥 SEEFOOD 惜福聯盟：全台獵場點亮中！單店即發車，餐飲老闆們快來免費入場卡位流量！👉 " + window.location.href;
+            const shareText = "🔥 SEEFOOD 惜福聯盟：全台獵場點亮中！單店即發車，老闆們馬上點擊30秒免費入場，報廢變現，獲取免費曝光！👉 " + window.location.href;
             if (navigator.share) { navigator.share({ title: '全台點燈戰情室', text: shareText, url: window.location.href }).catch(console.error); } 
             else { navigator.clipboard.writeText(shareText).then(() => alert("✅ 號召文案已複製到剪貼簿！快去丟到商圈群組吧！")); }
         }
