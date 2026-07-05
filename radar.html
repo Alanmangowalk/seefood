@@ -197,7 +197,7 @@
                     let lastOnlineText = dynData.lastOnline ? `<span class="text-emerald-400 font-bold">最後作戰: ${dynData.lastOnline}</span>` : `<span class="text-gray-500">尚未留下作戰紀錄</span>`;
                     let myIcon = L.divIcon({ className: isActive ? 'custom-sonar-icon' : 'custom-standby-icon', html: iconHtml, iconSize: [10, 10], iconAnchor: [5, 5] });
                     
-                    // 🟢 核心功能打通：單店情報卡強勢注入「🎯 進入獵場狙擊惜福」穿透行動按紐
+                    // 🟢 核心功能打通：單店情報卡強勢注入「🎯 進入獵場尋飽」穿透行動按紐
                     let actionButtonHtml = isActive 
                         ? `<button onclick="goToShopHunt('${s.shopId}')" class="w-full mt-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs py-2.5 rounded-xl font-black active:scale-95 transition shadow-[0_4px_10px_rgba(16,185,129,0.3)] border border-emerald-400">🎯 進入獵場狙擊惜福</button>`
                         : `<button class="w-full mt-3 bg-slate-800 text-slate-500 text-xs py-2.5 rounded-xl font-bold cursor-not-allowed border border-slate-700" disabled>💤 獵場整備中</button>`;
