@@ -42,16 +42,26 @@
             <p id="loading-desc" class="text-sm text-emerald-400 font-bold px-6 text-center animate-pulse">請勿關閉畫面...</p>
         </div>
 
+        <!-- ⚖️ 綠界合規條款彈窗 -->
         <div id="tos-modal" class="absolute inset-0 bg-slate-900 z-[100] flex flex-col hidden">
             <div class="flex-1 overflow-y-auto p-6 text-gray-300 space-y-4 no-scrollbar">
                 <h2 class="text-2xl font-black text-seefoodYellow tracking-wider mb-2">📜 平台服務與免責聲明</h2>
-                <div class="text-xs leading-relaxed space-y-3">
-                    <p class="text-white font-bold">歡迎使用 SEEFOOD 美食獵人！為保障雙方權益，請務必詳細閱讀以下條款：</p>
-                    <p><span class="text-emerald-400 font-bold">1. 惜福品特殊性：</span>本平台販售之商品為「即期惜福食品」或「安全庫存之餘額備品」，且因食品具時效性，依法<span class="text-red-400">不適用消費者保護法第19條之7日無條件退貨規定</span>。</p>
-                    <p><span class="text-emerald-400 font-bold">2. 平台免責聲明：</span>本平台（照路有限公司）僅提供資訊撮合與代收付服務。餐點之製造、包裝、保存與衛生安全，全由供餐商家獨立承擔法律責任。若生消費糾紛或食安問題，概由商家負責。</p>
-                    <p><span class="text-emerald-400 font-bold">3. 逾期未取沒收：</span>消費者知悉並同意，若未於商家規定之「取餐限時」內自取，視同自願放棄。商家有權直接銷毀食品，且<span class="text-red-400">平台不予退款</span>。</p>
-                    <p><span class="text-emerald-400 font-bold">4. 數位憑證效力：</span>畫面「滑動核銷」視為合意交付憑證，不得以誤觸要求撤銷。</p>
-                    <p><span class="text-emerald-400 font-bold">5. 交易防線與防洗錢聲明：</span>平台方具備金流與交易異常之主動稽核權。若經系統偵測有疑似洗錢、盜刷等異常行為，平台有權無限期凍結帳款並配合調查。</p>
+                <div class="text-xs leading-relaxed space-y-4">
+                    <p class="text-white font-bold">歡迎使用 SEEFOOD 美食獵人！為保障雙方權益與因應法規，請務必詳細閱讀以下條款：</p>
+                    
+                    <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+                        <p class="text-emerald-400 font-bold mb-1">1. 依據法規排除七天鑑賞期 (重要)</p>
+                        <p>依據《通訊交易解除權合理例外情事適用準則》第2條第1項，本平台媒合之餐飲與即期惜福品，屬於「易於腐敗、保存期限較短或解約時即將逾期」之商品。<b>一經消費者線上付款訂購完成，即不適用消費者保護法第19條之七天鑑賞期規定，亦不接受無條件退換貨。</b></p>
+                    </div>
+
+                    <p><span class="text-emerald-400 font-bold">2. 平台免責聲明：</span>本平台僅提供資訊撮合與代收付服務。餐點之製造、包裝、保存與衛生安全，全由供餐商家獨立承擔法律責任。若生消費糾紛或食安問題，概由商家負責。</p>
+                    <p><span class="text-emerald-400 font-bold">3. 逾期未取沒收：</span>若未於商家規定之「取餐限時」內自取，視同自願放棄。商家有權直接銷毀食品，且<span class="text-red-400 font-bold">平台不予退款</span>。</p>
+                    <p><span class="text-emerald-400 font-bold">4. 交易防線與防洗錢聲明：</span>若經系統偵測有疑似洗錢、盜刷等異常行為，平台有權無限期凍結帳款並配合調查。</p>
+                    
+                    <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+                        <p class="text-emerald-400 font-bold mb-1">5. 營運與客服資訊</p>
+                        <p>營運單位：照路有限公司<br>客服管道：請透過官方 LINE (@398ndwec) 聯繫，系統將於營業時間內為您協助。</p>
+                    </div>
                 </div>
             </div>
             <div class="p-6 bg-slate-800 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
@@ -113,6 +123,13 @@
                 <div id="store-list-container" class="space-y-3">
                     <div class="text-center py-16 px-4"><span class="text-4xl animate-spin inline-block mb-3">⏳</span><h4 class="font-black text-gray-800 text-sm">正在連線全台雷達...</h4><p class="text-xs text-gray-400 mt-2">首次連線需時較長，請稍候</p></div>
                 </div>
+
+                <!-- ⚖️ 綠界審核必備：明確的常態底部 Footer -->
+                <div class="mt-8 border-t border-gray-200 pt-5 pb-2 text-center space-y-2 opacity-80">
+                    <p class="text-[11px] text-gray-500 font-bold">平台營運單位：照路有限公司</p>
+                    <p class="text-[10px] text-gray-400 font-bold">客服中心：請洽官方 LINE @398ndwec</p>
+                    <button onclick="document.getElementById('tos-modal').classList.remove('hidden')" class="text-[11px] text-blue-600 underline font-bold active:scale-95 transition inline-block">隱私聲明與退換貨服務條款</button>
+                </div>
             </div>
 
             <div id="page-orders" class="space-y-3 hidden">
@@ -161,6 +178,29 @@
 
             <div id="page-merchant" class="space-y-4 hidden">
                 <div id="merchant-dashboard-zone" class="bg-gradient-to-br from-slate-900 to-blue-950 text-white rounded-3xl p-5 shadow-xl space-y-4 hidden mb-4 relative overflow-hidden">
+                    
+                    <!-- 🚀 MCN 自媒體合夥人招商艙 -->
+                    <div id="mcn-affiliate-zone" class="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-2xl p-4 shadow-lg border border-purple-500/30 relative overflow-hidden mb-2">
+                        <div class="absolute -right-4 -top-4 w-20 h-20 bg-purple-500/20 rounded-full blur-xl pointer-events-none"></div>
+                        <h4 class="font-black text-white text-sm flex items-center mb-3 tracking-wide"><span class="text-lg mr-1">🚀</span> 流量合夥人招商中心</h4>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div class="bg-slate-900/60 rounded-xl p-3 border border-purple-500/20 shadow-inner">
+                                <p class="text-[10px] text-purple-300 font-bold mb-1">旗下特約店鋪</p>
+                                <p class="text-xl font-black text-white">0 <span class="text-xs text-gray-400 font-bold">家</span></p>
+                            </div>
+                            <div class="bg-slate-900/60 rounded-xl p-3 border border-purple-500/20 shadow-inner">
+                                <p class="text-[10px] text-purple-300 font-bold mb-1">本期預估佣金</p>
+                                <p class="text-xl font-black text-seefoodYellow font-mono">$0</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <button onclick="copyAffiliateLink()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl active:scale-95 transition text-xs shadow-md border border-purple-400 flex justify-center items-center">
+                                🔗 複製我的專屬招商連結
+                            </button>
+                            <p class="text-[9px] text-purple-200 opacity-80 text-center leading-relaxed">將連結放至主頁或給店家點擊註冊即永久綁定！<br>享旗下店家系統服務費與 VIP 月費 50% 終身分潤！</p>
+                        </div>
+                    </div>
+
                     <div id="contract-warning-wall" class="hidden bg-gradient-to-r from-amber-500 to-yellow-600 rounded-xl p-4 shadow-[0_0_15px_rgba(250,204,21,0.3)] mb-4 text-slate-900 border-2 border-yellow-300 relative z-20">
                         <h4 class="font-black text-sm mb-1 flex items-center"><span class="text-lg mr-1 animate-bounce">⚠️</span> 實名合約與帳戶審核中</h4>
                         <p class="text-[10px] font-bold leading-relaxed mb-3 opacity-90">依洗錢防制法規定，未完成線上實名簽約與收款帳戶綁定前，本期帳款將強制執行「資金攔截凍結」無法匯款！</p>
@@ -343,7 +383,7 @@
                 <div class="bg-slate-800 rounded-xl p-4 h-56 overflow-y-auto text-[11px] text-gray-300 space-y-3 border border-slate-600 shadow-inner">
                     <p class="font-black text-white text-sm border-b border-slate-600 pb-2 mb-2 sticky top-0 bg-slate-800">【SEEFOOD 平台特約商店服務條款暨代收付合約】</p>
                     <p><span class="text-emerald-400 font-bold">1. 居間定位與勞雇切割：</span>平台僅為資訊撮合與代收付工具，不涉入商品實際買賣，與店家無勞雇或加盟關係。</p>
-                    <p><span class="text-emerald-400 font-bold">2. 食安與客訴全責：</span>店家保誠上架商品符合《食品安全衛生管理法》。若因食物變質、標示不實導致客訴或傷病，由店家負擔 100% 法律與賠償責任。</p>
+                    <p><span class="text-emerald-400 font-bold">2. 食安與客訴全責：</span>店家保證上架商品符合《食品安全衛生管理法》。若因食物變質、標示不實導致客訴或傷病，由店家負擔 100% 法律與賠償責任。</p>
                     <p><span class="text-emerald-400 font-bold">3. 稅務與發票開立：</span>平台僅就「系統服務費」開立發票給店家；商品本身的免稅申報或發票開立責任，由店家自行承擔。</p>
                     <p><span class="text-emerald-400 font-bold">4. 代收付結算與手續費：</span>明訂 3.15% 金流手續費、撥款週期（A/B期），若因店家提供之銀行帳戶錯誤導致退匯，需自行承擔重匯手續費。</p>
                     <p><span class="text-emerald-400 font-bold">5. 防洗錢、詐欺與凍結權：</span>配合洗錢防制法，若平台偵測異常交易（如人頭套現、盜刷），平台擁有絕對權力無限期凍結資金並終止合作。</p>
@@ -540,7 +580,7 @@
             } else if (content.includes("❌") || content.includes("🚨") || content.includes("🔴")) {
                 type = "error"; title = "🚨 阻斷與警告"; iconEl.innerText = "🛑"; glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-red-500/20 rounded-full blur-3xl pointer-events-none"; btnEl.className = "mt-5 w-full bg-red-600 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition text-base tracking-widest";
             } else if (content.includes("🛡️")) {
-                type = "shield"; title = "🛡️ 平台防禦機制"; iconEl.innerText = "👁️‍羊"; glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"; btnEl.className = "mt-5 w-full bg-seefoodDarkBlue text-white border border-blue-500/50 font-black py-4 rounded-xl shadow-lg active:scale-95 transition text-base tracking-widest";
+                type = "shield"; title = "🛡️ 平台防禦機制"; iconEl.innerText = "👁️‍🗨️"; glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"; btnEl.className = "mt-5 w-full bg-seefoodDarkBlue text-white border border-blue-500/50 font-black py-4 rounded-xl shadow-lg active:scale-95 transition text-base tracking-widest";
             } else {
                 iconEl.innerText = "💡"; title = "💡 系統情報"; glowEl.className = "absolute -top-10 -right-10 w-32 h-32 bg-seefoodYellow/20 rounded-full blur-3xl pointer-events-none"; btnEl.className = "mt-5 w-full bg-seefoodYellow text-slate-900 font-black py-4 rounded-xl shadow-lg active:scale-95 transition text-base tracking-widest";
             }
@@ -703,13 +743,10 @@
                 });
                 updateGlobalCo2Display(baseSavedKg); initFilterMenus(); filterStores(); renderSavedTicketsWall();
                 
-                // 📡 戰情室穿透開搶定位解鎖
                 const urlParams = new URLSearchParams(window.location.search);
                 const targetShopId = urlParams.get('targetShopId');
                 if (targetShopId) {
-                    // 清除網址的參數，避免重整時反覆觸發
                     window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
-                    // 執行前端篩選並高亮
                     setTimeout(() => {
                         const targetStore = storesData.find(s => s.shopId === targetShopId);
                         if (targetStore) {
@@ -941,8 +978,14 @@
             if (userStats.lineUid === "LINE_GUEST") { alert('🛡️ 系統安全限制：請使用 LINE 應用程式開啟本網頁，以綁定您的真實店鋪帳號，確保後台管理權限與資金安全！'); return; }
             const name = document.getElementById('merchant-name-input').value.trim(); const address = document.getElementById('merchant-address-input').value.trim(); const phone = document.getElementById('merchant-phone-input').value.trim(); const owner = document.getElementById('m-owner-name').value.trim(); const oPhone = document.getElementById('m-owner-phone').value.trim(); const oLine = document.getElementById('m-owner-line').value.trim(); const email = document.getElementById('merchant-email-input').value.trim(); const mType = document.getElementById('merchant-type-select').value;
             if (!name || !address || !phone || !oPhone || !email) { alert('🛡️ 請填寫所有核心卡位欄位！'); return; }
+            
             isSubmittingGlobal = true; showGlobalLoading("資料建檔中", "正在安全卡位並發送合約，約需 10 秒...");
-            const d = new URLSearchParams(); d.append('action', 'register'); d.append('merchantName', name); d.append('merchantAddress', address); d.append('merchantPhone', phone); d.append('ownerName', owner); d.append('ownerPhone', oPhone); d.append('ownerLine', oLine); d.append('lineUid', userStats.lineUid); d.append('merchantEmail', email); d.append('merchantType', mType);
+            
+            // 🚀 MCN：抓取網址中的推薦人推廣碼
+            const urlParams = new URLSearchParams(window.location.search);
+            const refUid = urlParams.get('ref') || "";
+
+            const d = new URLSearchParams(); d.append('action', 'register'); d.append('merchantName', name); d.append('merchantAddress', address); d.append('merchantPhone', phone); d.append('ownerName', owner); d.append('ownerPhone', oPhone); d.append('ownerLine', oLine); d.append('lineUid', userStats.lineUid); d.append('merchantEmail', email); d.append('merchantType', mType); d.append('referrerUid', refUid);
             fetch(gasUrl, { method: "POST", body: d }).then(res => res.json()).then(resJson => {
                 if (resJson.status === "success") { 
                     alert('🎉 恭喜！全台創始店鋪卡位成功！\n您的專屬店鋪後台已為您開通，正式合約連結也已寄至您的信箱。請立即登入後台完成實名簽約！'); localStorage.setItem('seefood_merchant_shop_id', resJson.shopId); localStorage.setItem('seefood_merchant_shop_name', resJson.shopName); document.getElementById('merchant-registration-zone').style.display = 'none'; checkMerchantUrlParameters(); syncUserDataFromCloud();
@@ -950,7 +993,6 @@
             }).catch(() => { alert("⏳ 雲端處理超時，但您的卡位請求已成功送達大腦！\n請直接重新整理網頁，即可進入您的專屬商家後台。"); }).finally(() => { isSubmittingGlobal = false; hideGlobalLoading(); });
         }
 
-        // 🎯 終極修復：物理拔除無情強行切分頁的 switchTab 毒瘤代碼[cite: 3]
         function checkMerchantUrlParameters() {
             const urlParams = new URLSearchParams(window.location.search);
             const urlShopId = urlParams.get('shopId');
@@ -962,13 +1004,19 @@
                 document.getElementById('merchant-dashboard-zone').classList.remove('hidden'); document.getElementById('dashboard-shop-title').innerText = cachedName; document.getElementById('tab-merchant-text').innerText = "商家後台"; const regZone = document.getElementById('merchant-registration-zone'); if(regZone) regZone.style.display = 'none';
                 let isVip = localStorage.getItem('seefood_merchant_vip') === 'true'; if(isVip) { document.getElementById('vip-upgrade-banner').classList.add('hidden'); document.getElementById('dashboard-plan-badge').innerText = "大覺者 VIP (10格)"; }
                 renderDashboardSlots(); 
-                
-                // 🛡️ 只有在網址明確帶有 shopId 參數註冊，或是目前 hash 本來就是 #merchant 時才允許切換！
-                // 絕不允許在背景非同步對帳同步時，把正在下單、核銷的獵人強行一槍踢到後台！
-                if (urlShopId || window.location.hash === '#merchant') {
-                    switchTab('merchant');
-                }
+                if (urlShopId || window.location.hash === '#merchant') { switchTab('merchant'); }
             }
+        }
+
+        // 🚀 MCN 推薦碼複製引擎
+        function copyAffiliateLink() {
+            if (userStats.lineUid === "LINE_GUEST") { alert('⚠️ 請先透過 LINE App 開啟網頁，系統才能成功抓取您的專屬推廣身份碼！'); return; }
+            const link = `https://seefood.mangowalkers.workers.dev/#merchant?ref=${userStats.lineUid}`;
+            navigator.clipboard.writeText(link).then(() => {
+                alert('✅ 專屬招商連結已複製！\n\n連結：' + link + '\n\n快去貼到您的自媒體短影音主頁，或是直接傳給店家老闆註冊卡位吧！\n(店家只要透過此連結註冊，您將終身獲得該店服務費分潤)');
+            }).catch(() => {
+                alert('複製失敗，您的專屬招商連結為：\n' + link);
+            });
         }
 
         function renderBadgesWall() { const container = document.getElementById('badges-container'); if(!container) return; container.innerHTML = ''; let times = userStats.unlockedTimes || {}; let counts = userStats.storeCounts || {}; let saved = Number(userStats.savedAmount) || 0; if (userStats.hasFirstOrder) container.innerHTML += createBadgeHtml("🌱", "環保初學者", "成功完成第一次惜福核銷"); if (saved >= 500) container.innerHTML += createBadgeHtml("🤖", "無情省錢機器", `累計為荷包省下 $${saved} 元`); else container.innerHTML += createBadgeHtml("💵", "精打細算新手", `解鎖省錢機器進度：$${saved}/$500`); if (times.lunch) container.innerHTML += createBadgeHtml("📊", "精算師", "成功在黃金時段搶單"); if (times.nightMarket) container.innerHTML += createBadgeHtml("🧹", "黃金清道夫", "成功在晚間尖峰清料"); if (times.midnight) container.innerHTML += createBadgeHtml("🌙", "夜貓子", "拯救打烊極限備品"); for (const [storeName, count] of Object.entries(counts)) { if (count >= 3) container.innerHTML += createBadgeHtml("☕", `${storeName} 忠實大股東`, `拯救該店達 ${count} 次`); else if (count >= 1) container.innerHTML += createBadgeHtml("🎁", `${storeName} 初體驗`, `首次拯救該店`); } }
