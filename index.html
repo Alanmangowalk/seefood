@@ -635,7 +635,7 @@
             if (type.includes('個人個體戶')) { warning.classList.remove('hidden'); } else { warning.classList.add('hidden'); }
         }
 
-        // 🚨 終極修復：物理拔除強制跳轉 LINE 登入，允許無痕訪客與綠界法務自由瀏覽！
+        // 🚨 終極修復：無痕訪客可看首頁，但碰到綁定操作時強制喚起 LINE 網頁登入
         async function initLiffAuth() {
             if (window.location.protocol === 'file:') { loadUserStats(); return; }
             try {
@@ -645,7 +645,7 @@
                     userStats.lineUid = p.userId; 
                     syncUserDataFromCloud(); 
                 } else {
-                    // 若未登入，絕對不強制 liff.login()！直接配發訪客通行證允許瀏覽！
+                    // 若未登入，絕對不強制跳轉！直接配發訪客通行證允許瀏覽！
                     userStats.lineUid = "LINE_GUEST";
                     loadUserStats(); 
                 }
@@ -831,10 +831,10 @@
         function sniperEscapeFailed() { clearInterval(countdownInterval); document.getElementById('target-scale-wrapper').style.transform = `scale(0)`; setTimeout(() => { showSniperResult("❌", "目標脫逃", "防線崩潰，庫存名額已釋出給其他獵人。"); setTimeout(cancelCheckout, 1500); }, 500); }
 
         function submitPayment(paymentMethod) {
-            // 🛡️ 升級：深層喚醒跳轉
+            // 🛡️ 升級：透過 liff.login 強制官方授權跳轉
             if (userStats.lineUid === "LINE_GUEST") { 
-                seefoodConfirm("🛡️ 系統安全機制\n\n為確保您的票券與金流綁定至您的帳號，請前往 LINE 應用程式內結帳！\n\n點擊「確定」將自動為您跳轉至 LINE。").then(res => {
-                    if(res) window.location.href = "https://liff.line.me/2010392646-KEEBg8gS";
+                seefoodConfirm("🛡️ 系統安全機制\n\n為確保您的票券與金流綁定至您的帳號，請登入 LINE 以進行實名結帳！\n\n點擊「確定」將為您導向 LINE 安全授權。").then(res => {
+                    if(res) liff.login({ redirectUri: window.location.href });
                 });
                 return; 
             }
@@ -962,10 +962,10 @@
         function renderDashboardSlots() { const container = document.getElementById('dashboard-slots-container'); container.innerHTML = ""; let isVip = localStorage.getItem('seefood_merchant_vip') === 'true'; let maxSlots = isVip ? 10 : 3; for (let i = 1; i <= maxSlots; i++) { container.innerHTML += generateSingleSlotHtmlRow(i); } }
 
         async function updateStoreOnlineStatus(status) {
-            // 🛡️ 升級：深層喚醒跳轉
+            // 🛡️ 升級：透過 liff.login 強制官方授權跳轉
             if (userStats.lineUid === "LINE_GUEST") { 
-                seefoodConfirm("🛡️ 系統安全機制\n\n為確保您的店鋪管理權限，請前往 LINE 應用程式內操作！\n\n點擊「確定」將自動為您跳轉至 LINE。").then(res => {
-                    if(res) window.location.href = "https://liff.line.me/2010392646-KEEBg8gS";
+                seefoodConfirm("🛡️ 系統安全機制\n\n為確保您的店鋪管理權限，請登入 LINE 進行實名操作！\n\n點擊「確定」將為您導向 LINE 安全授權。").then(res => {
+                    if(res) liff.login({ redirectUri: window.location.href });
                 });
                 return; 
             }
@@ -1007,10 +1007,10 @@
 
         function handleMerchantFormSubmit() {
             if (isSubmittingGlobal) return;
-            // 🛡️ 升級：深層喚醒跳轉
+            // 🛡️ 升級：透過 liff.login 強制官方授權跳轉
             if (userStats.lineUid === "LINE_GUEST") { 
-                seefoodConfirm("🛡️ 系統安全機制\n\n為確保您的店鋪帳戶綁定安全，請前往 LINE 應用程式內完成卡位！\n\n點擊「確定」將自動為您跳轉至 LINE。").then(res => {
-                    if(res) window.location.href = "https://liff.line.me/2010392646-KEEBg8gS";
+                seefoodConfirm("🛡️ 系統安全機制\n\n為確保您的店鋪帳戶綁定安全，請登入 LINE 進行實名卡位！\n\n點擊「確定」將為您導向 LINE 安全授權。").then(res => {
+                    if(res) liff.login({ redirectUri: window.location.href });
                 });
                 return; 
             }
@@ -1046,14 +1046,13 @@
         }
 
         function copyAffiliateLink() {
-            // 🛡️ 升級：深層喚醒跳轉
+            // 🛡️ 升級：透過 liff.login 強制官方授權跳轉
             if (userStats.lineUid === "LINE_GUEST") { 
-                seefoodConfirm("⚠️ 推廣綁定機制\n\n請前往 LINE 應用程式內開啟，系統才能成功抓取您的專屬推廣身份碼！\n\n點擊「確定」將為您自動跳轉至 LINE。").then(res => {
-                    if(res) window.location.href = "https://liff.line.me/2010392646-KEEBg8gS";
+                seefoodConfirm("⚠️ 推廣綁定機制\n\n請登入 LINE 授權，系統才能成功抓取您的專屬推廣身份碼！\n\n點擊「確定」將為您導向 LINE 登入。").then(res => {
+                    if(res) liff.login({ redirectUri: window.location.href });
                 });
                 return; 
             }
-            // 🔥 MCN 升級：產生的連結改為 LIFF Deep Link，保證點擊者 100% 被喚醒至 LINE！
             const link = `https://liff.line.me/2010392646-KEEBg8gS?ref=${userStats.lineUid}`;
             navigator.clipboard.writeText(link).then(() => {
                 alert('✅ 專屬招商連結已複製！\n\n連結：' + link + '\n\n快去貼到您的自媒體短影音主頁，或是直接傳給店家老闆註冊卡位吧！\n(店家只要透過此連結註冊，您將終身獲得該店服務費分潤)');
