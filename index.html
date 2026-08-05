@@ -42,7 +42,6 @@
             <p id="loading-desc" class="text-sm text-emerald-400 font-bold px-6 text-center animate-pulse">請勿關閉畫面...</p>
         </div>
 
-        <!-- ⚖️ 綠界合規條款彈窗 -->
         <div id="tos-modal" class="absolute inset-0 bg-slate-900 z-[100] flex flex-col hidden">
             <div class="flex-1 overflow-y-auto p-6 text-gray-300 space-y-4 no-scrollbar">
                 <h2 class="text-2xl font-black text-seefoodYellow tracking-wider mb-2">📜 平台服務與免責聲明</h2>
@@ -636,11 +635,20 @@
             if (type.includes('個人個體戶')) { warning.classList.remove('hidden'); } else { warning.classList.add('hidden'); }
         }
 
+        // 🚨 終極修復：物理拔除強制跳轉 LINE 登入，允許無痕訪客與綠界法務自由瀏覽！
         async function initLiffAuth() {
             if (window.location.protocol === 'file:') { loadUserStats(); return; }
             try {
                 await liff.init({ liffId: "2010392646-KEEBg8gS" });
-                if (!liff.isLoggedIn()) liff.login(); else { const p = await liff.getProfile(); userStats.lineUid = p.userId; syncUserDataFromCloud(); }
+                if (liff.isLoggedIn()) { 
+                    const p = await liff.getProfile(); 
+                    userStats.lineUid = p.userId; 
+                    syncUserDataFromCloud(); 
+                } else {
+                    // 若未登入，絕對不強制 liff.login()！直接配發訪客通行證允許瀏覽！
+                    userStats.lineUid = "LINE_GUEST";
+                    loadUserStats(); 
+                }
             } catch (err) { console.error("LIFF 錯誤", err); loadUserStats(); }
         }
 
@@ -691,6 +699,16 @@
                         checkMerchantUrlParameters();
                     }
                     if (json.orders && json.orders.length > 0) { localStorage.setItem('seefood_orders_list', JSON.stringify(json.orders)); recalculateUserStats(json.orders); } else { loadUserStats(); renderBadgesWall(); }
+                    
+                    // 🚀 更新 MCN 推薦數據到前端面板
+                    if (json.affiliate) {
+                        const affZone = document.getElementById('mcn-affiliate-zone');
+                        if (affZone) {
+                            affZone.querySelector('p.text-xl.text-white').innerHTML = `${json.affiliate.shopCount} <span class="text-xs text-gray-400 font-bold">家</span>`;
+                            affZone.querySelector('p.text-seefoodYellow').innerText = `$${json.affiliate.commission}`;
+                        }
+                    }
+                    
                     renderSavedTicketsWall();
                 }
             } catch (e) { console.error("同步失敗", e); loadUserStats(); renderBadgesWall(); }
@@ -813,7 +831,8 @@
         function sniperEscapeFailed() { clearInterval(countdownInterval); document.getElementById('target-scale-wrapper').style.transform = `scale(0)`; setTimeout(() => { showSniperResult("❌", "目標脫逃", "防線崩潰，庫存名額已釋出給其他獵人。"); setTimeout(cancelCheckout, 1500); }, 500); }
 
         function submitPayment(paymentMethod) {
-            if (userStats.lineUid === "LINE_GUEST") { alert('🛡️ 系統安全限制：請使用 LINE 應用程式開啟本連結，以進行實名購買與確保票券權益！'); return; }
+            // 🛡️ 金流防線：如果在購買環節，且使用者是訪客，直接阻斷並要求跳去 LINE 打開！
+            if (userStats.lineUid === "LINE_GUEST") { alert('🛡️ 系統安全限制：為保障您的票券權益與綁定，請使用 LINE 應用程式開啟本連結進行實名結帳！'); return; }
             if (!document.getElementById('agree-tos').checked) { alert('請先勾選確認自取限時，付款後立刻致電店家之切結！'); return; }
             
             clearInterval(countdownInterval);
@@ -938,6 +957,9 @@
         function renderDashboardSlots() { const container = document.getElementById('dashboard-slots-container'); container.innerHTML = ""; let isVip = localStorage.getItem('seefood_merchant_vip') === 'true'; let maxSlots = isVip ? 10 : 3; for (let i = 1; i <= maxSlots; i++) { container.innerHTML += generateSingleSlotHtmlRow(i); } }
 
         async function updateStoreOnlineStatus(status) {
+            // 🛡️ 發車前安全防線：如果在營業上架環節，且使用者是訪客，直接阻斷！
+            if (userStats.lineUid === "LINE_GUEST") { alert('🛡️ 系統安全限制：為保障您的店鋪帳戶與資金安全，請使用 LINE 應用程式開啟本連結進行店鋪管理！'); return; }
+
             const shopId = new URLSearchParams(window.location.search).get('shopId') || localStorage.getItem('seefood_merchant_shop_id');
             const shopName = document.getElementById('dashboard-shop-title').innerText; const time = document.getElementById('dash-time').value.trim(); 
             if (status === 'ON') {
@@ -975,13 +997,12 @@
 
         function handleMerchantFormSubmit() {
             if (isSubmittingGlobal) return;
-            if (userStats.lineUid === "LINE_GUEST") { alert('🛡️ 系統安全限制：請使用 LINE 應用程式開啟本網頁，以綁定您的真實店鋪帳號，確保後台管理權限與資金安全！'); return; }
+            if (userStats.lineUid === "LINE_GUEST") { alert('🛡️ 系統安全限制：為綁定您的真實店鋪帳號，請使用 LINE 應用程式開啟本網頁確保後台管理權限與資金安全！'); return; }
             const name = document.getElementById('merchant-name-input').value.trim(); const address = document.getElementById('merchant-address-input').value.trim(); const phone = document.getElementById('merchant-phone-input').value.trim(); const owner = document.getElementById('m-owner-name').value.trim(); const oPhone = document.getElementById('m-owner-phone').value.trim(); const oLine = document.getElementById('m-owner-line').value.trim(); const email = document.getElementById('merchant-email-input').value.trim(); const mType = document.getElementById('merchant-type-select').value;
             if (!name || !address || !phone || !oPhone || !email) { alert('🛡️ 請填寫所有核心卡位欄位！'); return; }
             
             isSubmittingGlobal = true; showGlobalLoading("資料建檔中", "正在安全卡位並發送合約，約需 10 秒...");
             
-            // 🚀 MCN：抓取網址中的推薦人推廣碼
             const urlParams = new URLSearchParams(window.location.search);
             const refUid = urlParams.get('ref') || "";
 
@@ -1008,7 +1029,6 @@
             }
         }
 
-        // 🚀 MCN 推薦碼複製引擎
         function copyAffiliateLink() {
             if (userStats.lineUid === "LINE_GUEST") { alert('⚠️ 請先透過 LINE App 開啟網頁，系統才能成功抓取您的專屬推廣身份碼！'); return; }
             const link = `https://seefood.mangowalkers.workers.dev/#merchant?ref=${userStats.lineUid}`;
