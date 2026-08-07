@@ -178,6 +178,15 @@
             <div id="page-merchant" class="space-y-4 hidden">
                 <div id="merchant-dashboard-zone" class="bg-gradient-to-br from-slate-900 to-blue-950 text-white rounded-3xl p-5 shadow-xl space-y-4 hidden mb-4 relative overflow-hidden">
                     
+                    <!-- 🧱 SEEFOOD 2.0.1：多店切換器（Foundation） -->
+                    <div id="merchant-shop-switcher-zone" class="hidden bg-slate-950/70 border border-slate-700 rounded-2xl p-3 relative z-20">
+                        <div class="flex items-center gap-2">
+                            <select id="merchant-shop-select" onchange="switchMerchantShop(this.value)" class="flex-1 bg-slate-900 border border-slate-600 text-white rounded-xl px-3 py-2.5 text-xs font-black focus:outline-none focus:border-seefoodYellow"></select>
+                            <button type="button" onclick="startAddMerchantShop()" class="bg-seefoodYellow text-slate-900 font-black px-3 py-2.5 rounded-xl text-xs active:scale-95 transition whitespace-nowrap">＋ 新增店鋪</button>
+                        </div>
+                        <p class="text-[9px] text-slate-400 mt-2">同一個 LINE 帳號可管理多間店鋪；每間店的商品、VIP、合約與帳務獨立。</p>
+                    </div>
+
                     <!-- 🚀 MCN 自媒體合夥人招商艙 -->
                     <div id="mcn-affiliate-zone" class="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-2xl p-4 shadow-lg border border-purple-500/30 relative overflow-hidden mb-2">
                         <div class="absolute -right-4 -top-4 w-20 h-20 bg-purple-500/20 rounded-full blur-xl pointer-events-none"></div>
@@ -654,15 +663,27 @@
 
         async function syncUserDataFromCloud() {
             if (userStats.lineUid === "LINE_GUEST") return;
-            const p = new URLSearchParams(); p.append('action', 'syncUser'); p.append('uid', userStats.lineUid);
+            const p = new URLSearchParams(); p.append('action', 'syncUser'); p.append('uid', userStats.lineUid); const selectedShopId = localStorage.getItem('seefood_merchant_shop_id') || ''; if(selectedShopId) p.append('shopId', selectedShopId);
             try {
                 const res = await fetch(gasUrl, { method: "POST", body: p }); const json = await res.json();
                 if (json.status === "success") {
+                    if (json.myShops && json.myShops.length > 0) {
+                        const switcherZone = document.getElementById('merchant-shop-switcher-zone');
+                        const shopSelect = document.getElementById('merchant-shop-select');
+                        if (switcherZone && shopSelect) {
+                            switcherZone.classList.remove('hidden');
+                            shopSelect.innerHTML = json.myShops.map(s => `<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip ? ' · VIP' : ''}</option>`).join('');
+                            if (json.myShop) shopSelect.value = json.myShop.shopId;
+                        }
+                    }
                     if (json.myShop) {
                         localStorage.setItem('seefood_merchant_shop_id', json.myShop.shopId); localStorage.setItem('seefood_merchant_shop_name', json.myShop.shopName); 
                         localStorage.setItem('seefood_merchant_vip', json.myShop.isVip ? 'true' : 'false'); localStorage.setItem('seefood_merchant_bank_code', json.myShop.bCode); 
                         localStorage.setItem('seefood_merchant_bank_branch', json.myShop.bBranch); localStorage.setItem('seefood_merchant_bank_account', json.myShop.bAcc); 
                         localStorage.setItem('seefood_merchant_bank_owner', json.myShop.bOwner); localStorage.setItem('seefood_merchant_contract_status', json.myShop.contractStatus || "PENDING_REVIEW");
+                        const dashTitle = document.getElementById('dashboard-shop-title'); if(dashTitle) dashTitle.innerText = json.myShop.shopName;
+                        const dashboardZone = document.getElementById('merchant-dashboard-zone'); if(dashboardZone) dashboardZone.classList.remove('hidden');
+                        const regZoneSync = document.getElementById('merchant-registration-zone'); if(regZoneSync) regZoneSync.style.display = 'none';
                         if (json.myShop.finance) { userStats.merchantFinance = json.myShop.finance; }
                         
                         document.getElementById('tab-merchant-text').innerText = "商家後台";
@@ -1005,6 +1026,20 @@
             }).catch((err) => { console.error(err); if(btn) { btn.innerText = "⚡ 極速開賣 (上架)"; btn.disabled = false; } alert("連線異常，請檢查網路狀態"); });
         }
 
+        function switchMerchantShop(shopId) {
+            if (!shopId) return;
+            localStorage.setItem('seefood_merchant_shop_id', shopId);
+            for(let i=1; i<=10; i++) { localStorage.removeItem('seefood_slot_data_' + i); localStorage.removeItem('seefood_slot_' + i + '_locked'); }
+            syncUserDataFromCloud();
+        }
+
+        function startAddMerchantShop() {
+            if (userStats.lineUid === "LINE_GUEST") { liff.login({ redirectUri: window.location.href }); return; }
+            const regZone = document.getElementById('merchant-registration-zone');
+            if (regZone) { regZone.style.display = 'block'; regZone.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            ['merchant-name-input','merchant-address-input','merchant-phone-input','merchant-email-input','m-owner-name','m-owner-phone','m-owner-line'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+        }
+
         function handleMerchantFormSubmit() {
             if (isSubmittingGlobal) return;
             // 🛡️ 升級：透過 liff.login 強制官方授權跳轉
@@ -1026,7 +1061,7 @@
             fetch(gasUrl, { method: "POST", body: d }).then(res => res.json()).then(resJson => {
                 if (resJson.status === "success") { 
                     alert('🎉 恭喜！全台創始店鋪卡位成功！\n您的專屬店鋪後台已為您開通，正式合約連結也已寄至您的信箱。請立即登入後台完成實名簽約！'); localStorage.setItem('seefood_merchant_shop_id', resJson.shopId); localStorage.setItem('seefood_merchant_shop_name', resJson.shopName); document.getElementById('merchant-registration-zone').style.display = 'none'; checkMerchantUrlParameters(); syncUserDataFromCloud();
-                } else if (resJson.status === "error" && resJson.shopId) { alert(resJson.msg); localStorage.setItem('seefood_merchant_shop_id', resJson.shopId); localStorage.setItem('seefood_merchant_shop_name', resJson.shopName); checkMerchantUrlParameters(); } else { alert(resJson.msg || "重複申請"); }
+                } else if (resJson.status === "error" && resJson.shopId) { alert(resJson.msg); localStorage.setItem('seefood_merchant_shop_id', resJson.shopId); localStorage.setItem('seefood_merchant_shop_name', resJson.shopName); checkMerchantUrlParameters(); syncUserDataFromCloud(); } else { alert(resJson.msg || "申請失敗"); }
             }).catch(() => { alert("⏳ 雲端處理超時，但您的卡位請求已成功送達大腦！\n請直接重新整理網頁，即可進入您的專屬商家後台。"); }).finally(() => { isSubmittingGlobal = false; hideGlobalLoading(); });
         }
 
