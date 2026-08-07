@@ -86,7 +86,7 @@
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="bg-seefoodYellow px-4 py-3 flex items-center justify-between">
                 <span class="text-seefoodDarkBlue font-black text-xl tracking-wider">SEEFOOD-美食獵人</span>
-                <span class="text-[10px] bg-seefoodDarkBlue text-white px-2.5 py-1 rounded-full font-bold">正式營運 1.0</span>
+                <span class="text-[10px] bg-seefoodDarkBlue text-white px-2.5 py-1 rounded-full font-bold">2.1 TEST</span>
             </div>
             <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -114,10 +114,11 @@
         <div class="flex-1 overflow-y-auto p-4 pb-6 no-scrollbar" style="-webkit-overflow-scrolling: touch;">
             
             <div id="page-home" class="space-y-3">
-                <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold pb-1">
-                    <button id="btn-sort-distance" onclick="setSort('distance')" class="bg-seefoodDarkBlue text-white py-2.5 rounded-xl shadow-sm transition cursor-pointer">📍 離我最近</button>
-                    <button id="btn-sort-discount" onclick="setSort('discount')" class="bg-white border border-gray-200 text-gray-600 py-2.5 rounded-xl transition cursor-pointer">🔥 折扣最高</button>
-                    <button id="btn-sort-remain" onclick="setSort('remain')" class="bg-white border border-gray-200 text-gray-600 py-2.5 rounded-xl transition cursor-pointer">📦 剩餘最多</button>
+                <div class="grid grid-cols-4 gap-1.5 text-center text-[10px] font-black pb-1">
+                    <button id="btn-sort-recommend" onclick="setSort('recommend')" class="bg-seefoodDarkBlue text-white py-2.5 rounded-xl shadow-sm transition cursor-pointer">🎯 推薦</button>
+                    <button id="btn-sort-distance" onclick="setSort('distance')" class="bg-white border border-gray-200 text-gray-600 py-2.5 rounded-xl transition cursor-pointer">📍 最近</button>
+                    <button id="btn-sort-discount" onclick="setSort('discount')" class="bg-white border border-gray-200 text-gray-600 py-2.5 rounded-xl transition cursor-pointer">🔥 最殺</button>
+                    <button id="btn-sort-remain" onclick="setSort('remain')" class="bg-white border border-gray-200 text-gray-600 py-2.5 rounded-xl transition cursor-pointer">📦 待救</button>
                 </div>
                 <div id="store-list-container" class="space-y-3">
                     <div class="text-center py-16 px-4"><span class="text-4xl animate-spin inline-block mb-3">⏳</span><h4 class="font-black text-gray-800 text-sm">正在連線全台雷達...</h4><p class="text-xs text-gray-400 mt-2">首次連線需時較長，請稍候</p></div>
@@ -171,15 +172,53 @@
                     </div>
                 </div>
 
+                <div id="partner-hub-zone" class="bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 rounded-2xl p-5 border border-purple-500/30 shadow-xl text-white relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-28 h-28 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="flex items-start justify-between gap-3 relative z-10">
+                        <div>
+                            <p class="text-[10px] text-purple-300 font-black tracking-[0.18em] uppercase">PARTNER NETWORK</p>
+                            <h3 class="font-black text-lg mt-1">點亮新獵場</h3>
+                            <p class="text-[10px] text-slate-400 mt-1 leading-relaxed">任何獵人都能邀請店家加入。成功綁定後，店家未來的服務費與 VIP 貢獻會計入你的夥伴收益。</p>
+                        </div>
+                        <span class="text-2xl">🛰️</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5 mt-4 relative z-10">
+                        <div class="bg-white/5 border border-white/10 rounded-xl p-3">
+                            <p class="text-[10px] text-slate-400 font-bold">已點亮獵場</p>
+                            <p id="partner-shop-count" class="text-2xl font-black mt-1">0 <span class="text-xs text-slate-500">家</span></p>
+                        </div>
+                        <div class="bg-white/5 border border-white/10 rounded-xl p-3">
+                            <p class="text-[10px] text-slate-400 font-bold">目前預估分潤</p>
+                            <p id="partner-commission" class="text-2xl font-black text-seefoodYellow mt-1">$0</p>
+                        </div>
+                    </div>
+                    <details class="mt-3 bg-black/20 border border-white/10 rounded-xl relative z-10">
+                        <summary class="list-none cursor-pointer px-3 py-2.5 flex justify-between items-center text-[11px] font-black"><span>查看旗下店家業績與分潤</span><span>⌄</span></summary>
+                        <div id="partner-breakdown" class="px-3 pb-3 space-y-2"><p class="text-[10px] text-slate-500 text-center py-2">尚無夥伴店家資料</p></div>
+                    </details>
+                    <button onclick="copyAffiliateLink()" class="w-full mt-3 bg-white text-slate-950 font-black py-3 rounded-xl text-xs active:scale-95 transition relative z-10">複製我的專屬邀請連結</button>
+                    <p class="text-[9px] text-slate-500 text-center mt-2 relative z-10">目前為預估分潤；正式撥款狀態將由 Partner Ledger 帳本管理。</p>
+                </div>
+
                 <h3 class="font-black text-gray-900 text-base pt-1">解鎖的美食獵人勳章</h3>
                 <div id="badges-container" class="grid grid-cols-2 gap-3"></div>
             </div>
 
             <div id="page-merchant" class="space-y-4 hidden">
+                <div id="merchant-account-bar" class="hidden bg-white border border-gray-200 rounded-2xl p-3 shadow-sm sticky top-2 z-40">
+                    <div class="flex items-center gap-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[9px] text-gray-400 font-black tracking-widest">目前管理店鋪</p>
+                            <select id="merchant-shop-select-top" onchange="switchMerchantShop(this.value)" class="w-full bg-transparent text-seefoodDarkBlue font-black text-sm mt-0.5 focus:outline-none truncate"></select>
+                        </div>
+                        <button type="button" onclick="startAddMerchantShop()" class="bg-seefoodDarkBlue text-seefoodYellow font-black px-3.5 py-2.5 rounded-xl text-xs active:scale-95 transition whitespace-nowrap">＋ 新增店鋪</button>
+                    </div>
+                </div>
+
                 <div id="merchant-dashboard-zone" class="bg-gradient-to-br from-slate-900 to-blue-950 text-white rounded-3xl p-5 shadow-xl space-y-4 hidden mb-4 relative overflow-hidden">
                     
                     <!-- 🧱 SEEFOOD 2.0.1：多店切換器（Foundation） -->
-                    <div id="merchant-shop-switcher-zone" class="hidden bg-slate-950/70 border border-slate-700 rounded-2xl p-3 relative z-20">
+                    <div id="merchant-shop-switcher-zone" class="hidden !hidden bg-slate-950/70 border border-slate-700 rounded-2xl p-3 relative z-20">
                         <div class="flex items-center gap-2">
                             <select id="merchant-shop-select" onchange="switchMerchantShop(this.value)" class="flex-1 bg-slate-900 border border-slate-600 text-white rounded-xl px-3 py-2.5 text-xs font-black focus:outline-none focus:border-seefoodYellow"></select>
                             <button type="button" onclick="startAddMerchantShop()" class="bg-seefoodYellow text-slate-900 font-black px-3 py-2.5 rounded-xl text-xs active:scale-95 transition whitespace-nowrap">＋ 新增店鋪</button>
@@ -188,7 +227,7 @@
                     </div>
 
                     <!-- 🚀 MCN 自媒體合夥人招商艙 -->
-                    <div id="mcn-affiliate-zone" class="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-2xl p-4 shadow-lg border border-purple-500/30 relative overflow-hidden mb-2">
+                    <div id="mcn-affiliate-zone" class="hidden bg-gradient-to-br from-indigo-900 to-purple-900 rounded-2xl p-4 shadow-lg border border-purple-500/30 relative overflow-hidden mb-2">
                         <div class="absolute -right-4 -top-4 w-20 h-20 bg-purple-500/20 rounded-full blur-xl pointer-events-none"></div>
                         <h4 class="font-black text-white text-sm flex items-center mb-3 tracking-wide"><span class="text-lg mr-1">🚀</span> 流量合夥人招商中心</h4>
                         <div class="grid grid-cols-2 gap-3 mb-3">
@@ -289,6 +328,7 @@
                 </div>
 
                 <div id="merchant-registration-zone" class="space-y-4">
+                    <button id="cancel-add-shop-btn" type="button" onclick="cancelAddMerchantShop()" class="hidden w-full bg-white border border-gray-200 text-seefoodDarkBlue font-black py-3 rounded-xl text-xs shadow-sm active:scale-95 transition">← 取消新增店鋪，返回目前店鋪</button>
                     <div class="text-center py-1 space-y-2 px-1">
                         <h2 class="font-black text-2xl text-seefoodDarkBlue tracking-wide">🤝 全台創始商家 30秒卡位</h2>
                         <div class="inline-block bg-red-600 text-white font-black text-[11px] px-3 py-1 rounded-full mt-1 shadow-sm">🔥 限量福利：前 100 名「終身 0月費、0抽成」</div>
@@ -552,7 +592,7 @@
 
     <script>
         const gasUrl = "https://script.google.com/macros/s/AKfycbxOsS40qejUGDKjp0kQFn76CeM0DBiTN41HHorYJ6gBa9qK1fTEP3xDRbn7CgXo3C4Z9g/exec";
-        let storesData = []; let locationHierarchy = {}; let currentSortMethod = 'distance'; let currentOrder = {}; let orderSubTab = 'active';
+        let storesData = []; let locationHierarchy = {}; let currentSortMethod = 'recommend'; let currentOrder = {}; let orderSubTab = 'active';
         let userStats = { co2Total: 0.0, savedAmount: 0, hasFirstOrder: false, storeCounts: {}, unlockedTimes: { lunch: false, nightMarket: false, midnight: false }, lineUid: "LINE_GUEST", merchantFinance: null };
         let userLocation = null; let cloudBanners = []; let bannerIndex = 0;
         let textBannerTemplates = [ { emoji: "🌍", text: "系統連線中..." }, { emoji: "👑", text: "加入創始大覺者 VIP 享有黃金標籤特權，免抽成免月費！" } ];
@@ -668,12 +708,12 @@
                 const res = await fetch(gasUrl, { method: "POST", body: p }); const json = await res.json();
                 if (json.status === "success") {
                     if (json.myShops && json.myShops.length > 0) {
-                        const switcherZone = document.getElementById('merchant-shop-switcher-zone');
-                        const shopSelect = document.getElementById('merchant-shop-select');
-                        if (switcherZone && shopSelect) {
-                            switcherZone.classList.remove('hidden');
-                            shopSelect.innerHTML = json.myShops.map(s => `<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip ? ' · VIP' : ''}</option>`).join('');
-                            if (json.myShop) shopSelect.value = json.myShop.shopId;
+                        const accountBar = document.getElementById('merchant-account-bar');
+                        const topSelect = document.getElementById('merchant-shop-select-top');
+                        if (accountBar && topSelect) {
+                            accountBar.classList.remove('hidden');
+                            topSelect.innerHTML = json.myShops.map(s => `<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip ? ' · VIP' : ''}</option>`).join('');
+                            if (json.myShop) topSelect.value = json.myShop.shopId;
                         }
                     }
                     if (json.myShop) {
@@ -696,17 +736,17 @@
                             contractWall.classList.remove('hidden'); successWall.classList.add('hidden');
                         }
                         
+                        for(let i=1; i<=10; i++) { localStorage.removeItem(slotDataKey(i, json.myShop.shopId)); localStorage.removeItem(slotLockKey(i, json.myShop.shopId)); }
                         if (json.myShop.liveSlots && json.myShop.liveSlots.length > 0) {
-                            for(let i=1; i<=10; i++) { localStorage.removeItem('seefood_slot_data_' + i); localStorage.removeItem('seefood_slot_' + i + '_locked'); }
                             json.myShop.liveSlots.forEach(slot => {
-                                localStorage.setItem('seefood_slot_data_' + slot.index, JSON.stringify({ type: slot.type, name: slot.name, desc: slot.desc, orig: slot.orig, rate: slot.rate, rem: slot.rem }));
-                                if (slot.type === "固定菜單" && slot.name && slot.name !== "【未啟用】") { localStorage.setItem('seefood_slot_' + slot.index + '_locked', slot.name); }
+                                localStorage.setItem(slotDataKey(slot.index, json.myShop.shopId), JSON.stringify({ type: slot.type, name: slot.name, desc: slot.desc, orig: slot.orig, rate: slot.rate, rem: slot.rem }));
+                                if (slot.type === "固定菜單" && slot.name && slot.name !== "【未啟用】") localStorage.setItem(slotLockKey(slot.index, json.myShop.shopId), slot.name);
                             });
-                            document.getElementById('dash-time').value = safeFormatTime(json.myShop.storeTime) || "今日打烊前";
-                            const b = document.getElementById('dashboard-status-badge');
-                            if (json.myShop.storeStatus === 'ON') { b.innerText = "營業中"; b.className = "text-xs bg-emerald-600 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px] animate-pulse"; } 
-                            else { b.innerText = "休息中"; b.className = "text-xs bg-slate-500 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px]"; }
                         }
+                        document.getElementById('dash-time').value = safeFormatTime(json.myShop.storeTime) || "今日打烊前";
+                        const b = document.getElementById('dashboard-status-badge');
+                        if (json.myShop.storeStatus === 'ON') { b.innerText = "營業中"; b.className = "text-xs bg-emerald-600 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px] animate-pulse"; } 
+                        else { b.innerText = "休息中"; b.className = "text-xs bg-slate-500 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px]"; }
                         
                         if (json.myShop.activeOrders) {
                             const ordersZone = document.getElementById('merchant-active-orders-zone'); const ordersList = document.getElementById('merchant-active-orders-list');
@@ -721,12 +761,15 @@
                     }
                     if (json.orders && json.orders.length > 0) { localStorage.setItem('seefood_orders_list', JSON.stringify(json.orders)); recalculateUserStats(json.orders); } else { loadUserStats(); renderBadgesWall(); }
                     
-                    // 🚀 更新 MCN 推薦數據到前端面板
+                    // 2.1 Partner Hub：任何 LINE 登入獵人都可查看邀請成果
                     if (json.affiliate) {
-                        const affZone = document.getElementById('mcn-affiliate-zone');
-                        if (affZone) {
-                            affZone.querySelector('p.text-xl.text-white').innerHTML = `${json.affiliate.shopCount} <span class="text-xs text-gray-400 font-bold">家</span>`;
-                            affZone.querySelector('p.text-seefoodYellow').innerText = `$${json.affiliate.commission}`;
+                        const pc = document.getElementById('partner-shop-count'); const pm = document.getElementById('partner-commission');
+                        if (pc) pc.innerHTML = `${json.affiliate.shopCount} <span class="text-xs text-slate-500">家</span>`;
+                        if (pm) pm.innerText = `$${Math.round(Number(json.affiliate.commission)||0)}`;
+                        const pb = document.getElementById('partner-breakdown');
+                        if (pb) {
+                            const shops = Array.isArray(json.affiliate.shops) ? json.affiliate.shops : [];
+                            pb.innerHTML = shops.length ? shops.map(s => `<div class="bg-white/5 border border-white/10 rounded-lg p-2.5"><div class="flex justify-between gap-2"><div class="min-w-0"><p class="text-[11px] font-black text-white truncate">${escapeHTML(s.shopName || s.shopId)}</p><p class="text-[9px] text-slate-500 mt-0.5">${Number(s.transactions)||0} 筆有效交易</p></div><p class="text-sm font-black text-seefoodYellow">$${Math.round(Number(s.totalCommission)||0)}</p></div><div class="flex justify-between mt-2 text-[9px] text-slate-400"><span>服務費分潤 $${Math.round(Number(s.orderCommission)||0)}</span><span>VIP 分潤 $${Math.round(Number(s.vipCommission)||0)}</span></div></div>`).join('') : '<p class="text-[10px] text-slate-500 text-center py-2">尚無夥伴店家資料</p>';
                         }
                     }
                     
@@ -766,7 +809,48 @@
 
         function getDistance(lat1, lon1, lat2, lon2) { if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity; const R = 6371e3; const φ1 = lat1 * Math.PI/180; const φ2 = lat2 * Math.PI/180; const Δφ = (lat2-lat1) * Math.PI/180; const Δλ = (lon2-lon1) * Math.PI/180; const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2); const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return Math.round(R * c); }
         function requestLocation() { if (navigator.geolocation) { navigator.geolocation.getCurrentPosition((position) => { userLocation = { lat: position.coords.latitude, lng: position.coords.longitude }; filterStores(); }, () => { alert("📍 需允許定位才能幫您計算與店家的真實距離喔！"); }); } else { alert("您的瀏覽器不支援定位功能。"); } }
-        function setSort(method) { if (method === 'distance' && !userLocation) { requestLocation(); } currentSortMethod = method; filterStores(); }
+        function setSort(method) {
+            if (method === 'distance' && !userLocation) requestLocation();
+            currentSortMethod = method;
+            ['recommend','distance','discount','remain'].forEach(m => {
+                const btn = document.getElementById('btn-sort-' + m); if(!btn) return;
+                const active = m === method;
+                btn.className = active ? 'bg-seefoodDarkBlue text-white py-2.5 rounded-xl shadow-sm transition cursor-pointer' : 'bg-white border border-gray-200 text-gray-600 py-2.5 rounded-xl transition cursor-pointer';
+            });
+            filterStores();
+        }
+
+        function parseMinutesUntilPickup(timeText) {
+            const m = String(timeText || '').match(/(\d{1,2}):(\d{2})/); if(!m) return 360;
+            const now = new Date(); const target = new Date(now); target.setHours(Number(m[1]), Number(m[2]), 0, 0);
+            let mins = (target - now) / 60000; if (mins < -60) mins += 1440;
+            return Math.max(0, mins);
+        }
+        function parseFreshnessMinutes(lastOnline) {
+            const m = String(lastOnline || '').match(/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{2})/); if(!m) return 9999;
+            const now = new Date(); const d = new Date(now.getFullYear(), Number(m[1])-1, Number(m[2]), Number(m[3]), Number(m[4]));
+            let mins = (now-d)/60000; if(mins < -60) d.setFullYear(d.getFullYear()-1), mins=(now-d)/60000;
+            return Math.max(0, mins);
+        }
+        function calculateHuntScore(s) {
+            const pickupMins = parseMinutesUntilPickup(s.time);
+            const urgency = pickupMins <= 30 ? 30 : pickupMins <= 60 ? 27 : pickupMins <= 120 ? 22 : pickupMins <= 240 ? 15 : pickupMins <= 480 ? 8 : 3;
+            let distance = 12.5;
+            if (userLocation && Number.isFinite(s.distance)) distance = s.distance <= 500 ? 25 : s.distance <= 1000 ? 22 : s.distance <= 2000 ? 18 : s.distance <= 5000 ? 12 : s.distance <= 10000 ? 6 : 2;
+            const ratio = Number(s.discountRate || 1); const discount = ratio <= 0 ? 20 : ratio <= .3 ? 20 : ratio <= .5 ? 15 : ratio <= .7 ? 8 : 2;
+            const rem = Number(s.remain || 0); const rescue = rem >= 15 ? 10 : rem >= 8 ? 8 : rem >= 4 ? 6 : rem >= 2 ? 4 : 3;
+            const freshMins = parseFreshnessMinutes(s.lastOnline); const freshness = freshMins <= 15 ? 5 : freshMins <= 60 ? 4 : freshMins <= 180 ? 3 : freshMins <= 480 ? 2 : 1;
+            const vip = s.isVip ? 10 : 0;
+            return urgency + distance + discount + rescue + freshness + vip;
+        }
+        function diversifyStores(items) {
+            const remaining = [...items]; const out = []; const recentShops = [];
+            while (remaining.length) {
+                let idx = remaining.findIndex(x => !recentShops.includes(x.shopId)); if(idx < 0) idx = 0;
+                const picked = remaining.splice(idx,1)[0]; out.push(picked); recentShops.push(picked.shopId); if(recentShops.length > 2) recentShops.shift();
+            }
+            return out;
+        }
 
         async function fetchLiveStores() {
             if (!localStorage.getItem('seefood_tos_agreed')) return;
@@ -778,7 +862,7 @@
                 let typeDict = {}; if (resJson.allMerchants) { resJson.allMerchants.forEach(m => { typeDict[m.shopId] = m.merchantType || "公司/行號"; }); }
                 rawData.forEach(store => {
                     let finalNote = store.note; if (!finalNote) { finalNote = store.itemType === '固定菜單' ? "這很有名耶..還需要介紹嗎？直接搶就對了！" : "※ 餐廳新鮮現做優質備品"; }
-                    storesData.push({ id: `${store.shopId}-${store.itemIndex}`, shopId: store.shopId, itemIndex: store.itemIndex, city: store.city || "全部地區", district: store.district || "全部行政區", address: store.address, phone: store.phone, name: store.name, lat: parseFloat(store.lat) || 0, lng: parseFloat(store.lng) || 0, itemType: store.itemType, item: store.item, note: finalNote, originalPrice: parseFloat(store.originalPrice) || 0, discountPrice: parseFloat(store.discountPrice) || 0, remain: parseInt(store.remain) || 0, time: safeFormatTime(store.time), discountRate: store.originalPrice > 0 ? (store.discountPrice / store.originalPrice) : 0, isVip: store.isVip || false, merchantType: typeDict[store.shopId] || "公司/行號" });
+                    storesData.push({ id: `${store.shopId}-${store.itemIndex}`, shopId: store.shopId, itemIndex: store.itemIndex, city: store.city || "全部地區", district: store.district || "全部行政區", address: store.address, phone: store.phone, name: store.name, lat: parseFloat(store.lat) || 0, lng: parseFloat(store.lng) || 0, itemType: store.itemType, item: store.item, note: finalNote, originalPrice: parseFloat(store.originalPrice) || 0, discountPrice: parseFloat(store.discountPrice) || 0, remain: parseInt(store.remain) || 0, time: safeFormatTime(store.time), discountRate: store.originalPrice > 0 ? (store.discountPrice / store.originalPrice) : 0, isVip: store.isVip || false, merchantType: typeDict[store.shopId] || "公司/行號", lastOnline: store.lastOnline || "" });
                 });
                 updateGlobalCo2Display(baseSavedKg); initFilterMenus(); filterStores(); renderSavedTicketsWall();
                 
@@ -816,7 +900,10 @@
             if(!container) return; container.innerHTML = '';
             let filtered = storesData.filter(s => { return (selectedCity === "全部地區" || s.city === selectedCity) && (selectedDistrict === "全部行政區" || s.district === selectedDistrict) && s.remain > 0; });
             filtered.forEach(s => { if (!s.lat || !s.lng) { s.distance = Infinity; } else if (userLocation) { s.distance = getDistance(userLocation.lat, userLocation.lng, s.lat, s.lng); } else { s.distance = Infinity; } });
-            filtered.sort((a, b) => { if (a.isVip && !b.isVip) return -1; if (!a.isVip && b.isVip) return 1; if (currentSortMethod === 'discount') { return (a.discountRate !== b.discountRate) ? a.discountRate - b.discountRate : a.remain - b.remain; } else if (currentSortMethod === 'remain') { return b.remain - a.remain; } else { return a.distance - b.distance; } });
+            if (currentSortMethod === 'recommend') { filtered.forEach(s => s.huntScore = calculateHuntScore(s)); filtered.sort((a,b) => b.huntScore - a.huntScore); filtered = diversifyStores(filtered); }
+            else if (currentSortMethod === 'discount') filtered.sort((a,b) => (a.discountRate !== b.discountRate) ? a.discountRate - b.discountRate : a.distance - b.distance);
+            else if (currentSortMethod === 'remain') filtered.sort((a,b) => b.remain - a.remain);
+            else filtered.sort((a,b) => a.distance - b.distance);
             if (filtered.length === 0) { container.innerHTML = `<div class="text-center py-16 bg-white border rounded-3xl"><span class="text-5xl block mb-2">🔍</span><h4 class="font-black text-gray-800 text-sm">一掃而空！</h4></div>`; return; }
             filtered.forEach(s => {
                 let isGoldenVip = s.isVip && s.discountRate <= 0.5; let distanceHtml = "";
@@ -964,19 +1051,25 @@
 
         function showAppTutorial() { alert("【🍏 iPhone 蘋果教學】\n1. 點擊 Safari 下方「分享」圖示 🔗\n2. 往下滑點擊「加入主畫面\" ➕\n\n【🤖 Android 安卓教學】\n1. 點擊 Chrome 右上角「三個點」設定 ⋮\n2. 點擊「加到主畫面」➕\n\n加入後免開 LINE，像 App 一樣秒開秒上架！"); }
 
+        function activeShopId() { return localStorage.getItem('seefood_merchant_shop_id') || 'NO_SHOP'; }
+        function slotDataKey(index, shopId = activeShopId()) { return `seefood_shop_${shopId}_slot_data_${index}`; }
+        function slotLockKey(index, shopId = activeShopId()) { return `seefood_shop_${shopId}_slot_${index}_locked`; }
+        function getSlotSaved(index) { return localStorage.getItem(slotDataKey(index)); }
+        function getSlotLocked(index) { return localStorage.getItem(slotLockKey(index)); }
+
         function generateSingleSlotHtmlRow(index) {
-            let savedStr = localStorage.getItem('seefood_slot_data_' + index); let saved = savedStr ? JSON.parse(savedStr) : null; let lockedName = localStorage.getItem('seefood_slot_' + index + '_locked');
-            let defaultType = saved ? saved.type : (index > 1 ? "暫不使用" : (lockedName ? "固定菜單" : "超值惜福包")); let actualName = saved ? saved.name : (lockedName ? lockedName : (defaultType === "超值惜福包" ? "【超值惜福包】" : "")); let actualDesc = saved ? saved.desc : ""; let actualOrig = saved ? saved.orig : 150; let actualRate = saved ? saved.rate : 0.5; let actualRem = saved ? saved.rem : 3; let isLocked = (lockedName != null); let isSleeping = (defaultType === '暫不使用');
-            return `<div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700 shadow-md space-y-3 mb-3"><div class="flex justify-between items-center mb-1"><p class="font-black text-seefoodYellow text-sm tracking-wider">🔥 惜福欄位格 ${index < 10 ? '0'+index : index}</p>${isLocked ? `<span class="text-[10px] bg-red-900/80 text-red-300 px-2 py-1 rounded-md border border-red-700 font-bold shadow-sm">🔒 常態品名已綁定</span>` : ''}</div><div class="grid grid-cols-2 gap-3"><div><label class="text-blue-200 block text-xs font-bold mb-1.5">品項模式</label><select id="dash-itemType${index}" onchange="toggleItemTypeUI(${index})" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-2 py-3 text-white text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner"><option value="暫不使用" ${defaultType==='暫不使用'?'selected':''}>🈳 本格暫停</option><option value="超值惜福包" ${defaultType==='超值惜福包'?'selected':''}>🛍️ 超值惜福包</option><option value="固定菜單" ${defaultType==='固定菜單'?'selected':''}>🍱 常態菜單</option></select></div><div id="dash-nameBox${index}" class="${isSleeping ? 'slot-disabled' : 'slot-active'}"><label class="text-blue-200 block text-xs font-bold mb-1.5">品名</label><input type="text" id="dash-itemName${index}" value="${actualName}" placeholder="${defaultType==='固定菜單'?'輸入店內常態商品':''}" class="w-full ${isLocked || defaultType === '超值惜福包' ? 'bg-slate-800 text-gray-400' : 'bg-slate-900 text-white'} border border-slate-600 rounded-xl px-3 py-3 text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner" ${isLocked || defaultType === '超值惜福包' ? 'readonly' : ''}></div></div><div id="dash-detailBox${index}" class="${isSleeping ? 'slot-disabled' : 'slot-active'} space-y-3"><div><label class="text-blue-200 block text-xs font-bold mb-1.5" id="desc-lbl-${index}">${defaultType === '固定菜單' ? '商品簡介描述 (選填)' : '內容物描述 (必填包退) *'}</label><input type="text" id="dash-itemDesc${index}" value="${actualDesc}" placeholder="${defaultType === '固定菜單' ? '留空自動帶入：這很有名耶..還需要介紹嗎？' : '簡述今日打包內容，如：排骨飯+滷蛋'}" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white text-sm focus:border-blue-400 focus:outline-none shadow-inner"></div><div class="grid grid-cols-3 gap-2"><div><label class="text-blue-200 block text-xs font-bold mb-1.5 text-center">原價</label><input type="number" id="dash-orig${index}" value="${actualOrig}" class="w-full bg-slate-900 text-center border border-slate-600 rounded-xl px-1 py-3 text-white text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner"></div><div><label class="text-red-400 block text-xs font-bold mb-1.5 text-center">折數價格</label><select id="dash-rate${index}" class="w-full bg-slate-900 text-center border border-slate-600 rounded-xl px-1 py-3 text-red-400 text-sm font-black focus:border-blue-400 focus:outline-none shadow-inner"><option value="0" ${actualRate == 0 ? 'selected' : ''}>🎁 免費送</option><option value="0.3" ${actualRate == 0.3 ? 'selected' : ''}>3折殺</option><option value="0.5" ${actualRate == 0.5 ? 'selected' : ''}>5折半</option><option value="0.7" ${actualRate == 0.7 ? 'selected' : ''}>7折親</option></select></div><div><label class="text-yellow-400 block text-xs font-bold mb-1.5 text-center">剩餘份數</label><input type="number" id="dash-rem${index}" value="${actualRem}" class="w-full bg-slate-900 text-center border border-slate-600 rounded-xl px-1 py-3 text-yellow-400 text-sm font-black focus:border-blue-400 focus:outline-none shadow-inner"></div></div></div></div>`;
+            let savedStr = getSlotSaved(index); let saved = savedStr ? JSON.parse(savedStr) : null; let lockedName = getSlotLocked(index);
+            let defaultType = saved ? saved.type : (index > 1 ? "暫不使用" : (lockedName ? "固定菜單" : "超值惜福包")); let actualName = saved ? saved.name : (lockedName ? lockedName : (defaultType === "超值惜福包" ? "【今日惜福品】" : "")); let actualDesc = saved ? saved.desc : ""; let actualOrig = saved ? saved.orig : 150; let actualRate = saved ? saved.rate : 0.5; let actualRem = saved ? saved.rem : 3; let isLocked = (lockedName != null); let isSleeping = (defaultType === '暫不使用');
+            return `<details class="group bg-slate-800/60 rounded-2xl border border-slate-700 shadow-md mb-3 overflow-hidden" ${index===1 ? "open" : ""}><summary class="list-none cursor-pointer p-4 flex justify-between items-center"><div><p class="font-black text-seefoodYellow text-sm tracking-wider">惜福欄位 ${index < 10 ? "0"+index : index}</p><p class="text-[10px] text-slate-400 mt-1">${isSleeping ? "目前未啟用" : escapeHTML(actualName || "尚未命名")} · 剩 ${actualRem} 份</p></div><div class="flex items-center gap-2">${isLocked ? `<span class="text-[9px] bg-red-900/80 text-red-300 px-2 py-1 rounded-md border border-red-700 font-bold">🔒 固定品</span>` : ""}<span class="text-slate-400 group-open:rotate-180 transition">⌄</span></div></summary><div class="px-4 pb-4 space-y-3 border-t border-slate-700/70 pt-3"><div class="hidden"><p class="font-black text-seefoodYellow text-sm tracking-wider">🔥 惜福欄位格 ${index < 10 ? '0'+index : index}</p>${isLocked ? `<span class="text-[10px] bg-red-900/80 text-red-300 px-2 py-1 rounded-md border border-red-700 font-bold shadow-sm">🔒 常態品名已綁定</span>` : ''}</div><div class="grid grid-cols-2 gap-3"><div><label class="text-blue-200 block text-xs font-bold mb-1.5">品項模式</label><select id="dash-itemType${index}" onchange="toggleItemTypeUI(${index})" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-2 py-3 text-white text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner"><option value="暫不使用" ${defaultType==='暫不使用'?'selected':''}>🈳 本格暫停</option><option value="超值惜福包" ${defaultType==='超值惜福包'?'selected':''}>🧺 今日惜福品</option><option value="固定菜單" ${defaultType==='固定菜單'?'selected':''}>🍱 固定惜福品</option></select></div><div id="dash-nameBox${index}" class="${isSleeping ? 'slot-disabled' : 'slot-active'}"><label class="text-blue-200 block text-xs font-bold mb-1.5">品名</label><input type="text" id="dash-itemName${index}" value="${actualName}" placeholder="${defaultType==='固定菜單'?'輸入店內常態商品':''}" class="w-full ${isLocked || defaultType === '超值惜福包' ? 'bg-slate-800 text-gray-400' : 'bg-slate-900 text-white'} border border-slate-600 rounded-xl px-3 py-3 text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner" ${isLocked || defaultType === '超值惜福包' ? 'readonly' : ''}></div></div><div id="dash-detailBox${index}" class="${isSleeping ? 'slot-disabled' : 'slot-active'} space-y-3"><div><label class="text-blue-200 block text-xs font-bold mb-1.5" id="desc-lbl-${index}">${defaultType === '固定菜單' ? '商品簡介描述 (選填)' : '明確內容＋數量 (必填) *'}</label><input type="text" id="dash-itemDesc${index}" value="${actualDesc}" placeholder="${defaultType === '固定菜單' ? '留空自動帶入：這很有名耶..還需要介紹嗎？' : '例如：雞腿 1 支＋滷蛋 1 顆'}" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white text-sm focus:border-blue-400 focus:outline-none shadow-inner"></div><div class="grid grid-cols-3 gap-2"><div><label class="text-blue-200 block text-xs font-bold mb-1.5 text-center">原價</label><input type="number" id="dash-orig${index}" value="${actualOrig}" class="w-full bg-slate-900 text-center border border-slate-600 rounded-xl px-1 py-3 text-white text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner"></div><div><label class="text-red-400 block text-xs font-bold mb-1.5 text-center">折數價格</label><select id="dash-rate${index}" class="w-full bg-slate-900 text-center border border-slate-600 rounded-xl px-1 py-3 text-red-400 text-sm font-black focus:border-blue-400 focus:outline-none shadow-inner"><option value="0" ${actualRate == 0 ? 'selected' : ''}>🎁 免費送</option><option value="0.3" ${actualRate == 0.3 ? 'selected' : ''}>3折殺</option><option value="0.5" ${actualRate == 0.5 ? 'selected' : ''}>5折半</option><option value="0.7" ${actualRate == 0.7 ? 'selected' : ''}>7折親</option></select></div><div><label class="text-yellow-400 block text-xs font-bold mb-1.5 text-center">剩餘份數</label><input type="number" id="dash-rem${index}" value="${actualRem}" class="w-full bg-slate-900 text-center border border-slate-600 rounded-xl px-1 py-3 text-yellow-400 text-sm font-black focus:border-blue-400 focus:outline-none shadow-inner"></div></div></div></div></details>`;
         }
 
         function toggleItemTypeUI(index) {
-            let type = document.getElementById(`dash-itemType${index}`).value; let lockedName = localStorage.getItem('seefood_slot_' + index + '_locked'); let nameBox = document.getElementById(`dash-nameBox${index}`); let detailBox = document.getElementById(`dash-detailBox${index}`); let nameInput = document.getElementById(`dash-itemName${index}`); let descInput = document.getElementById(`dash-itemDesc${index}`); let lbl = document.getElementById(`desc-lbl-${index}`);
+            let type = document.getElementById(`dash-itemType${index}`).value; let lockedName = getSlotLocked(index); let nameBox = document.getElementById(`dash-nameBox${index}`); let detailBox = document.getElementById(`dash-detailBox${index}`); let nameInput = document.getElementById(`dash-itemName${index}`); let descInput = document.getElementById(`dash-itemDesc${index}`); let lbl = document.getElementById(`desc-lbl-${index}`);
             if (type === "暫不使用") { nameBox.className = "slot-disabled"; detailBox.className = "slot-disabled"; document.getElementById(`dash-rem${index}`).value = 0; } 
             else {
                 nameBox.className = "slot-active"; detailBox.className = "slot-active space-y-3";
                 if (type === "固定菜單") { if (lockedName) { nameInput.value = lockedName; nameInput.readOnly = true; nameInput.className = "w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-3 text-gray-400 text-sm font-bold focus:outline-none shadow-inner"; } else { nameInput.value = ""; nameInput.readOnly = false; nameInput.placeholder = "請輸入常態商品名稱"; nameInput.className = "w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-3 text-white text-sm font-bold focus:border-blue-400 focus:outline-none shadow-inner"; } lbl.innerHTML = "商品簡介描述 (選填)"; descInput.placeholder = "留空自動帶入：這很有名耶..還需要介紹嗎？直接搶就對了！"; } 
-                else if (type === "超值惜福包") { nameInput.value = "【超值惜福包】"; nameInput.readOnly = true; nameInput.className = "w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-3 text-gray-400 text-sm font-bold focus:outline-none shadow-inner"; lbl.innerHTML = "內容物描述 (必填包退) *"; descInput.placeholder = "請簡述今日打包內容，如：排骨飯+滷蛋"; }
+                else if (type === "超值惜福包") { nameInput.value = "【今日惜福品】"; nameInput.readOnly = true; nameInput.className = "w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-3 text-gray-400 text-sm font-bold focus:outline-none shadow-inner"; lbl.innerHTML = "明確內容＋數量 (必填) *"; descInput.placeholder = "例如：雞腿 1 支＋滷蛋 1 顆"; }
             }
         }
 
@@ -1002,17 +1095,22 @@
             let maxSlots = localStorage.getItem('seefood_merchant_vip') === 'true' ? 10 : 3;
             for (let i = 1; i <= maxSlots; i++) {
                 let typeSelect = document.getElementById(`dash-itemType${i}`); if (!typeSelect) continue; let type = typeSelect.value; 
-                if (type === "暫不使用") { localStorage.setItem('seefood_slot_data_' + i, JSON.stringify({type: type, name: "", desc: "", orig: 150, rate: 0.5, rem: 0})); formData.append(`itemType${i}`, "暫不使用"); formData.append(`itemName${i}`, "【未啟用】"); formData.append(`itemDesc${i}`, ""); formData.append(`orig${i}`, 0); formData.append(`disc${i}`, 0); formData.append(`rem${i}`, 0); continue; }
+                if (type === "暫不使用") { localStorage.setItem(slotDataKey(i), JSON.stringify({type: type, name: "", desc: "", orig: 150, rate: 0.5, rem: 0})); formData.append(`itemType${i}`, "暫不使用"); formData.append(`itemName${i}`, "【未啟用】"); formData.append(`itemDesc${i}`, ""); formData.append(`orig${i}`, 0); formData.append(`disc${i}`, 0); formData.append(`rem${i}`, 0); continue; }
                 let nameInput = document.getElementById(`dash-itemName${i}`); let name = nameInput ? nameInput.value.trim() : ""; 
                 let descInput = document.getElementById(`dash-itemDesc${i}`); let desc = descInput ? descInput.value.trim() : "";
                 if (type === "固定菜單" && desc === "") { desc = "這很有名耶..還需要介紹嗎？直接搶就對了！"; }
+                if (status === "ON" && type === "超值惜福包") {
+                    const vague = /(隨機|驚喜|看現場|好料|老闆搭配|不一定|有什麼給什麼)/;
+                    const qty = /(\d+|一|二|兩|三|四|五|六|七|八|九|十)\s*(份|個|顆|支|片|塊|盒|包|碗|杯|條|串|組|入)/;
+                    if (!desc || vague.test(desc) || !qty.test(desc)) { alert(`⚠️ 欄位 ${i < 10 ? '0'+i : i}「今日惜福品」需明確標示內容與最低數量。\n\n例如：雞腿 1 支＋滷蛋 1 顆\n例如：炸雞 3 塊，部位隨機`); return; }
+                }
                 let orig = parseFloat(document.getElementById(`dash-orig${i}`).value) || 0; let rateStr = document.getElementById(`dash-rate${i}`).value; let rate = parseFloat(rateStr) || 0; let rem = parseInt(document.getElementById(`dash-rem${i}`).value) || 0;
                 if (status === "ON" && (orig * rate) > 1000) { alert(`⚠️ 上架攔截提示：品項 ${i < 10 ? '0'+i : i} 折後價大於 $1,000，將觸發防洗錢機制！系統會自動轉為審核中，待實物驗證後方可顯示。`); }
-                if (status === "ON" && type === "超值惜福包" && !desc) { alert(`❌ 上架被退回：品項 ${i < 10 ? '0'+i : i} 是【超值惜福包】，請填寫今日內容物描述！`); return; }
+                if (status === "ON" && type === "超值惜福包" && !desc) { alert(`❌ 上架被退回：品項 ${i < 10 ? '0'+i : i} 是【今日惜福品】，請填寫今日內容物描述！`); return; }
                 if (status === "ON" && type === "固定菜單" && !name) { alert(`❌ 上架被退回：品項 ${i < 10 ? '0'+i : i} 請填寫常態商品名稱！`); return; }
-                let lockedName = localStorage.getItem('seefood_slot_' + i + '_locked');
-                if (status === "ON" && type === "固定菜單" && name && !lockedName) { localStorage.setItem('seefood_slot_' + i + '_locked', name); nameInput.readOnly = true; nameInput.classList.remove('bg-slate-900', 'text-white'); nameInput.classList.add('bg-slate-800', 'text-gray-400'); }
-                localStorage.setItem('seefood_slot_data_' + i, JSON.stringify({type: type, name: name, desc: desc, orig: orig, rate: rateStr, rem: rem})); formData.append(`itemType${i}`, type); formData.append(`itemName${i}`, name); formData.append(`itemDesc${i}`, desc); formData.append(`orig${i}`, orig); formData.append(`disc${i}`, Math.round(orig * rate)); formData.append(`rem${i}`, rem);
+                let lockedName = getSlotLocked(i);
+                if (status === "ON" && type === "固定菜單" && name && !lockedName) { localStorage.setItem(slotLockKey(i), name); nameInput.readOnly = true; nameInput.classList.remove('bg-slate-900', 'text-white'); nameInput.classList.add('bg-slate-800', 'text-gray-400'); }
+                localStorage.setItem(slotDataKey(i), JSON.stringify({type: type, name: name, desc: desc, orig: orig, rate: rateStr, rem: rem})); formData.append(`itemType${i}`, type); formData.append(`itemName${i}`, name); formData.append(`itemDesc${i}`, desc); formData.append(`orig${i}`, orig); formData.append(`disc${i}`, Math.round(orig * rate)); formData.append(`rem${i}`, rem);
             }
             const btn = document.getElementById('btn-online-submit'); if(btn) { btn.innerText = "⏳ 同步中..."; btn.disabled = true; }
             fetch(gasUrl, { method: "POST", body: formData }).then(res => res.json()).then(resJson => {
@@ -1026,18 +1124,26 @@
             }).catch((err) => { console.error(err); if(btn) { btn.innerText = "⚡ 極速開賣 (上架)"; btn.disabled = false; } alert("連線異常，請檢查網路狀態"); });
         }
 
-        function switchMerchantShop(shopId) {
-            if (!shopId) return;
+        async function switchMerchantShop(shopId) {
+            if (!shopId || shopId === activeShopId()) return;
             localStorage.setItem('seefood_merchant_shop_id', shopId);
-            for(let i=1; i<=10; i++) { localStorage.removeItem('seefood_slot_data_' + i); localStorage.removeItem('seefood_slot_' + i + '_locked'); }
-            syncUserDataFromCloud();
+            const title = document.getElementById('dashboard-shop-title'); if(title) title.innerText = '切換店鋪中…';
+            const slots = document.getElementById('dashboard-slots-container'); if(slots) slots.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs font-bold">⏳ 正在載入此店獨立商品資料…</div>';
+            await syncUserDataFromCloud();
         }
 
         function startAddMerchantShop() {
             if (userStats.lineUid === "LINE_GUEST") { liff.login({ redirectUri: window.location.href }); return; }
-            const regZone = document.getElementById('merchant-registration-zone');
+            const regZone = document.getElementById('merchant-registration-zone'); const dash = document.getElementById('merchant-dashboard-zone'); const cancel = document.getElementById('cancel-add-shop-btn');
+            if (dash) dash.classList.add('hidden'); if (cancel) cancel.classList.remove('hidden');
             if (regZone) { regZone.style.display = 'block'; regZone.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
             ['merchant-name-input','merchant-address-input','merchant-phone-input','merchant-email-input','m-owner-name','m-owner-phone','m-owner-line'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+        }
+
+        function cancelAddMerchantShop() {
+            const regZone = document.getElementById('merchant-registration-zone'); const dash = document.getElementById('merchant-dashboard-zone'); const cancel = document.getElementById('cancel-add-shop-btn');
+            if (regZone) regZone.style.display = 'none'; if (dash && activeShopId() !== 'NO_SHOP') dash.classList.remove('hidden'); if (cancel) cancel.classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function handleMerchantFormSubmit() {
@@ -1060,7 +1166,7 @@
             const d = new URLSearchParams(); d.append('action', 'register'); d.append('merchantName', name); d.append('merchantAddress', address); d.append('merchantPhone', phone); d.append('ownerName', owner); d.append('ownerPhone', oPhone); d.append('ownerLine', oLine); d.append('lineUid', userStats.lineUid); d.append('merchantEmail', email); d.append('merchantType', mType); d.append('referrerUid', refUid);
             fetch(gasUrl, { method: "POST", body: d }).then(res => res.json()).then(resJson => {
                 if (resJson.status === "success") { 
-                    alert('🎉 恭喜！全台創始店鋪卡位成功！\n您的專屬店鋪後台已為您開通，正式合約連結也已寄至您的信箱。請立即登入後台完成實名簽約！'); localStorage.setItem('seefood_merchant_shop_id', resJson.shopId); localStorage.setItem('seefood_merchant_shop_name', resJson.shopName); document.getElementById('merchant-registration-zone').style.display = 'none'; checkMerchantUrlParameters(); syncUserDataFromCloud();
+                    alert('🎉 恭喜！全台創始店鋪卡位成功！\n您的專屬店鋪後台已為您開通，正式合約連結也已寄至您的信箱。請立即登入後台完成實名簽約！'); localStorage.setItem('seefood_merchant_shop_id', resJson.shopId); localStorage.setItem('seefood_merchant_shop_name', resJson.shopName); document.getElementById('merchant-registration-zone').style.display = 'none'; const c=document.getElementById('cancel-add-shop-btn'); if(c)c.classList.add('hidden'); checkMerchantUrlParameters(); syncUserDataFromCloud();
                 } else if (resJson.status === "error" && resJson.shopId) { alert(resJson.msg); localStorage.setItem('seefood_merchant_shop_id', resJson.shopId); localStorage.setItem('seefood_merchant_shop_name', resJson.shopName); checkMerchantUrlParameters(); syncUserDataFromCloud(); } else { alert(resJson.msg || "申請失敗"); }
             }).catch(() => { alert("⏳ 雲端處理超時，但您的卡位請求已成功送達大腦！\n請直接重新整理網頁，即可進入您的專屬商家後台。"); }).finally(() => { isSubmittingGlobal = false; hideGlobalLoading(); });
         }
