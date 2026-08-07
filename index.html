@@ -58,10 +58,31 @@ html{background:#eef2f6} body{letter-spacing:-.01em}
  #contract-modal>div{max-width:760px!important}
 }
 </style>
+
+<style id="seefood-27-design-system">
+:root{--sf-navy:#10273F;--sf-ink:#17212B;--sf-muted:#66717D;--sf-bg:#F3F5F7;--sf-card:#FFFFFF;--sf-line:#E2E7EC;--sf-accent:#E8A900;--sf-green:#16855B;--sf-red:#C74444}
+html,body{background:var(--sf-bg)!important;color:var(--sf-ink)}
+body{align-items:flex-start!important}
+.sf-app-shell{background:var(--sf-bg)!important;max-width:430px!important;box-shadow:none!important}
+.sf-brandbar{background:#fff!important;border-bottom:1px solid var(--sf-line)}.sf-brand-title{color:var(--sf-navy)}.sf-brand-title span{color:#66717D}.sf-version-pill{background:#EEF1F4;color:#66717D}
+#home-header-zone{box-shadow:none!important;background:#fff!important}.sf-main-scroll{background:var(--sf-bg)}
+#text-banner-container{background:var(--sf-navy)!important;box-shadow:none!important}.vip-border{border:1px solid var(--sf-line)!important;box-shadow:none!important}
+.sf-sort-btn{min-height:46px;border:1px solid var(--sf-line);background:#fff;color:#66717D;border-radius:13px;display:flex;gap:5px;align-items:center;justify-content:center}.sf-sort-btn svg{width:14px;height:14px}.sf-sort-active{background:var(--sf-navy)!important;color:#fff!important;border-color:var(--sf-navy)!important}
+.sf-hunt-card{position:relative;background:#fff;border:1px solid var(--sf-line);border-radius:18px;padding:16px;box-shadow:0 4px 14px rgba(16,39,63,.045)}.sf-hunt-priority{border-color:#D7DDE3}.sf-priority-tag{position:absolute;right:12px;top:10px;color:#9A6A00;background:#FFF8E4;border:1px solid #F1D991;border-radius:999px;padding:4px 8px;font-size:9px;font-weight:800;display:flex;gap:4px;align-items:center}.sf-priority-tag svg{width:11px}.sf-hunt-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.sf-hunt-location{font-size:11px;font-weight:800;color:#687582}.sf-stock{font-size:11px;font-weight:800;color:#9D3C3C;background:#FFF2F2;padding:5px 8px;border-radius:9px}.sf-hunt-body{margin-top:14px}.sf-hunt-body h3{font-size:19px;font-weight:900;color:#17212B}.sf-hunt-body>p{font-size:12px;color:#6B7580;margin-top:5px}.sf-hunt-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;color:#66717D;font-size:10px;font-weight:700}.sf-hunt-meta span{display:flex;gap:5px;align-items:center}.sf-hunt-meta svg{width:13px;height:13px}.sf-hunt-foot{border-top:1px solid #EDF0F3;margin-top:14px;padding-top:12px;display:flex;align-items:center;justify-content:space-between}.sf-hunt-foot strong{font-size:17px;color:#B33F3F;margin-left:7px}.sf-old-price{text-decoration:line-through;color:#9AA3AC;font-size:11px}.sf-free{font-size:16px;font-weight:900;color:var(--sf-green)}.sf-primary-action{border:0;background:var(--sf-navy);color:#fff;border-radius:12px;padding:11px 18px;font-weight:900;font-size:13px}
+.sf-partner-card{background:var(--sf-navy)!important;border:1px solid #294057!important;box-shadow:none!important}.sf-partner-card .bg-purple-500\/10{display:none!important}
+#badges-container{gap:10px!important}.sf-badge-card{background:#fff;border:1px solid var(--sf-line);border-radius:14px;padding:13px;display:flex;align-items:center;gap:11px;min-width:0}.sf-badge-icon{width:36px;height:36px;border-radius:11px;background:#F0F3F5;color:var(--sf-navy);display:flex;align-items:center;justify-content:center;flex:none}
+#page-achievement>div:first-child{background:#fff!important;border:1px solid var(--sf-line)!important;box-shadow:none!important}#global-co2-total{color:var(--sf-navy)!important;text-shadow:none!important}#global-fuel-total{color:#66717D!important;background:#F4F6F8!important;border-color:#E2E7EC!important}
+.sf-merchant-os{background:var(--sf-navy)!important;border:0!important;box-shadow:none!important}.sf-support-handle{background:var(--sf-navy)!important;box-shadow:0 8px 22px rgba(16,39,63,.16)!important}
+#bottom-nav{background:var(--sf-navy)!important}
+@media(min-width:900px){
+ body{padding:24px!important;justify-content:center!important;background:#E9EDF1!important}.sf-app-shell{max-width:1180px!important;width:min(1180px,calc(100vw - 48px))!important;height:calc(100vh - 48px)!important;border-radius:24px!important;box-shadow:0 18px 60px rgba(18,35,52,.14)!important;overflow:hidden!important}.sf-main-scroll{padding:24px 28px 30px!important}#page-home,#page-achievement,#page-orders{max-width:1100px;margin:0 auto}#store-list-container{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px!important}.sf-sortbar{max-width:560px}.sf-merchant-bar,#merchant-dashboard-zone{max-width:1040px!important}#merchant-dashboard-zone{padding:28px!important}#merchant-registration-zone{max-width:860px!important;margin:0 auto}#contract-modal>div{max-width:920px!important;width:min(920px,calc(100vw - 64px))!important;max-height:88vh!important}.sf-support-handle{display:none!important}#page-achievement #badges-container{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(min-width:1300px){#store-list-container{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
 </head>
 <body class="bg-gray-900 min-h-screen flex justify-center items-top">
 
-    <div class="w-full max-w-[430px] bg-gray-50 h-[100dvh] shadow-2xl flex flex-col overflow-hidden relative">
+    <div class="sf-app-shell w-full max-w-[430px] bg-gray-50 h-[100dvh] shadow-2xl flex flex-col overflow-hidden relative">
         
         <div id="global-loading-overlay" class="absolute inset-0 bg-slate-950/90 z-[10000] flex flex-col items-center justify-center hidden backdrop-blur-sm transition-opacity duration-300 opacity-0">
             <div class="text-6xl animate-spin mb-4" id="loading-icon">⏳</div>
@@ -111,9 +132,9 @@ html{background:#eef2f6} body{letter-spacing:-.01em}
         </div>
 
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
-            <div class="bg-seefoodYellow px-4 py-3 flex items-center justify-between">
-                <span class="text-seefoodDarkBlue font-black text-xl tracking-wider">SEEFOOD-美食獵人</span>
-                <span class="text-[10px] bg-seefoodDarkBlue text-white px-2.5 py-1 rounded-full font-bold">2.5 PLATFORM</span>
+            <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
+                <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">2.7 PREVIEW</span>
             </div>
             <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -138,14 +159,14 @@ html{background:#eef2f6} body{letter-spacing:-.01em}
             </div>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-4 pb-6 no-scrollbar" style="-webkit-overflow-scrolling: touch;">
+        <div class="sf-main-scroll flex-1 overflow-y-auto p-4 pb-6 no-scrollbar" style="-webkit-overflow-scrolling: touch;">
             
             <div id="page-home" class="space-y-3">
-                <div class="grid grid-cols-4 gap-1.5 text-center text-[10px] font-black pb-1">
-                    <button id="btn-sort-recommend" onclick="setSort('recommend')" class="bg-seefoodDarkBlue text-white py-2.5 rounded-xl shadow-sm transition cursor-pointer">🎯 推薦</button>
-                    <button id="btn-sort-distance" onclick="setSort('distance')" class="bg-white border border-gray-200 text-gray-600 py-2.5 rounded-xl transition cursor-pointer">📍 最近</button>
-                    <button id="btn-sort-discount" onclick="setSort('discount')" class="bg-white border border-gray-200 text-gray-600 py-2.5 rounded-xl transition cursor-pointer">🔥 最殺</button>
-                    <button id="btn-sort-remain" onclick="setSort('remain')" class="bg-white border border-gray-200 text-gray-600 py-2.5 rounded-xl transition cursor-pointer">📦 待救</button>
+                <div class="sf-sortbar grid grid-cols-4 gap-1.5 text-center text-[10px] font-black pb-1">
+                    <button id="btn-sort-recommend" onclick="setSort('recommend')" class="sf-sort-btn sf-sort-active"><i data-lucide="sparkles"></i><span>推薦</span></button>
+                    <button id="btn-sort-distance" onclick="setSort('distance')" class="sf-sort-btn"><i data-lucide="navigation"></i><span>最近</span></button>
+                    <button id="btn-sort-discount" onclick="setSort('discount')" class="sf-sort-btn"><i data-lucide="badge-percent"></i><span>優惠</span></button>
+                    <button id="btn-sort-remain" onclick="setSort('remain')" class="sf-sort-btn"><i data-lucide="package-open"></i><span>待救</span></button>
                 </div>
                 <div id="store-list-container" class="space-y-3">
                     <div class="text-center py-16 px-4"><span class="text-4xl animate-spin inline-block mb-3">⏳</span><h4 class="font-black text-gray-800 text-sm">正在連線全台雷達...</h4><p class="text-xs text-gray-400 mt-2">首次連線需時較長，請稍候</p></div>
@@ -174,19 +195,19 @@ html{background:#eef2f6} body{letter-spacing:-.01em}
                 <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 text-center shadow-xl relative overflow-hidden">
                     <div class="absolute -right-6 -top-6 w-24 h-24 bg-radarGreen/5 rounded-full blur-xl pointer-events-none"></div>
                     <h3 class="text-gray-400 text-xs font-black tracking-widest uppercase flex items-center justify-center space-x-1">
-                        <span>🌍</span> <span>全台獵人共同累積減碳總量</span>
+                        <i data-lucide="leaf" class="w-4 h-4"></i> <span>全台共同惜食成果</span>
                     </h3>
                     <h2 id="global-co2-total" class="text-4xl font-black text-seefoodYellow tracking-tight my-3" style="text-shadow: 0 0 10px rgba(250,185,0,0.4);">
                         1285.5 <span class="text-base text-gray-400 font-bold ml-0.5">kg</span>
                     </h2>
                     <p id="global-fuel-total" class="text-[11px] text-radarGreen font-bold flex items-center justify-center bg-slate-950/60 py-1.5 px-3 rounded-lg border border-radarGreen/20 w-max mx-auto">
-                        🍃 相當於為地球集體少燃燒了 424.2 公升汽油 🛰️
+                        目前為平台估算值，正式環境係數將依驗證方法版本化
                     </p>
                 </div>
 
                 <div class="bg-white border border-gray-200 rounded-2xl p-4 text-xs space-y-2.5 shadow-sm">
                     <div class="flex justify-between items-center text-gray-400 font-bold">
-                        <span>📡 減碳精算公約</span>
+                        <span>惜食成果估算</span>
                         <span class="text-gray-500 font-mono">1 份惜福品 = 0.5 kg 減碳</span>
                     </div>
                     <div class="border-t border-gray-100 my-2"></div>
@@ -194,20 +215,20 @@ html{background:#eef2f6} body{letter-spacing:-.01em}
                         您個人目前已成功狙擊 <span id="user-order-count" class="text-seefoodDarkBlue font-black font-mono text-base">0</span> 份安全庫存，個人貢獻 <span id="user-co2-total" class="text-radarGreen font-black font-mono text-base">0.0 kg</span> 減碳量。
                     </p>
                     <div class="bg-gray-50 px-3 py-2 rounded-xl border border-gray-200 font-bold text-[11px] text-gray-500 flex justify-between items-center shadow-inner">
-                        <span>🔥 獵人實時戰報：</span>
-                        <span class="text-tacticalOrange font-black animate-pulse">您已擊敗全台 87% 的環境守護者！</span>
+                        <span>個人救援進度</span>
+                        <span class="text-tacticalOrange font-black animate-pulse">持續完成惜食核銷，解鎖更多里程碑</span>
                     </div>
                 </div>
 
-                <div id="partner-hub-zone" class="bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 rounded-2xl p-5 border border-purple-500/30 shadow-xl text-white relative overflow-hidden">
+                <div id="partner-hub-zone" class="sf-partner-card rounded-2xl p-5 text-white relative overflow-hidden">
                     <div class="absolute -right-8 -top-8 w-28 h-28 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
                     <div class="flex items-start justify-between gap-3 relative z-10">
                         <div>
-                            <p class="text-[10px] text-purple-300 font-black tracking-[0.18em] uppercase">PARTNER NETWORK</p>
+                            <p class="text-[10px] text-slate-400 font-black tracking-[0.18em] uppercase">PARTNER NETWORK</p>
                             <h3 class="font-black text-lg mt-1">點亮新獵場</h3>
                             <p class="text-[10px] text-slate-400 mt-1 leading-relaxed">任何獵人都能邀請店家加入。成功綁定後，店家未來的服務費與 VIP 貢獻會計入你的夥伴收益。</p>
                         </div>
-                        <span class="text-2xl">🛰️</span>
+                        <span class="sf-iconbox !bg-white/10 !text-white"><i data-lucide="network" class="w-4 h-4"></i></span>
                     </div>
                     <div class="grid grid-cols-2 gap-2.5 mt-4 relative z-10">
                         <div class="bg-white/5 border border-white/10 rounded-xl p-3">
@@ -536,7 +557,7 @@ html{background:#eef2f6} body{letter-spacing:-.01em}
                 </div>
             </div>
             <div class="fixed bottom-0 w-full p-4 bg-slate-950/90 backdrop-blur-md border-t border-slate-800 z-20">
-                <button id="btn-submit-contract" onclick="submitContract()" class="w-full max-w-[400px] mx-auto block bg-seefoodYellow text-slate-900 font-black py-4 rounded-xl shadow-[0_0_20px_rgba(250,185,0,0.4)] active:scale-95 transition text-base tracking-widest border border-amber-400">🚀 提交合約並解除資金鎖定</button>
+                <button id="btn-submit-contract" onclick="submitContract()" class="w-full max-w-[400px] mx-auto block bg-seefoodYellow text-slate-900 font-black py-4 rounded-xl shadow-[0_0_20px_rgba(250,185,0,0.4)] active:scale-95 transition text-base tracking-widest border border-amber-400">送出實名與收款資料</button>
             </div>
         </div>
 
@@ -767,7 +788,7 @@ html{background:#eef2f6} body{letter-spacing:-.01em}
 
         async function loadShopDashboardV25(shopId, showLoader=false) {
             if(!shopId||userStats.lineUid==='LINE_GUEST')return; if(showLoader)showGlobalLoading('切換店鋪','只載入這間店的即時資料…');
-            try{const j=await postActionV25('getShopDashboard',{uid:userStats.lineUid,shopId});if(j.status==='success'&&j.myShop){sessionStorage.setItem('sf26_dash_'+shopId,JSON.stringify(j.myShop));renderShopDashboardV25(j.myShop);}else alert(j.msg||'店鋪載入失敗');}catch(e){console.error(e);alert('店鋪資料載入失敗，請稍後重試');}finally{if(showLoader)hideGlobalLoading();}
+            try{const j=await postActionV25('getShopDashboard',{uid:userStats.lineUid,shopId});if(j.status==='success'&&j.myShop){sessionStorage.setItem('sf27_dash_'+shopId,JSON.stringify(j.myShop));renderShopDashboardV25(j.myShop);}else alert(j.msg||'店鋪載入失敗');}catch(e){console.error(e);alert('店鋪資料載入失敗，請稍後重試');}finally{if(showLoader)hideGlobalLoading();}
         }
 
         async function loadPartnerHubV25() {
@@ -778,11 +799,11 @@ html{background:#eef2f6} body{letter-spacing:-.01em}
         async function syncUserDataFromCloud() {
             if(userStats.lineUid==='LINE_GUEST')return;
             try{
-                const coreCached=sessionStorage.getItem('sf26_core_'+userStats.lineUid); if(coreCached){try{const c=JSON.parse(coreCached);renderCore26(c);}catch(e){}}
-                const json=await postActionV25('syncCore',{uid:userStats.lineUid}); if(json.status!=='success')return; sessionStorage.setItem('sf26_core_'+userStats.lineUid,JSON.stringify(json));
+                const coreCached=sessionStorage.getItem('sf27_core_'+userStats.lineUid)||sessionStorage.getItem('sf26_core_'+userStats.lineUid); if(coreCached){try{const c=JSON.parse(coreCached);renderCore26(c);}catch(e){}}
+                const json=await postActionV25('syncCore',{uid:userStats.lineUid}); if(json.status!=='success')return; sessionStorage.setItem('sf27_core_'+userStats.lineUid,JSON.stringify(json));
                 merchantAccountCache=json.merchantAccount||null; renderCore26(json);
                 const shops=Array.isArray(json.myShops)?json.myShops:[]; const bar=document.getElementById('merchant-account-bar'),sel=document.getElementById('merchant-shop-select-top');
-                if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · VIP':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);await loadShopDashboardV25(active,false);}
+                if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · VIP':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);const dc=sessionStorage.getItem('sf27_dash_'+active)||sessionStorage.getItem('sf26_dash_'+active);if(dc){try{renderShopDashboardV25(JSON.parse(dc));}catch(e){}}loadShopDashboardV25(active,false);}
                 if(json.orders&&json.orders.length){localStorage.setItem('seefood_orders_list',JSON.stringify(json.orders));recalculateUserStats(json.orders);}else{localStorage.setItem('seefood_orders_list','[]');loadUserStats();renderBadgesWall();}
                 renderSavedTicketsWall();
             }catch(e){console.error('核心同步失敗',e);loadUserStats();renderBadgesWall();}
@@ -927,7 +948,7 @@ html{background:#eef2f6} body{letter-spacing:-.01em}
                 if (!s.lat || !s.lng) { distanceHtml = `<p class="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-0.5 rounded">📍 新商店地圖建置中</p>`; } else if (!userLocation) { distanceHtml = `<p class="text-xs text-blue-500 font-bold cursor-pointer animate-pulse bg-blue-50 px-2 py-0.5 rounded border border-blue-200 shadow-sm" onclick="requestLocation()">📍 點我解鎖真實距離</p>`; } else { let distDisplay = s.distance > 1000 ? (s.distance/1000).toFixed(1) + "km" : s.distance + "m"; distanceHtml = `<p class="text-xs text-gray-400 font-bold">📍 距離 ${distDisplay}</p>`; }
                 let safeJsName = escapeHTML(s.name).replace(/'/g, "\\'"); let safeJsItem = escapeHTML(s.item).replace(/'/g, "\\'"); let safeJsAddress = escapeHTML(s.address).replace(/'/g, "\\'"); let safeJsPhone = escapeHTML(s.phone).replace(/'/g, "\\'"); let safeJsTime = escapeHTML(s.time).replace(/'/g, "\\'");
                 let taxWarningHtml = ''; if (s.merchantType && s.merchantType.includes('個體戶')) { taxWarningHtml = `<p class="text-[9px] text-gray-400 mt-2 border-t border-dashed border-gray-200 pt-2 font-bold leading-tight">⚠️ 本店鋪為個人惜福個體，依法由賣方自負申報，不提供統一發票。</p>`; }
-                container.innerHTML += `<div class="bg-white border ${isGoldenVip ? 'vip-border' : 'border-gray-200'} rounded-2xl p-4 relative shadow-sm">${isGoldenVip ? '<div class="absolute top-0 right-0 bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10 animate-pulse">👑 今日最殺推薦</div>' : ''}<div><h3 class="font-black text-xl text-gray-900 leading-tight mb-1">[${escapeHTML(s.district)}] ${escapeHTML(s.name)}</h3>${distanceHtml}</div><div class="mt-3 bg-gray-50 rounded-xl p-3 border"><div class="flex justify-between items-center"><span class="font-black text-gray-800 text-base">${escapeHTML(s.item)}</span><span class="text-xs font-black text-red-600 bg-red-100 px-2 py-0.5 rounded shadow-sm">剩 ${s.remain} 份</span></div><p class="text-xs text-gray-500 mt-1.5 font-bold">${escapeHTML(s.note)}</p><p class="text-sm text-amber-600 font-black mt-2">⏳ 取餐限時：${escapeHTML(s.time)}</p></div>${taxWarningHtml}<div class="flex justify-between items-center mt-3 pt-3 border-t border-dashed"><span class="text-xs bg-blue-50 text-blue-600 font-bold px-2 py-1 rounded">線上完款·外帶自取</span><div class="flex items-center space-x-2"><div class="text-right leading-none">${s.discountPrice === 0 ? `<span class="text-lg font-black text-emerald-600">🎁 免費惜福</span>` : `<span class="text-xs text-gray-400 line-through block font-bold mb-0.5">原價$${s.originalPrice}</span><span class="text-xl font-black text-red-600">${Math.round(s.discountRate*10)}折$${s.discountPrice}</span>`}</div><button onclick="openCheckout('${safeJsName}', '${safeJsItem}', ${s.discountPrice}, '${safeJsTime}', ${s.itemIndex}, ${s.originalPrice}, '${s.shopId}', '${safeJsAddress}', '${safeJsPhone}')" class="bg-seefoodYellow text-seefoodDarkBlue font-black text-sm px-5 py-3 rounded-xl shadow-md active:scale-95 transition">立即搶購</button></div></div></div>`;
+                container.innerHTML += `<article class="sf-hunt-card ${isGoldenVip ? 'sf-hunt-priority' : ''}">${isGoldenVip ? '<div class="sf-priority-tag"><i data-lucide="sparkles"></i> 優先曝光</div>' : ''}<div class="sf-hunt-head"><div><p class="sf-hunt-location">${escapeHTML(s.district)} · ${escapeHTML(s.name)}</p>${distanceHtml}</div><span class="sf-stock">剩 ${s.remain}</span></div><div class="sf-hunt-body"><h3>${escapeHTML(s.item)}</h3><p>${escapeHTML(s.note||'')}</p><div class="sf-hunt-meta"><span><i data-lucide="clock-3"></i>${escapeHTML(s.time)}</span><span><i data-lucide="store"></i>外帶自取</span></div></div>${taxWarningHtml}<div class="sf-hunt-foot"><div>${s.discountPrice === 0 ? `<span class="sf-free">免費惜福</span>` : `<span class="sf-old-price">$${s.originalPrice}</span><strong>${Math.round(s.discountRate*10)}折 · $${s.discountPrice}</strong>`}</div><button onclick="openCheckout('${safeJsName}', '${safeJsItem}', ${s.discountPrice}, '${safeJsTime}', ${s.itemIndex}, ${s.originalPrice}, '${s.shopId}', '${safeJsAddress}', '${safeJsPhone}')" class="sf-primary-action">獵取</button></div></article>`;
             });
         }
 
@@ -1145,9 +1166,9 @@ html{background:#eef2f6} body{letter-spacing:-.01em}
             if(!shopId||shopId===activeShopId())return;
             localStorage.setItem('seefood_merchant_shop_id',shopId);
             const top=document.getElementById('merchant-shop-select-top');if(top)top.value=shopId;
-            const cached=sessionStorage.getItem('sf26_dash_'+shopId); if(cached){try{renderShopDashboardV25(JSON.parse(cached));}catch(e){}}
+            const cached=sessionStorage.getItem('sf27_dash_'+shopId)||sessionStorage.getItem('sf26_dash_'+shopId); if(cached){try{renderShopDashboardV25(JSON.parse(cached));}catch(e){}}
             const title=document.getElementById('dashboard-shop-title');if(title&&!cached)title.innerText='載入店鋪資料…';
-            await loadShopDashboardV25(shopId,!cached);
+            loadShopDashboardV25(shopId,!cached); // 2.7：切店不阻塞 UI，背景刷新
         }
 
         function toggleResponsibleMode(){const mode=document.querySelector('input[name="responsible-mode"]:checked')?.value||'SAME';const z=document.getElementById('owner-fields-zone');if(z)z.classList.toggle('hidden',mode==='SAME'&&merchantAccountCache?.kycStatus==='VERIFIED_BASIC');}
@@ -1222,8 +1243,8 @@ html{background:#eef2f6} body{letter-spacing:-.01em}
             });
         }
 
-        function renderBadgesWall() { const container = document.getElementById('badges-container'); if(!container) return; container.innerHTML = ''; let times = userStats.unlockedTimes || {}; let counts = userStats.storeCounts || {}; let saved = Number(userStats.savedAmount) || 0; if (userStats.hasFirstOrder) container.innerHTML += createBadgeHtml("🌱", "環保初學者", "成功完成第一次惜福核銷"); if (saved >= 500) container.innerHTML += createBadgeHtml("🤖", "無情省錢機器", `累計為荷包省下 $${saved} 元`); else container.innerHTML += createBadgeHtml("💵", "精打細算新手", `解鎖省錢機器進度：$${saved}/$500`); if (times.lunch) container.innerHTML += createBadgeHtml("📊", "精算師", "成功在黃金時段搶單"); if (times.nightMarket) container.innerHTML += createBadgeHtml("🧹", "黃金清道夫", "成功在晚間尖峰清料"); if (times.midnight) container.innerHTML += createBadgeHtml("🌙", "夜貓子", "拯救打烊極限備品"); for (const [storeName, count] of Object.entries(counts)) { if (count >= 3) container.innerHTML += createBadgeHtml("☕", `${storeName} 忠實大股東`, `拯救該店達 ${count} 次`); else if (count >= 1) container.innerHTML += createBadgeHtml("🎁", `${storeName} 初體驗`, `首次拯救該店`); } }
-        function createBadgeHtml(emoji, title, desc) { return `<div class="bg-white border p-4 rounded-xl text-center flex flex-col items-center shadow-xs transition transform hover:scale-105"><span class="text-3xl mb-1">${emoji}</span><p class="font-black text-xs text-gray-800 truncate w-full">${title}</p><p class="text-[10px] text-gray-500 mt-1 leading-tight">${desc}</p></div>`; }
+        function renderBadgesWall() { const container = document.getElementById('badges-container'); if(!container) return; container.innerHTML = ''; let times = userStats.unlockedTimes || {}; let counts = userStats.storeCounts || {}; let saved = Number(userStats.savedAmount) || 0; if (userStats.hasFirstOrder) container.innerHTML += createBadgeHtml("sprout", "初次救援", "完成第一次惜福核銷"); if (saved >= 500) container.innerHTML += createBadgeHtml("wallet-cards", "省下 500", `累計省下 $${saved} 元`); else container.innerHTML += createBadgeHtml("wallet", "惜福新手", `省下 $${saved} / $500`); if (times.lunch) container.innerHTML += createBadgeHtml("sun", "午間救援", "在午間完成一次惜福"); if (times.nightMarket) container.innerHTML += createBadgeHtml("sunset", "晚間救援", "在晚間尖峰完成惜福"); if (times.midnight) container.innerHTML += createBadgeHtml("moon", "深夜救援", "拯救打烊前最後庫存"); for (const [storeName, count] of Object.entries(counts)) { if (count >= 3) container.innerHTML += createBadgeHtml("heart-handshake", `${storeName} 熟客`, `已救援該店 ${count} 次`); else if (count >= 1) container.innerHTML += createBadgeHtml("map-pin-check", `${storeName} 初訪`, `完成首次救援`); } refreshIcons26(); }
+        function createBadgeHtml(icon, title, desc) { return `<div class="sf-badge-card"><span class="sf-badge-icon"><i data-lucide="${icon}" class="w-5 h-5"></i></span><div class="min-w-0"><p class="font-black text-xs text-slate-900 truncate w-full">${escapeHTML(title)}</p><p class="text-[10px] text-slate-500 mt-1 leading-tight">${escapeHTML(desc)}</p></div></div>`; }
         
         function switchTab(tabId) {
             ['home', 'orders', 'achievement', 'merchant'].forEach(p => {
@@ -1245,30 +1266,31 @@ html{background:#eef2f6} body{letter-spacing:-.01em}
                 nameInput.value = localStorage.getItem('seefood_signer_name') || "***"; idInput.value = localStorage.getItem('seefood_signer_id') || "***"; bankCode.value = localStorage.getItem('seefood_merchant_bank_code') || ""; bankBranch.value = localStorage.getItem('seefood_merchant_bank_branch') || ""; bankAcc.value = localStorage.getItem('seefood_merchant_bank_account') || ""; bankOwner.value = localStorage.getItem('seefood_merchant_bank_owner') || "";
                 [nameInput, idInput, bankCode, bankBranch, bankAcc, bankOwner].forEach(el => { el.readOnly = true; el.classList.add('bg-slate-800', 'text-gray-400'); el.classList.remove('bg-slate-900', 'text-white'); }); agreeCheck.checked = true; agreeCheck.disabled = true;
                 document.getElementById('upload-action-zone').classList.add('hidden'); document.getElementById('upload-readonly-zone').classList.remove('hidden'); document.getElementById('sign-action-zone').classList.add('hidden'); document.getElementById('sign-readonly-zone').classList.remove('hidden'); document.getElementById('btn-clear-sign').classList.add('hidden');
-                btnSubmit.innerHTML = "🔒 資料已寫入雲端區塊鏈，修改請洽客服"; btnSubmit.disabled = true; btnSubmit.className = "w-full max-w-[400px] mx-auto block bg-slate-800 text-gray-400 font-black py-4 rounded-xl text-sm border border-slate-700 pointer-events-none";
+                btnSubmit.innerHTML = "資料已完成綁定，如需修改請聯絡支援"; btnSubmit.disabled = true; btnSubmit.className = "w-full max-w-[400px] mx-auto block bg-slate-800 text-gray-400 font-black py-4 rounded-xl text-sm border border-slate-700 pointer-events-none";
             } else {
                 [nameInput, idInput, bankCode, bankBranch, bankAcc, bankOwner].forEach(el => { el.readOnly = false; el.classList.remove('bg-slate-800', 'text-gray-400'); el.classList.add('bg-slate-900', 'text-white'); }); agreeCheck.disabled = false;
                 document.getElementById('upload-action-zone').classList.remove('hidden'); document.getElementById('upload-readonly-zone').classList.add('hidden'); document.getElementById('sign-action-zone').classList.remove('hidden'); document.getElementById('sign-readonly-zone').classList.add('hidden'); document.getElementById('btn-clear-sign').classList.remove('hidden');
-                btnSubmit.innerHTML = "🚀 提交合約並解除資金鎖定"; btnSubmit.disabled = false; btnSubmit.className = "w-full max-w-[400px] mx-auto block bg-seefoodYellow text-slate-900 font-black py-4 rounded-xl shadow-[0_0_20px_rgba(250,185,0,0.4)] active:scale-95 transition text-base tracking-widest border border-amber-400";
+                btnSubmit.innerHTML = "送出實名與收款資料"; btnSubmit.disabled = false; btnSubmit.className = "w-full max-w-[400px] mx-auto block bg-seefoodYellow text-slate-900 font-black py-4 rounded-xl shadow-[0_0_20px_rgba(250,185,0,0.4)] active:scale-95 transition text-base tracking-widest border border-amber-400";
                 setTimeout(initSignaturePad, 100);
             }
         }
         function closeContractModal() { document.getElementById('contract-modal').classList.add('hidden'); }
 
         function initSignaturePad() {
-            const cvs = document.getElementById('sign-canvas'); if(!cvs) return; signCtx = cvs.getContext('2d'); const rect = cvs.getBoundingClientRect(); cvs.width = rect.width; cvs.height = rect.height; signCtx.lineWidth = 4; signCtx.lineCap = 'round'; signCtx.strokeStyle = '#0f172a'; signatureStrokeLength=0;lastSignPos=null;signatureMetrics={minX:Infinity,minY:Infinity,maxX:0,maxY:0,turns:0,lastAngle:null};
+            const cvs = document.getElementById('sign-canvas'); if(!cvs) return; signCtx = cvs.getContext('2d'); const rect = cvs.getBoundingClientRect(); cvs.width = rect.width; cvs.height = rect.height; signCtx.lineWidth = 4; signCtx.lineCap = 'round'; signCtx.strokeStyle = '#0f172a'; signatureStrokeLength=0;lastSignPos=null;signatureMetrics={minX:Infinity,minY:Infinity,maxX:0,maxY:0,turns:0,lastAngle:null,strokes:0};
             const getPos = (e) => { const r = cvs.getBoundingClientRect(); const evt = e.touches ? e.touches[0] : e; return { x: evt.clientX - r.left, y: evt.clientY - r.top }; };
-            const start = (e) => { e.preventDefault(); isDrawing = true; const p = getPos(e); lastSignPos = p; signCtx.beginPath(); signCtx.moveTo(p.x, p.y); };
+            const start = (e) => { e.preventDefault(); isDrawing = true; signatureMetrics.strokes=(signatureMetrics.strokes||0)+1; const p = getPos(e); lastSignPos = p; signCtx.beginPath(); signCtx.moveTo(p.x, p.y); };
             const move = (e) => { e.preventDefault(); if(!isDrawing) return; const p = getPos(e); signCtx.lineTo(p.x, p.y); signCtx.stroke(); if(lastSignPos){let dx=p.x-lastSignPos.x,dy=p.y-lastSignPos.y;signatureStrokeLength+=Math.sqrt(dx*dx+dy*dy);const ang=Math.atan2(dy,dx);if(signatureMetrics.lastAngle!==null){let d=Math.abs(ang-signatureMetrics.lastAngle);if(d>Math.PI)d=2*Math.PI-d;if(d>0.55)signatureMetrics.turns++;}signatureMetrics.lastAngle=ang;}signatureMetrics.minX=Math.min(signatureMetrics.minX,p.x);signatureMetrics.minY=Math.min(signatureMetrics.minY,p.y);signatureMetrics.maxX=Math.max(signatureMetrics.maxX,p.x);signatureMetrics.maxY=Math.max(signatureMetrics.maxY,p.y);lastSignPos=p; };
             const end = (e) => { e.preventDefault(); isDrawing = false; lastSignPos = null; };
             cvs.addEventListener('mousedown', start); cvs.addEventListener('mousemove', move); cvs.addEventListener('mouseup', end); cvs.addEventListener('touchstart', start, {passive: false}); cvs.addEventListener('touchmove', move, {passive: false}); cvs.addEventListener('touchend', end);
         }
 
-        function clearSignature(){if(!signCtx)return;const cvs=document.getElementById('sign-canvas');signCtx.clearRect(0,0,cvs.width,cvs.height);signatureStrokeLength=0;signatureMetrics={minX:Infinity,minY:Infinity,maxX:0,maxY:0,turns:0,lastAngle:null};}
+        function clearSignature(){if(!signCtx)return;const cvs=document.getElementById('sign-canvas');signCtx.clearRect(0,0,cvs.width,cvs.height);signatureStrokeLength=0;signatureMetrics={minX:Infinity,minY:Infinity,maxX:0,maxY:0,turns:0,lastAngle:null,strokes:0};}
 
         function handleIdUpload(event) {
             const file = event.target.files[0]; if(!file) return; const reader = new FileReader();
             reader.onload = function(e) {
+                contractRawImageBase64 = e.target.result;
                 const img = new Image();
                 img.onload = function() {
                     const canvas=document.getElementById('watermark-canvas'),ctx=canvas.getContext('2d'); contractImageMetrics.width=img.width;contractImageMetrics.height=img.height;contractImageMetrics.fileSize=file.size||0;
@@ -1285,26 +1307,37 @@ html{background:#eef2f6} body{letter-spacing:-.01em}
             reader.readAsDataURL(file);
         }
 
-        function submitContract() {
+        function isValidTwIdClientV27(id){id=String(id||'').toUpperCase();if(!/^[A-Z][12]\d{8}$/.test(id))return false;const c={A:10,B:11,C:12,D:13,E:14,F:15,G:16,H:17,I:34,J:18,K:19,L:20,M:21,N:22,O:35,P:23,Q:24,R:25,S:26,T:27,U:28,V:29,W:32,X:30,Y:31,Z:33}[id[0]];let s=Math.floor(c/10)+(c%10)*9;for(let i=1;i<=8;i++)s+=Number(id[i])*(9-i);s+=Number(id[9]);return s%10===0;}
+        function isValidTaxIdClientV27(id){id=String(id||'');if(!/^\d{8}$/.test(id))return false;const w=[1,2,1,2,1,2,4,1];let s=0;for(let i=0;i<8;i++){let p=Number(id[i])*w[i];s+=Math.floor(p/10)+p%10;}return s%5===0||(id[6]==='7'&&(s+1)%5===0);}
+        async function loadTesseractV27(){if(window.Tesseract)return true;return await new Promise(resolve=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=()=>resolve(true);s.onerror=()=>resolve(false);document.head.appendChild(s);});}
+        async function runDocumentOcrV27(imageData, expectedId){const ok=await loadTesseractV27();if(!ok||!window.Tesseract)return {available:false,matched:false,confidence:0};try{const ret=await Tesseract.recognize(imageData,'eng',{logger:()=>{}});const text=String(ret?.data?.text||'').toUpperCase().replace(/[^A-Z0-9]/g,'');const target=String(expectedId||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return {available:true,matched:text.includes(target),confidence:Math.round(Number(ret?.data?.confidence)||0)};}catch(e){console.warn('OCR unavailable',e);return {available:false,matched:false,confidence:0};}}
+
+        async function submitContract() {
             if (isSubmittingGlobal) return; const shopId = new URLSearchParams(window.location.search).get('shopId') || localStorage.getItem('seefood_merchant_shop_id');
             if(!shopId) { alert("找不到店鋪編號，請從您的信箱專屬連結登入！"); return; }
             if(!document.getElementById('contract-agree').checked) { alert("🛡️ 阻斷：請勾選同意合約法務條款！"); return; }
             const sName = document.getElementById('contract-name').value.trim(); const sId = document.getElementById('contract-id').value.trim(); const bCode = document.getElementById('contract-bank-code').value.trim(); const bBranch = document.getElementById('contract-bank-branch').value.trim(); const bAcc = document.getElementById('contract-bank-acc').value.trim(); const bOwner = document.getElementById('contract-bank-owner').value.trim();
             if(!sName || !sId || !bCode || !bAcc || !bOwner) { alert("🛡️ 阻斷：請完整填寫負責人與匯款銀行資料！"); return; }
             if(sName.length < 2) { alert("🛡️ 阻斷：請填寫真實中文全名！"); return; }
-            const idRegex = /^[A-Z][1289]\d{8}$/; const taxRegex = /^\d{8}$/;
-            if (!idRegex.test(sId) && !taxRegex.test(sId)) { alert("🛡️ 格式錯誤：個人請輸入有效身分證字號(首字大寫)\n公司請輸入8碼統一編號"); return; }
+            const isPersonal=/^[A-Z]/.test(sId.toUpperCase()); const idValid=isPersonal?isValidTwIdClientV27(sId):isValidTaxIdClientV27(sId);
+            if (!idValid) { alert('證號檢核未通過：請確認身分證字號或統一編號是否正確。'); return; }
             if(!contractIdBase64) { alert("🛡️ 阻斷：請拍照上傳您的證件或營登文件！"); return; }
-            if(signatureStrokeLength < 100) { alert("🛡️ 簽名無效：軌跡過於簡略，請確實手寫完整姓名以生法律效力。"); clearSignature(); return; }
+            if(signatureStrokeLength < 260 || (signatureMetrics.strokes||0)<2 || (signatureMetrics.maxX-signatureMetrics.minX)<80 || (signatureMetrics.maxY-signatureMetrics.minY)<28) { alert("簽名辨識不足：請以至少兩筆手寫完整姓名，避免單一直線或單筆塗鴉。"); clearSignature(); return; }
 
-            const signCvs = document.getElementById('sign-canvas'); const signBase64 = signCvs.toDataURL('image/png'); isSubmittingGlobal = true;
-            showGlobalLoading("金庫連線加密中", "資料寫入雲端檔案庫，約需 10~20 秒請稍候...");
-            const d = new URLSearchParams(); d.append('action', 'signContract'); d.append('shopId', shopId); d.append('uid', userStats.lineUid); d.append('signerName', sName); d.append('signerId', sId); d.append('bankCode', bCode); d.append('bankBranch', bBranch); d.append('bankAccount', bAcc); d.append('bankOwner', bOwner); d.append('idCardImage',contractIdBase64);d.append('signImage',signBase64);d.append('imageWidth',contractImageMetrics.width);d.append('imageHeight',contractImageMetrics.height);d.append('imageFileSize',contractImageMetrics.fileSize);d.append('imageVariance',contractImageMetrics.variance);d.append('imageBrightness',contractImageMetrics.brightness);d.append('signatureLength',signatureStrokeLength);d.append('signatureWidth',Math.max(0,signatureMetrics.maxX-signatureMetrics.minX));d.append('signatureHeight',Math.max(0,signatureMetrics.maxY-signatureMetrics.minY));d.append('signatureTurns',signatureMetrics.turns);
+            if(contractImageMetrics.width<700 || contractImageMetrics.height<450 || contractImageMetrics.fileSize<45000 || contractImageMetrics.variance<14){alert('證件影像品質不足：請重新拍攝完整、清晰、無反光的證件／營登文件。');return;}
+            isSubmittingGlobal = true; showGlobalLoading('證件辨識中','正在比對證號與上傳文件，首次辨識可能需要數秒…');
+            const ocr=await runDocumentOcrV27(contractRawImageBase64||contractIdBase64,sId);
+            if(ocr.available && !ocr.matched){isSubmittingGlobal=false;hideGlobalLoading();alert('證件內容未能辨識到你填寫的證號。請確認上傳的是對應證件，並重新拍攝清晰完整畫面。');return;}
+            const signCvs = document.getElementById('sign-canvas'); const signBase64 = signCvs.toDataURL('image/png');
+            showGlobalLoading('安全送出中', ocr.available?'證號比對完成，正在寫入驗證紀錄…':'OCR 暫時不可用，本次將進入例外審核，不會自動通過。');
+            const d = new URLSearchParams(); d.append('action', 'signContract'); d.append('shopId', shopId); d.append('uid', userStats.lineUid); d.append('signerName', sName); d.append('signerId', sId); d.append('bankCode', bCode); d.append('bankBranch', bBranch); d.append('bankAccount', bAcc); d.append('bankOwner', bOwner); d.append('idCardImage',contractIdBase64);d.append('signImage',signBase64);d.append('imageWidth',contractImageMetrics.width);d.append('imageHeight',contractImageMetrics.height);d.append('imageFileSize',contractImageMetrics.fileSize);d.append('imageVariance',contractImageMetrics.variance);d.append('imageBrightness',contractImageMetrics.brightness);d.append('signatureLength',signatureStrokeLength);d.append('signatureWidth',Math.max(0,signatureMetrics.maxX-signatureMetrics.minX));d.append('signatureHeight',Math.max(0,signatureMetrics.maxY-signatureMetrics.minY));d.append('signatureTurns',signatureMetrics.turns);d.append('signatureStrokes',signatureMetrics.strokes||0);d.append('ocrAvailable',ocr.available?'1':'0');d.append('ocrIdMatched',ocr.matched?'1':'0');d.append('ocrConfidence',ocr.confidence||0);
             fetch(gasUrl, { method: "POST", body: d }).then(res => res.json()).then(resJson => {
                 if(resJson.status === "success") {
-                    alert("✅ 實名認證與帳戶綁定成功！\n商家主帳號基礎實名驗證完成；同主體店鋪可沿用。"); localStorage.setItem('seefood_merchant_contract_status', '已完成'); localStorage.setItem('seefood_signer_name', sName); localStorage.setItem('seefood_signer_id', sId); localStorage.setItem('seefood_merchant_bank_code', bCode); localStorage.setItem('seefood_merchant_bank_branch', bBranch); localStorage.setItem('seefood_merchant_bank_account', bAcc); localStorage.setItem('seefood_merchant_bank_owner', bOwner);
+                    alert("實名與收款資料已完成基礎驗證。\n同一商家主帳號的同責任人店鋪可沿用。"); localStorage.setItem('seefood_merchant_contract_status', '已完成'); localStorage.setItem('seefood_signer_name', sName); localStorage.setItem('seefood_signer_id', sId); localStorage.setItem('seefood_merchant_bank_code', bCode); localStorage.setItem('seefood_merchant_bank_branch', bBranch); localStorage.setItem('seefood_merchant_bank_account', bAcc); localStorage.setItem('seefood_merchant_bank_owner', bOwner);
                     closeContractModal(); document.getElementById('contract-warning-wall').classList.add('hidden'); document.getElementById('contract-success-wall').classList.remove('hidden');
-                } else { alert("❌ 連線錯誤：" + resJson.msg); }
+                } else if(resJson.status==='resubmit') { alert(resJson.msg||'驗證未通過，請重新補件。'); }
+                else if(resJson.status==='review') { alert(resJson.msg||'已進入例外審核，尚未自動通過。'); }
+                else { alert("連線錯誤：" + (resJson.msg||'未知錯誤')); }
             }).catch(() => { alert("⏳ 雲端處理超時：您的檔案較大正在背景建檔中。請稍後重整網頁確認是否審核通過，無需重複送出！"); }).finally(() => { isSubmittingGlobal = false; hideGlobalLoading(); });
         }
     
