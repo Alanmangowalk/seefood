@@ -7,6 +7,7 @@
     <title>SEEFOOD 美食獵人尋飽趣</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
     <script>
         tailwind.config = { theme: { extend: { colors: { seefoodYellow: '#FAB900', seefoodDarkBlue: '#0D2A4A', radarGreen: '#10b981', tacticalOrange: '#f97316' } } } }
     </script>
@@ -31,6 +32,32 @@
         #target-scale-wrapper { transition: transform 1s linear; z-index: 15; position: absolute; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
         .hud-text { font-family: monospace; text-shadow: 0 0 5px rgba(132, 204, 22, 0.8); }
     </style>
+
+<style id="seefood-26-design-system">
+:root{--sf-ink:#0B1F33;--sf-yellow:#F6B800;--sf-green:#16A36A;--sf-line:#E7ECF2;--sf-soft:#F6F8FB}
+html{background:#eef2f6} body{letter-spacing:-.01em}
+.sf-merchant-bar{position:relative!important;top:auto!important;z-index:5!important}
+.sf-merchant-os{box-shadow:0 18px 45px rgba(11,31,51,.12)!important;background:linear-gradient(180deg,#10243A 0%,#0B1F33 100%)!important}
+.sf-merchant-os .animate-pulse{animation:none!important}
+.sf-secondary-btn{box-shadow:none!important}
+#contract-modal .overflow-y-auto{overscroll-behavior:contain}
+#contract-modal .bg-slate-800{position:relative}
+.sf-support-handle{position:fixed;right:0;bottom:88px;z-index:80;width:42px;height:52px;border-radius:16px 0 0 16px;background:#10243A;color:#fff;border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 30px rgba(11,31,51,.2);display:flex;align-items:center;justify-content:center}
+.sf-support-handle:hover{background:#0B1F33}.sf-support-handle .sf-dot{display:none;position:absolute;top:7px;right:5px;width:7px;height:7px;border-radius:50%;background:#ef4444}
+.sf-support-handle[data-alert="1"] .sf-dot{display:block}
+.sf-sheet-backdrop{background:rgba(5,15,25,.45);backdrop-filter:blur(3px)}
+.sf-sheet{border-radius:26px 26px 0 0;box-shadow:0 -20px 60px rgba(4,17,30,.22)}
+.sf-support-item{display:flex;gap:12px;align-items:center;width:100%;padding:13px 14px;border:1px solid #e5eaf0;border-radius:14px;background:white;text-align:left}
+.sf-support-item:hover{background:#f8fafc}
+.sf-iconbox{width:34px;height:34px;border-radius:10px;background:#f1f5f9;color:#0B1F33;display:flex;align-items:center;justify-content:center;flex:none}
+@media(min-width:900px){
+ body>div:first-of-type,.app-shell{max-width:1160px;margin:0 auto}
+ .sf-support-handle{display:none!important}
+ #merchant-dashboard-zone{max-width:900px;margin-left:auto;margin-right:auto}
+ #merchant-account-bar{max-width:900px;margin-left:auto;margin-right:auto}
+ #contract-modal>div{max-width:760px!important}
+}
+</style>
 </head>
 <body class="bg-gray-900 min-h-screen flex justify-center items-top">
 
@@ -205,17 +232,18 @@
             </div>
 
             <div id="page-merchant" class="space-y-4 hidden">
-                <div id="merchant-account-bar" class="hidden bg-white border border-gray-200 rounded-2xl p-3 shadow-sm">
-                    <div class="flex items-center gap-2">
+                <div id="merchant-account-bar" class="hidden sf-merchant-bar bg-white border border-slate-200 rounded-2xl p-3 shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-seefoodDarkBlue flex-none"><i data-lucide="store" class="w-4 h-4"></i></div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-[9px] text-gray-400 font-black tracking-widest">目前管理店鋪</p>
+                            <p class="text-[9px] text-slate-400 font-bold tracking-[.16em] uppercase">目前店鋪</p>
                             <select id="merchant-shop-select-top" onchange="switchMerchantShop(this.value)" class="w-full bg-transparent text-seefoodDarkBlue font-black text-sm mt-0.5 focus:outline-none truncate"></select>
                         </div>
-                        <button type="button" onclick="startAddMerchantShop()" class="bg-seefoodDarkBlue text-seefoodYellow font-black px-3.5 py-2.5 rounded-xl text-xs active:scale-95 transition whitespace-nowrap">＋ 新增店鋪</button>
+                        <button type="button" onclick="startAddMerchantShop()" class="sf-secondary-btn text-seefoodDarkBlue font-black px-3 py-2.5 rounded-xl text-xs active:scale-95 transition whitespace-nowrap border border-slate-200 bg-slate-50"><span class="hidden sm:inline">新增店鋪</span><span class="sm:hidden">新增</span></button>
                     </div>
                 </div>
 
-                <div id="merchant-dashboard-zone" class="bg-gradient-to-br from-slate-900 to-blue-950 text-white rounded-3xl p-5 shadow-xl space-y-4 hidden mb-4 relative overflow-hidden">
+                <div id="merchant-dashboard-zone" class="sf-merchant-os bg-slate-950 text-white rounded-3xl p-5 shadow-lg space-y-4 hidden mb-4 relative overflow-hidden border border-slate-800">
                     
                     <!-- 🧱 SEEFOOD 2.0.1：多店切換器（Foundation） -->
                     <div id="merchant-shop-switcher-zone" class="hidden !hidden bg-slate-950/70 border border-slate-700 rounded-2xl p-3 relative z-20">
@@ -257,7 +285,7 @@
                     <div id="contract-success-wall" class="hidden bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl p-4 shadow-[0_0_15px_rgba(16,185,129,0.3)] mb-4 text-white border border-emerald-400 relative z-20 flex justify-between items-center cursor-pointer active:scale-95 transition" onclick="openContractModal(true)">
                         <div>
                             <h4 class="font-black text-sm mb-0.5 flex items-center"><span class="text-lg mr-1">✅</span> 實名合約與帳戶已綁定</h4>
-                            <p class="text-[10px] font-bold opacity-80">資料已寫入雲端金庫與區塊鏈防竄改</p>
+                            <p class="text-[10px] font-bold opacity-80">資料已完成驗證並寫入商家主帳號</p>
                         </div>
                         <span class="bg-slate-900/40 px-2 py-1.5 rounded-lg text-xs font-black shadow-sm flex-none">📄 檢視</span>
                     </div>
@@ -275,8 +303,8 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 relative z-10">
-                        <button type="button" onclick="document.getElementById('dashboard-slots-container').scrollIntoView({behavior:'smooth'})" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left active:scale-95 transition"><p class="text-[10px] text-blue-200 font-bold">今日營運</p><p class="text-sm font-black text-white mt-1">⚡ 快速開賣</p></button>
-                        <button type="button" onclick="openFinanceModal()" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left active:scale-95 transition"><p class="text-[10px] text-blue-200 font-bold">帳務</p><p class="text-sm font-black text-white mt-1">📊 查看金庫</p></button>
+                        <button type="button" onclick="document.getElementById('dashboard-slots-container').scrollIntoView({behavior:'smooth'})" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left active:scale-95 transition"><p class="text-[10px] text-blue-200 font-bold">今日營運</p><p class="text-sm font-black text-white mt-1">快速開賣</p></button>
+                        <button type="button" onclick="openFinanceModal()" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left active:scale-95 transition"><p class="text-[10px] text-blue-200 font-bold">帳務</p><p class="text-sm font-black text-white mt-1">帳務總覽</p></button>
                     </div>
 
                     <div id="merchant-active-orders-zone" class="bg-slate-800 rounded-2xl p-4 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)] relative z-10 hidden">
@@ -289,7 +317,7 @@
 
                     <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-3 flex justify-between items-center shadow-md relative z-10 text-white">
                         <div>
-                            <p class="text-xs font-black flex items-center">📱 將後台加入手機主畫面</p>
+                            <p class="text-xs font-black flex items-center">將後台加入手機主畫面</p>
                             <p class="text-[9px] text-blue-200 mt-0.5 leading-tight">像 App 一樣，一鍵秒開秒上架！</p>
                         </div>
                         <button onclick="showAppTutorial()" class="bg-white text-indigo-700 font-black text-[10px] px-3 py-2 rounded-lg shadow-sm active:scale-95 transition flex-shrink-0 ml-2">查看教學</button>
@@ -297,7 +325,7 @@
 
                     <a href="guide.html" target="_blank" id="merchant-guide-btn" class="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-xl p-3 flex justify-between items-center shadow-md relative z-10 text-slate-900 block cursor-pointer active:scale-95 transition">
                         <div>
-                            <p class="text-xs font-black flex items-center tracking-wide">📖 創始商家 · 發車與操作指南</p>
+                            <p class="text-xs font-black flex items-center tracking-wide">商家操作指南</p>
                             <p class="text-[9px] text-amber-900 mt-0.5 leading-tight font-bold">必看！上架防呆、收款機制與接單須知</p>
                         </div>
                         <span class="bg-white/20 text-slate-900 font-black text-[10px] px-3 py-2 rounded-lg shadow-sm">前往閱讀</span>
@@ -312,13 +340,13 @@
                     </div>
 
                     <button type="button" onclick="openFinanceModal()" class="w-full bg-slate-800 border border-slate-600 text-blue-300 font-black py-3 rounded-xl text-sm transition active:scale-95 hover:bg-slate-700 flex justify-center items-center relative z-10 shadow-sm">
-                        📊 查看雲端金庫與對帳單
+                        查看帳務與對帳
                     </button>
 
                     <div id="dashboard-slots-container" class="space-y-4 text-xs relative z-10 mt-2"></div>
 
                     <div class="text-xs relative z-10 border-t border-slate-700 pt-4 mt-2">
-                        <label class="block text-blue-200 mb-1.5 font-bold text-sm">⏳ 顧客取餐截止限時</label>
+                        <label class="block text-blue-200 mb-1.5 font-bold text-sm">顧客取餐截止時間</label>
                         <input type="text" id="dash-time" value="今日打烊前" placeholder="範例：21:00前" class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-400">
                         <p class="text-[10px] text-gray-400 mt-1.5">💡 建議填寫明確時間，例如：21:00前</p>
                     </div>
@@ -327,8 +355,8 @@
                         <div class="col-span-2 text-center text-[10px] font-bold text-slate-400 mb-1 mt-2">
                             🛡️ 營運安全線：為防範異常交易，單日累積營業額達 $10,000 系統將強制打烊。
                         </div>
-                        <button type="button" onclick="updateStoreOnlineStatus('OFF')" class="bg-slate-700 text-white font-black py-4 rounded-xl active:scale-95 transition hover:bg-slate-600 text-sm shadow-md">🛑 結束販售 (下架)</button>
-                        <button type="button" id="btn-online-submit" onclick="updateStoreOnlineStatus('ON')" class="bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-black py-4 rounded-xl active:scale-95 transition shadow-lg hover:from-emerald-700 text-sm border border-emerald-400/50">⚡ 極速開賣 (上架)</button>
+                        <button type="button" onclick="updateStoreOnlineStatus('OFF')" class="bg-slate-700 text-white font-black py-4 rounded-xl active:scale-95 transition hover:bg-slate-600 text-sm shadow-md">結束販售</button>
+                        <button type="button" id="btn-online-submit" onclick="updateStoreOnlineStatus('ON')" class="bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-black py-4 rounded-xl active:scale-95 transition shadow-lg hover:from-emerald-700 text-sm border border-emerald-400/50">立即開賣</button>
                     </div>
                 </div>
 
@@ -382,10 +410,10 @@
 
         <div class="flex-none bg-seefoodDarkBlue text-white border-t border-blue-950 z-40 relative">
             <div class="grid grid-cols-4 text-center py-2.5 text-[10px] font-bold">
-                <button onclick="switchTab('home')" id="tab-home" class="flex flex-col items-center justify-center text-seefoodYellow cursor-pointer transition"><span class="text-xl mb-0.5">🛍️</span><span>尋飽開搶</span></button>
-                <button onclick="switchTab('orders')" id="tab-orders" class="flex flex-col items-center justify-center text-blue-200 relative cursor-pointer transition"><span class="text-xl mb-0.5">🎫</span><span>我的票券</span><div id="badge" class="absolute top-1 right-6 w-2 h-2 bg-red-500 rounded-full hidden shadow-sm"></div></button>
-                <button onclick="switchTab('achievement')" id="tab-achievement" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition"><span class="text-xl mb-0.5">🌱</span><span>減碳成就</span></button>
-                <button onclick="switchTab('merchant')" id="tab-merchant" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition"><span class="text-xl mb-0.5">🤝</span><span id="tab-merchant-text">優質招商</span></button>
+                <button onclick="switchTab('home')" id="tab-home" class="flex flex-col items-center justify-center text-seefoodYellow cursor-pointer transition"><i data-lucide="radar" class="w-5 h-5 mb-1"></i><span>獵物</span></button>
+                <button onclick="switchTab('orders')" id="tab-orders" class="flex flex-col items-center justify-center text-blue-200 relative cursor-pointer transition"><i data-lucide="ticket-check" class="w-5 h-5 mb-1"></i><span>票券</span><div id="badge" class="absolute top-1 right-6 w-2 h-2 bg-red-500 rounded-full hidden shadow-sm"></div></button>
+                <button onclick="switchTab('achievement')" id="tab-achievement" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition"><i data-lucide="award" class="w-5 h-5 mb-1"></i><span>成就</span></button>
+                <button onclick="switchTab('merchant')" id="tab-merchant" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition"><i data-lucide="store" class="w-5 h-5 mb-1"></i><span id="tab-merchant-text">商家</span></button>
             </div>
         </div>
 
@@ -443,7 +471,7 @@
                     <p>系統會先檢查照片清晰度、明暗與資訊格式，以及簽署筆跡的完整性。品質不足會直接要求補件，減少人工逐筆檢查。此階段不宣稱可驗證政府證件真偽；正式營運前將預留第三方 KYC 串接。</p>
                 </div>
                 <div class="bg-slate-800 rounded-xl p-4 h-56 overflow-y-auto text-[11px] text-gray-300 space-y-3 border border-slate-600 shadow-inner">
-                    <p class="font-black text-white text-sm border-b border-slate-600 pb-2 mb-2 sticky top-0 bg-slate-800">【SEEFOOD 平台特約商店服務條款暨代收付合約】</p>
+                    <p class="font-black text-white text-sm border-b border-slate-600 pb-3 mb-3 bg-slate-800">【SEEFOOD 平台特約商店服務條款暨代收付合約】</p>
                     <p><span class="text-emerald-400 font-bold">1. 居間定位與勞雇切割：</span>平台僅為資訊撮合與代收付工具，不涉入商品實際買賣，與店家無勞雇或加盟關係。</p>
                     <p><span class="text-emerald-400 font-bold">2. 食安與客訴全責：</span>店家保證上架商品符合《食品安全衛生管理法》。若因食物變質、標示不實導致客訴或傷病，由店家負擔 100% 法律與賠償責任。</p>
                     <p><span class="text-emerald-400 font-bold">3. 稅務與發票開立：</span>平台僅就「系統服務費」開立發票給店家；商品本身的免稅申報或發票開立責任，由店家自行承擔。</p>
@@ -673,7 +701,7 @@
         }
 
         function checkTos() { if (!localStorage.getItem('seefood_tos_agreed')) { document.getElementById('tos-modal').classList.remove('hidden'); } }
-        function acceptTos(){localStorage.setItem('seefood_tos_agreed','true');localStorage.setItem('seefood_tos_version','2.5');document.getElementById('tos-modal').classList.add('hidden');fetchLiveStores();if(userStats.lineUid&&userStats.lineUid!=='LINE_GUEST')postActionV25('recordConsent',{uid:userStats.lineUid,documentType:'TOS',version:'2.5',source:'WEB'}).catch(()=>{});}
+        function acceptTos(){localStorage.setItem('seefood_tos_agreed','true');localStorage.setItem('seefood_tos_version','2.6');document.getElementById('tos-modal').classList.add('hidden');fetchLiveStores();if(userStats.lineUid&&userStats.lineUid!=='LINE_GUEST')postActionV25('recordConsent',{uid:userStats.lineUid,documentType:'TOS',version:'2.6',source:'WEB'}).catch(()=>{});}
 
         function startBannerCarousel() {
             setInterval(() => {
@@ -739,7 +767,7 @@
 
         async function loadShopDashboardV25(shopId, showLoader=false) {
             if(!shopId||userStats.lineUid==='LINE_GUEST')return; if(showLoader)showGlobalLoading('切換店鋪','只載入這間店的即時資料…');
-            try{const j=await postActionV25('getShopDashboard',{uid:userStats.lineUid,shopId});if(j.status==='success'&&j.myShop)renderShopDashboardV25(j.myShop);else alert(j.msg||'店鋪載入失敗');}catch(e){console.error(e);alert('店鋪資料載入失敗，請稍後重試');}finally{if(showLoader)hideGlobalLoading();}
+            try{const j=await postActionV25('getShopDashboard',{uid:userStats.lineUid,shopId});if(j.status==='success'&&j.myShop){sessionStorage.setItem('sf26_dash_'+shopId,JSON.stringify(j.myShop));renderShopDashboardV25(j.myShop);}else alert(j.msg||'店鋪載入失敗');}catch(e){console.error(e);alert('店鋪資料載入失敗，請稍後重試');}finally{if(showLoader)hideGlobalLoading();}
         }
 
         async function loadPartnerHubV25() {
@@ -750,13 +778,21 @@
         async function syncUserDataFromCloud() {
             if(userStats.lineUid==='LINE_GUEST')return;
             try{
-                const json=await postActionV25('syncCore',{uid:userStats.lineUid}); if(json.status!=='success')return;
-                merchantAccountCache=json.merchantAccount||null;
+                const coreCached=sessionStorage.getItem('sf26_core_'+userStats.lineUid); if(coreCached){try{const c=JSON.parse(coreCached);renderCore26(c);}catch(e){}}
+                const json=await postActionV25('syncCore',{uid:userStats.lineUid}); if(json.status!=='success')return; sessionStorage.setItem('sf26_core_'+userStats.lineUid,JSON.stringify(json));
+                merchantAccountCache=json.merchantAccount||null; renderCore26(json);
                 const shops=Array.isArray(json.myShops)?json.myShops:[]; const bar=document.getElementById('merchant-account-bar'),sel=document.getElementById('merchant-shop-select-top');
                 if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · VIP':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);await loadShopDashboardV25(active,false);}
                 if(json.orders&&json.orders.length){localStorage.setItem('seefood_orders_list',JSON.stringify(json.orders));recalculateUserStats(json.orders);}else{localStorage.setItem('seefood_orders_list','[]');loadUserStats();renderBadgesWall();}
                 renderSavedTicketsWall();
             }catch(e){console.error('核心同步失敗',e);loadUserStats();renderBadgesWall();}
+        }
+
+
+        function renderCore26(json){
+            merchantAccountCache=json.merchantAccount||merchantAccountCache; const shops=Array.isArray(json.myShops)?json.myShops:[]; const bar=document.getElementById('merchant-account-bar'),sel=document.getElementById('merchant-shop-select-top');
+            if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · VIP':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);}
+            refreshIcons26();
         }
 
         function recalculateUserStats(orders) {
@@ -1095,21 +1131,23 @@
             }
             const btn = document.getElementById('btn-online-submit'); if(btn) { btn.innerText = "⏳ 同步中..."; btn.disabled = true; }
             fetch(gasUrl, { method: "POST", body: formData }).then(res => res.json()).then(resJson => {
-                if(btn) { btn.innerText = "⚡ 極速開賣 (上架)"; btn.disabled = false; }
+                if(btn) { btn.innerText = "立即開賣"; btn.disabled = false; }
                 if (resJson.status === "error") { alert(resJson.msg); return; }
                 const b = document.getElementById('dashboard-status-badge');
                 if (resJson.msg && resJson.msg.includes("⚠️")) { alert(resJson.msg); } 
                 else if (status === 'ON') { b.innerText = "營業中"; b.className = "text-xs bg-emerald-600 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px] animate-pulse"; alert('🟢【開張成功！】最新狀態已同步雲端，系統已記住您本次設定。'); } 
                 else { b.innerText = "休息中"; b.className = "text-xs bg-slate-500 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px]"; alert('🔴【店鋪已下架休息】'); }
                 renderDashboardSlots(); fetchLiveStores(); 
-            }).catch((err) => { console.error(err); if(btn) { btn.innerText = "⚡ 極速開賣 (上架)"; btn.disabled = false; } alert("連線異常，請檢查網路狀態"); });
+            }).catch((err) => { console.error(err); if(btn) { btn.innerText = "立即開賣"; btn.disabled = false; } alert("連線異常，請檢查網路狀態"); });
         }
 
         async function switchMerchantShop(shopId) {
             if(!shopId||shopId===activeShopId())return;
             localStorage.setItem('seefood_merchant_shop_id',shopId);
-            const title=document.getElementById('dashboard-shop-title');if(title)title.innerText='切換店鋪中…';
-            await loadShopDashboardV25(shopId,true);
+            const top=document.getElementById('merchant-shop-select-top');if(top)top.value=shopId;
+            const cached=sessionStorage.getItem('sf26_dash_'+shopId); if(cached){try{renderShopDashboardV25(JSON.parse(cached));}catch(e){}}
+            const title=document.getElementById('dashboard-shop-title');if(title&&!cached)title.innerText='載入店鋪資料…';
+            await loadShopDashboardV25(shopId,!cached);
         }
 
         function toggleResponsibleMode(){const mode=document.querySelector('input[name="responsible-mode"]:checked')?.value||'SAME';const z=document.getElementById('owner-fields-zone');if(z)z.classList.toggle('hidden',mode==='SAME'&&merchantAccountCache?.kycStatus==='VERIFIED_BASIC');}
@@ -1118,7 +1156,7 @@
             const regZone=document.getElementById('merchant-registration-zone'),dash=document.getElementById('merchant-dashboard-zone'),cancel=document.getElementById('cancel-add-shop-btn');
             if(dash)dash.classList.add('hidden');if(cancel)cancel.classList.remove('hidden');if(regZone){regZone.style.display='block';regZone.scrollIntoView({behavior:'smooth',block:'start'});}
             ['merchant-name-input','merchant-address-input','merchant-phone-input','merchant-email-input'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-            const rz=document.getElementById('responsible-mode-zone');if(rz)rz.classList.toggle('hidden',!(merchantAccountCache&&merchantAccountCache.kycStatus==='VERIFIED_BASIC'));
+            const rz=document.getElementById('responsible-mode-zone');if(rz)rz.classList.toggle('hidden',!merchantAccountCache);
             const same=document.querySelector('input[name="responsible-mode"][value="SAME"]');if(same)same.checked=true;toggleResponsibleMode();
         }
 
@@ -1193,7 +1231,7 @@
                 const btn = document.getElementById(`tab-${p}`); if (btn) { if (p === tabId) { btn.classList.remove('text-blue-200'); btn.classList.add('text-seefoodYellow'); } else { btn.classList.add('text-blue-200'); btn.classList.remove('text-seefoodYellow'); } }
             });
             const headerZone = document.getElementById('home-header-zone'); if(headerZone) { if(tabId === 'merchant') { headerZone.classList.add('hidden'); } else { headerZone.classList.remove('hidden'); } }
-            if(tabId==='achievement')loadPartnerHubV25(); if(window.location.hash!==`#${tabId}`)history.pushState(null,null,`#${tabId}`);
+            if(tabId==='achievement')loadPartnerHubV25(); refreshIcons26(); if(window.location.hash!==`#${tabId}`)history.pushState(null,null,`#${tabId}`);
         }
         function checkHashAndSwitch() { const hash = window.location.hash.replace('#', ''); switchTab(['home', 'orders', 'achievement', 'merchant'].includes(hash) ? hash : 'home'); }
         
@@ -1264,23 +1302,31 @@
             const d = new URLSearchParams(); d.append('action', 'signContract'); d.append('shopId', shopId); d.append('uid', userStats.lineUid); d.append('signerName', sName); d.append('signerId', sId); d.append('bankCode', bCode); d.append('bankBranch', bBranch); d.append('bankAccount', bAcc); d.append('bankOwner', bOwner); d.append('idCardImage',contractIdBase64);d.append('signImage',signBase64);d.append('imageWidth',contractImageMetrics.width);d.append('imageHeight',contractImageMetrics.height);d.append('imageFileSize',contractImageMetrics.fileSize);d.append('imageVariance',contractImageMetrics.variance);d.append('imageBrightness',contractImageMetrics.brightness);d.append('signatureLength',signatureStrokeLength);d.append('signatureWidth',Math.max(0,signatureMetrics.maxX-signatureMetrics.minX));d.append('signatureHeight',Math.max(0,signatureMetrics.maxY-signatureMetrics.minY));d.append('signatureTurns',signatureMetrics.turns);
             fetch(gasUrl, { method: "POST", body: d }).then(res => res.json()).then(resJson => {
                 if(resJson.status === "success") {
-                    alert("✅ 實名認證與帳戶綁定成功！\n您的法務指紋與證件已安全鎖入雲端，資金提領權限已完全開啟。"); localStorage.setItem('seefood_merchant_contract_status', '已完成'); localStorage.setItem('seefood_signer_name', sName); localStorage.setItem('seefood_signer_id', sId); localStorage.setItem('seefood_merchant_bank_code', bCode); localStorage.setItem('seefood_merchant_bank_branch', bBranch); localStorage.setItem('seefood_merchant_bank_account', bAcc); localStorage.setItem('seefood_merchant_bank_owner', bOwner);
+                    alert("✅ 實名認證與帳戶綁定成功！\n商家主帳號基礎實名驗證完成；同主體店鋪可沿用。"); localStorage.setItem('seefood_merchant_contract_status', '已完成'); localStorage.setItem('seefood_signer_name', sName); localStorage.setItem('seefood_signer_id', sId); localStorage.setItem('seefood_merchant_bank_code', bCode); localStorage.setItem('seefood_merchant_bank_branch', bBranch); localStorage.setItem('seefood_merchant_bank_account', bAcc); localStorage.setItem('seefood_merchant_bank_owner', bOwner);
                     closeContractModal(); document.getElementById('contract-warning-wall').classList.add('hidden'); document.getElementById('contract-success-wall').classList.remove('hidden');
                 } else { alert("❌ 連線錯誤：" + resJson.msg); }
             }).catch(() => { alert("⏳ 雲端處理超時：您的檔案較大正在背景建檔中。請稍後重整網頁確認是否審核通過，無需重複送出！"); }).finally(() => { isSubmittingGlobal = false; hideGlobalLoading(); });
         }
-    </script>
     
-    <a href="https://line.me/R/ti/p/@398ndwec" target="_blank" rel="noopener noreferrer" 
-       class="fixed bottom-32 right-4 z-[999] bg-slate-900/95 border-2 border-seefoodYellow text-seefoodYellow p-3.5 rounded-full shadow-[0_0_20px_rgba(250,185,0,0.4)] hover:shadow-[0_0_30px_rgba(250,185,0,0.6)] active:scale-95 hover:border-white hover:text-white transition-all duration-300 flex items-center justify-center group animate-pulse">
-        <span class="absolute top-0 right-0 flex h-3 w-3">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-        </span>
-        <div class="flex flex-col items-center justify-center leading-none text-center">
-            <span class="text-xl group-hover:rotate-12 transition-transform duration-200">📞</span>
-            <span class="text-[9px] font-black tracking-tighter mt-1 font-mono">呼叫總部</span>
+        function openSupportCenter(){const m=document.getElementById('sf-support-modal');if(m){m.classList.remove('hidden');m.classList.add('flex');} if(window.lucide)lucide.createIcons();}
+        function closeSupportCenter(){const m=document.getElementById('sf-support-modal');if(m){m.classList.add('hidden');m.classList.remove('flex');}}
+        function refreshIcons26(){try{if(window.lucide)lucide.createIcons();}catch(e){}}
+        window.addEventListener('DOMContentLoaded',()=>setTimeout(refreshIcons26,40));
+</script>
+    
+
+    <button id="sf-support-handle" class="sf-support-handle" type="button" onclick="openSupportCenter()" aria-label="支援中心"><span class="sf-dot"></span><i data-lucide="headphones" class="w-5 h-5"></i></button>
+    <div id="sf-support-modal" class="fixed inset-0 z-[1000] hidden sf-sheet-backdrop items-end md:items-center justify-center" onclick="if(event.target===this)closeSupportCenter()">
+      <div class="sf-sheet bg-white w-full md:max-w-md p-5 md:rounded-3xl md:m-5">
+        <div class="flex justify-between items-start mb-4"><div><p class="text-[10px] text-slate-400 font-bold tracking-[.18em] uppercase">SEEFOOD SUPPORT</p><h3 class="text-xl font-black text-seefoodDarkBlue mt-1">總部支援中心</h3><p class="text-xs text-slate-500 mt-1">只在你需要時出現，不再遮住主要操作。</p></div><button onclick="closeSupportCenter()" class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div id="sf-support-items" class="space-y-2">
+          <a href="https://line.me/R/ti/p/@398ndwec" target="_blank" class="sf-support-item"><span class="sf-iconbox"><i data-lucide="message-circle" class="w-4 h-4"></i></span><span><b class="text-sm text-slate-900">LINE 客服</b><small class="block text-[10px] text-slate-500">直接聯絡 SEEFOOD 總部</small></span></a>
+          <button onclick="window.open('guide.html','_blank')" class="sf-support-item"><span class="sf-iconbox"><i data-lucide="book-open" class="w-4 h-4"></i></span><span><b class="text-sm text-slate-900">操作指南</b><small class="block text-[10px] text-slate-500">商家上架、核銷與帳務說明</small></span></button>
+          <button onclick="switchTab('orders');closeSupportCenter()" class="sf-support-item"><span class="sf-iconbox"><i data-lucide="ticket-check" class="w-4 h-4"></i></span><span><b class="text-sm text-slate-900">訂單與票券</b><small class="block text-[10px] text-slate-500">先查看目前訂單狀態</small></span></button>
+          <button onclick="switchTab('merchant');closeSupportCenter()" class="sf-support-item"><span class="sf-iconbox"><i data-lucide="store" class="w-4 h-4"></i></span><span><b class="text-sm text-slate-900">商家支援</b><small class="block text-[10px] text-slate-500">上架、KYC、帳務與多店問題</small></span></button>
         </div>
-    </a>
+        <p class="text-[10px] text-slate-400 text-center mt-4">客服 LINE：@398ndwec</p>
+      </div>
+    </div>
 </body>
 </html>
