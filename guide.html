@@ -1,298 +1,139 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SEEFOOD 惜福聯盟 - 運營作戰戰術指南</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = { theme: { extend: { colors: { radarGreen: '#10b981', seefoodYellow: '#FAB900', tacticalOrange: '#f97316', seefoodPurple: '#a855f7' } } } }
-    </script>
-    <style>
-        body { background-color: #020617; background-image: linear-gradient(rgba(16,185,129,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.02) 1px, transparent 1px); background-size: 20px 20px; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .glow-text-yellow { text-shadow: 0 0 10px rgba(250,185,0,0.3); }
-        .tab-active-hunter { color: #FAB900; border-color: #FAB900; background-color: rgba(250,185,0,0.05); }
-        .tab-active-merchant { color: #10b981; border-color: #10b981; background-color: rgba(16,185,129,0.05); }
-        .tab-active-mcn { color: #a855f7; border-color: #a855f7; background-color: rgba(168,85,247,0.05); }
-    </style>
-
-<style id="sf-guide30">
-:root{--g-navy:#0B1F33;--g-gold:#F4B41A;--g-bg:#F6F7F4;--g-line:#E6E9ED}body{background:var(--g-bg)!important;color:#182230!important}header{background:rgba(255,255,255,.94)!important;color:var(--g-navy)!important;border-bottom:1px solid var(--g-line)!important;box-shadow:none!important}main,.container{max-width:1040px!important;margin:auto!important}.bg-slate-900,.bg-gray-900,.bg-slate-800{background:#fff!important;color:#182230!important}.text-white{color:#182230!important}.rounded-2xl,.rounded-3xl{border:1px solid var(--g-line)!important;box-shadow:none!important}.bg-gradient-to-r,.bg-gradient-to-br{background:#fff!important}.text-seefoodYellow,.text-yellow-400,.text-amber-400{color:#B77900!important}button,a{transition:.18s ease} @media(max-width:767px){body{font-size:16px!important}main{padding:16px!important}.grid{grid-template-columns:1fr!important}}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SEEFOOD Guide 3.1｜新手與營運知識中心</title>
+<style>
+:root{--navy:#0B1F33;--navy2:#12314F;--gold:#F4B41A;--green:#18A875;--bg:#F6F7F4;--ink:#17212B;--muted:#667085;--line:#E3E7EC;--red:#D64545}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;padding-bottom:110px}
+header{padding:24px 18px 18px;background:#fff;border-bottom:1px solid var(--line)}
+.wrap,.content{max-width:860px;margin:auto}
+.eyebrow{font-size:11px;font-weight:900;letter-spacing:.16em;color:#A36C00}
+.title{font-size:28px;font-weight:950;letter-spacing:-.04em;margin:8px 0 6px}
+.sub{font-size:14px;color:var(--muted);line-height:1.65}
+.core-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:16px}
+.core{background:#F8FAFC;border:1px solid var(--line);border-radius:15px;padding:12px;text-align:center}
+.core b{display:block;font-size:12px;color:var(--navy);margin-top:6px}.core span{font-size:20px}
+.tabs{position:sticky;top:0;z-index:20;background:rgba(246,247,244,.94);backdrop-filter:blur(12px);padding:12px 14px}
+.tabbar{max-width:860px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#E9EDF1;border-radius:16px;padding:5px}
+.tab{border:0;background:transparent;padding:11px 6px;border-radius:12px;font-weight:900;color:#667085;font-size:13px;display:flex;align-items:center;justify-content:center;gap:7px}
+.tab.active{background:#fff;color:var(--navy);box-shadow:0 1px 5px rgba(16,24,40,.08)}
+.tab svg{width:19px;height:19px}
+.content{padding:8px 14px}.pane{display:none}.pane.active{display:block}
+.hero{background:var(--navy);color:#fff;border-radius:22px;padding:21px;margin:10px 0 18px}
+.hero b{font-size:21px}.hero p{font-size:14px;line-height:1.75;color:#D7E0E9;margin:8px 0 0}
+.pill{display:inline-block;background:#FFF3C4;color:#8A6100;border-radius:999px;padding:5px 8px;font-size:11px;font-weight:900}
+.section{margin:22px 0}.section h2{font-size:19px;margin:0 0 11px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin:10px 0;box-shadow:0 5px 18px rgba(16,39,63,.035)}
+.step{display:flex;gap:13px}.num{width:34px;height:34px;border-radius:11px;background:#EDF6F2;color:#087A54;display:grid;place-items:center;font-weight:950;flex:none}
+.card h3{font-size:16px;margin:1px 0 5px}.card p,.card li{font-size:14px;line-height:1.75;color:#4F5B67}
+.notice{background:#FFF7DA;border:1px solid #EFD98D;border-radius:16px;padding:14px 16px;font-size:13px;line-height:1.7;color:#5D4A12}
+.rule{background:#fff;border:1px solid var(--line);border-radius:17px;overflow:hidden;margin:9px 0}
+.rule summary{list-style:none;display:flex;align-items:center;justify-content:space-between;padding:15px 16px;font-weight:900;color:var(--navy);cursor:pointer}
+.rule summary::-webkit-details-marker{display:none}.rule .body{padding:0 16px 16px;color:#56616D;font-size:13px;line-height:1.75}
+.money-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.money{background:#F0F8F5;border:1px solid #D5EBE2;border-radius:16px;padding:16px}
+.money small{display:block;color:#667085;font-weight:800}.money b{display:block;font-size:24px;color:#087A54;margin-top:5px}
+.cta-card{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px}
+.cta-card b{color:var(--navy)}.cta-card p{margin:4px 0 0;color:#667085;font-size:13px;line-height:1.5}
+.cta-card button{border:0;background:var(--navy);color:#fff;font-weight:900;padding:11px 14px;border-radius:12px;white-space:nowrap}
+.bottom{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(11,31,51,.96);z-index:30}
+.bottom a{max-width:860px;margin:auto;display:block;text-align:center;background:#fff;color:var(--navy);text-decoration:none;font-weight:950;padding:15px;border-radius:16px}
+@media(max-width:640px){.core-grid{grid-template-columns:1fr 1fr}.title{font-size:25px}.tab{font-size:12px}.money-grid{grid-template-columns:1fr}.cta-card{align-items:flex-start;flex-direction:column}.cta-card button{width:100%}}
 </style>
 </head>
-<body class="min-h-screen flex flex-col pb-24 no-scrollbar overflow-y-auto">
-
-    <!--  戰術標題 -->
-    <header class="p-6 text-center border-b border-slate-800 bg-slate-950/80 sticky top-0 z-50 backdrop-blur-md flex-none">
-        <h1 class="text-xl font-black text-seefoodYellow tracking-widest glow-text-yellow">🎯 SEEFOOD 雷達運營作戰指南</h1>
-        <p class="text-[10px] text-radarGreen font-mono mt-1">>> PLATFORM COVENANT VERSION 5.0 // 實事求是 · 精準合規</p>
-    </header>
-
-    <!-- 🌍 平台核心世界觀與環境理念 -->
-    <section class="max-w-md mx-auto w-full px-4 pt-6 flex-none">
-        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-5 relative overflow-hidden shadow-xl">
-            <h2 class="text-base font-black text-white flex items-center mb-2"> 什麼是 SEEFOOD 惜福雷達？</h2>
-            <p class="text-xs text-gray-400 leading-relaxed mb-3">
-                SEEFOOD 惜福雷達是專為改善食物浪費而生的「無差別安全庫存變現系統」。全平台商品嚴格規定<span class="text-seefoodYellow font-black">僅能上架「0元（免費贈與）以及 3折、5折、7折」之超值優惠價</span>，將多餘的高品質安全庫存精準導流至有需求的消費者，在保護商家獨立通路尊嚴的同時，完美達成惜福、減碳與綠色環保理念。
-            </p>
-            <div class="bg-slate-950/80 border border-red-500/30 rounded-xl p-3 text-[11px] text-red-400 font-bold leading-normal">
-                🚨 核心營運天條：為保障現場出餐流程、並完全不干擾店家既有的正價餐點交易，本平台「100% 僅開放線上付款、並由買家前往店面自取」。最極致的惜福回饋，僅留給最環保且勤勞的綠色獵人！
-            </div>
-        </div>
-    </section>
-
-    <!-- 🎛️ 三模式戰術切換面板 (Tabs) -->
-    <div class="max-w-md mx-auto w-full px-4 mt-6 flex-none">
-        <div class="bg-slate-950 p-1.5 rounded-xl border border-slate-800 flex shadow-inner gap-1">
-            <button id="tab-hunter" onclick="switchMode('hunter')" class="w-1/3 text-center py-2.7 rounded-lg text-[11px] font-black transition-all duration-200 flex flex-col items-center justify-center tab-active-hunter">
-                <span class="text-lg mb-0.5">🎒</span> <span>尋飽獵人</span>
-            </button>
-            <button id="tab-merchant" onclick="switchMode('merchant')" class="w-1/3 text-center py-2.7 rounded-lg text-[11px] font-black text-gray-500 hover:text-gray-300 transition-all duration-200 flex flex-col items-center justify-center">
-                <span class="text-lg mb-0.5 opacity-60" id="icon-merchant">🏪</span> <span id="text-merchant">獵場主人</span>
-            </button>
-            <button id="tab-mcn" onclick="switchMode('mcn')" class="w-1/3 text-center py-2.7 rounded-lg text-[11px] font-black text-gray-500 hover:text-gray-300 transition-all duration-200 flex flex-col items-center justify-center">
-                <span class="text-lg mb-0.5 opacity-60" id="icon-mcn">◎</span> <span id="text-mcn">推廣合夥人</span>
-            </button>
-        </div>
+<body>
+<header>
+  <div class="wrap">
+    <div class="eyebrow">SEEFOOD GUIDE 3.1</div>
+    <h1 class="title">萌新與營運知識中心</h1>
+    <div class="sub">第一眼先學會怎麼用；想深入，再展開完整規則。SEEFOOD 的核心不是「便宜」而已，而是把安全剩餘庫存重新變成價值。</div>
+    <div class="core-grid">
+      <div class="core"><span>🛡️</span><b>保護正價通路</b></div>
+      <div class="core"><span>💰</span><b>惜食變現</b></div>
+      <div class="core"><span>🌱</span><b>環保減碳</b></div>
+      <div class="core"><span>🎯</span><b>曝光新受眾</b></div>
     </div>
+  </div>
+</header>
 
-    <!-- 📖 核心內容區 -->
-    <main class="flex-1 max-w-md mx-auto w-full px-4 mt-6">
+<div class="tabs"><div class="tabbar">
+<button class="tab active" data-pane="hunter" onclick="showPane(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="m14.5 9.5-3 3-2 4 4-2 3-3z"/></svg>獵人</button>
+<button class="tab" data-pane="merchant" onclick="showPane(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10h18M5 10v10h14V10M4 4h16l1 6H3z"/></svg>店家</button>
+<button class="tab" data-pane="partner" onclick="showPane(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="7" r="3"/><circle cx="12" cy="17" r="3"/><path d="m9.5 8.5 2 5m3-5-2 5"/></svg>點燈夥伴</button>
+</div></div>
 
-        <!-- =================🎒 美食獵人模式內文 =================-->
-        <div id="content-hunter" class="space-y-6">
-            
-            <!-- 🚨 鐵律宣導看板 -->
-            <div class="bg-amber-950/30 border-2 border-dashed border-tacticalOrange/60 rounded-2xl p-4 shadow-md">
-                <h3 class="text-tacticalOrange font-black text-sm flex items-center mb-2">📢【大腦安全宣告：正確狩獵三步驟】</h3>
-                <ol class="text-xs text-gray-300 space-y-2 font-bold list-decimal pl-4 leading-normal">
-                    <li><span class="text-white">線上尋飽下單：</span>利用日常尋飽清單鎖定周圍店家，直接於線上完成金流裝彈下單。</li>
-                    <li><span class="text-seefoodYellow underline font-black">致電商家告知（核心關鍵）：</span><span class="underline decoration-wavy decoration-red-500 font-black text-white">下單後請務必立刻撥打電話給商家，主動告知您的「訂單單號」與「預計前往取餐的時間」！</span></li>
-                    <li><span class="text-white">前往取餐完成：</span>於約定時間抵達店面，出示手機 LINE 畫面由店家確認動態安全碼，不需現場付款，提餐離場！</li>
-                </ol>
-                <p class="text-[10px] text-gray-400 mt-2.7 italic">※ 警告：未履行第 2 步致電義務而逕行前往者，若遇品項現場調度或打烊重置問題，需自行承擔交易延遲與撲空風險。</p>
-            </div>
+<main class="content">
+<section id="hunter" class="pane active">
+  <div class="hero"><span class="pill">尋飽獵人</span><p><b>購買 → 致電商家 → 到店取餐核銷。</b></p><p>這是 SEEFOOD 的固定 SOP。平台不是店家的 POS 或外送機，付款後主動致電，是降低漏單、現場售罄與取餐落差的必要保險。</p></div>
+  <div class="section"><h2>第一次獵取只要 3 步</h2>
+    <div class="card step"><div class="num">1</div><div><h3>線上購買</h3><p>選擇商品後進入付款。商品會短暫保留；只有金流確認成功後，才建立有效票券。</p></div></div>
+    <div class="card step"><div class="num">2</div><div><h3>立即致電商家</h3><p>告知「SEEFOOD 訂單編號＋預計取餐時間」，確認店家收到訂單並保留餐點。這一步非常重要。</p></div></div>
+    <div class="card step"><div class="num">3</div><div><h3>到店取餐核銷</h3><p>在票券截止時間前抵達，出示票券完成核銷。逾期後正常核銷會鎖定並移入歷史。</p></div></div>
+  </div>
+  <div class="section"><h2>完整規則</h2>
+    <details class="rule"><summary>付款失敗會怎樣？<span>＋</span></summary><div class="body">付款失敗或保留逾時，不會產生有效票券，商品會重新釋出。付款成功才會進入「待取餐」。</div></details>
+    <details class="rule"><summary>票券為什麼一直有紅點？<span>＋</span></summary><div class="body">只要仍有未核銷待取餐票券，提醒就會保留；不是「看過就消失」，而是「完成待辦才消失」。</div></details>
+    <details class="rule"><summary>訂單遇到問題怎麼辦？<span>＋</span></summary><div class="body">若店家無法供餐、品項重大不符、已付款但無法取餐等，可從訂單單號進入「訂單遇到問題」送交平台審核。提出案件不代表自動退款。</div></details>
+    <details class="rule"><summary>交易安全與平台限制<span>＋</span></summary><div class="body">平台會針對高頻交易、異常金額與其他風險情境進行限制或人工審核，以避免洗單、盜刷與異常占用庫存。</div></details>
+  </div>
+</section>
 
-            <!-- 詳細步驟指引 -->
-            <div class="space-y-4">
-                <h3 class="text-white font-black text-base border-l-4 border-radarGreen pl-2">🛠️ 獵人詳細操作步驟</h3>
-                
-                <div class="space-y-3">
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3">
-                        <span class="bg-radarGreen/20 text-radarGreen font-mono font-black text-xs px-2 py-1 rounded-md">01</span>
-                        <div class="text-xs text-gray-400">
-                            <h5 class="text-white font-bold mb-1 text-sm">精準雷達對齊</h5>
-                            <p>點擊雷達戰情室介面的「MY GPS」獲取當前座標，地圖會實時點亮綠色（營業發車中）與黃色（整備中）的惜福光點。下方列表會依據各行政區營業中店家數量自動進行分區排序。</p>
-                        </div>
-                    </div>
+<section id="merchant" class="pane">
+  <div class="hero"><span class="pill">獵場主人</span><p><b>把可能報廢的安全庫存變現，又不傷正價品牌。</b></p><p>基本方案 0 月費、0 平台成交抽成；店家僅負擔第三方金流清算成本。Plus 為自願升級，不影響基本方案正常使用。</p></div>
+  <div class="section"><h2>SEEFOOD 對店家的核心價值</h2>
+    <div class="card"><ul>
+      <li><b>保護正價通路：</b>惜食商品與常態正價商品分開，不需要把原品牌全面打折。</li>
+      <li><b>惜食變現：</b>讓原本可能報廢的安全剩餘庫存重新創造營收。</li>
+      <li><b>環保減碳：</b>把減少浪費變成可量化成果。</li>
+      <li><b>曝光新受眾：</b>透過獵場、地圖與平台內容，帶入新的在地客群與二次消費機會。</li>
+    </ul></div>
+  </div>
+  <div class="section"><h2>店家日常流程</h2>
+    <div class="card step"><div class="num">1</div><div><h3>完成實名與收款設定</h3><p>同一負責人完成驗證後可沿用至多店；不同負責人才重新驗證。每間店的商品、Plus、帳務與分析獨立。</p></div></div>
+    <div class="card step"><div class="num">2</div><div><h3>快速開賣</h3><p>設定商品、數量、惜食價格與顧客取餐截止時間；現場庫存變動可即時調整。</p></div></div>
+    <div class="card step"><div class="num">3</div><div><h3>接到訂單後保留餐點</h3><p>付款成功才會進入商家待取餐。獵人應主動致電通知訂單編號與預計取餐時間，降低漏單與現場售罄風險。</p></div></div>
+  </div>
+  <div class="notice"><b>基本方案：0 月費、0 平台抽成</b><br>店家目前僅負擔第三方金流清算成本 3.15%。Plus $299 / 月為自願升級，每間店獨立計算。</div>
+  <div class="section"><h2>完整制度</h2>
+    <details class="rule"><summary>多店與實名怎麼算？<span>＋</span></summary><div class="body">同一老闆／負責人的既有驗證可沿用；不同負責人則重新進行 KYC。這樣避免同一人每開一間店就重做整套流程。</div></details>
+    <details class="rule"><summary>帳務與撥款流程<span>＋</span></summary><div class="body">核銷完成後才納入有效結算。帳務狀態依序可為：本期累積中、已關帳、總部對帳中、等待撥款、已撥款；異常交易與爭議則另行處理。</div></details>
+    <details class="rule"><summary>Plus 有什麼差異？<span>＋</span></summary><div class="body">Plus 為每店獨立的 $299 / 月自願方案，可擴充 10 格商品欄位與進階 30／90 日營運分析等功能。沒有升級仍可正常使用基本方案。</div></details>
+    <details class="rule"><summary>安全限制與自動防呆<span>＋</span></summary><div class="body">平台會對異常高額、高頻交易、長時間未更新庫存等情況套用風控與自動下架／審核機制，降低漏單與不實庫存。</div></details>
+  </div>
+  <div class="section"><h2>把 SEEFOOD 加到手機主畫面</h2>
+    <div class="cta-card"><div><b>每天開後台更快</b><p>加入主畫面後，不用每次從 LINE 對話裡找連結，操作更接近 App。</p></div><button onclick="showInstallHelp()">查看教學</button></div>
+  </div>
+</section>
 
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3">
-                        <span class="bg-radarGreen/20 text-radarGreen font-mono font-black text-xs px-2 py-1 rounded-md">02</span>
-                        <div class="text-xs text-gray-400">
-                            <h5 class="text-white font-bold mb-1 text-sm">解鎖勳章與單店卡</h5>
-                            <p>點擊地圖圓點，可拉出全面升級的「單店情報卡」。您可以即時查閱該店的登記類別（公司/個體户）、是否已通過「實名認證」、是否具備「👑大覺者 VIP」身份，以及該店歷史秒殺戰績，鎖定優質商家。</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3">
-                        <span class="bg-radarGreen/20 text-radarGreen font-mono font-black text-xs px-2 py-1 rounded-md">03</span>
-                        <div class="text-xs text-gray-400">
-                            <h5 class="text-white font-bold mb-1 text-sm">飢餓秒殺生存遊戲</h5>
-                            <p>挑選完商品後進入狙擊倒數舱，在 60 秒極限距離內完成 LINE Pay、Apple Pay 或信用道的線上交易。完成後致電確認，並在截止時間前到店完成核銷，即可抱回大餐！</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 金流與風控防線 -->
-            <div class="space-y-4">
-                <h3 class="text-white font-black text-base border-l-4 border-radarGreen pl-2">🛡️ 獵人金流配額與風控公約</h3>
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-gray-400 space-y-3 leading-normal">
-                    <p>📌 <span class="text-white font-bold">代收服務費公式</span>：買家實付總額為「店家惜福價 + 平台代收服務費」。服務費固定為商品售價之 10%，並設有底線與天花板：<span class="text-radarGreen font-bold">單筆最低收取 $5 元，最高上限僅收 $20 元</span>。當您解鎖特定商家大股東勳章時，未來更有機會享有專屬特權減免。</p>
-                    <p>📌 <span class="text-white font-bold">1分鐘高頻限速鎖</span>：為防止惡意自動化程式洗單，單一帳戶 <span class="text-amber-400 font-bold">1 分鐘內上限最多結帳 3 筆訂單</span>，超過者大腦將自動阻斷 60 秒。</p>
-                    <p>📌 <span class="text-white font-bold">24小時交易安全線</span>：單一帳戶在 <span class="text-amber-400 font-bold">24 小時內累積抢購總額天花板為 $3,000 元 新台幣</span>，超過此配額者，在額度重置前雷達將自動對其關閉交易功能。</p>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- =================🏪 獵場主人 (店家) 模式內文 =================-->
-        <div id="content-merchant" class="space-y-6 hidden">
-            
-            <!-- 商家五大核心利多 -->
-            <div class="bg-gradient-to-r from-emerald-950/20 to-slate-900 border border-emerald-500/30 rounded-2xl p-5 shadow-xl">
-                <h3 class="text-emerald-400 font-black text-sm flex items-center mb-3">💎 SEEFOOD 給特約店家的創始五大權益</h3>
-                <ul class="text-xs text-gray-300 space-y-2.7 font-bold list-disc pl-4 leading-normal">
-                    <li><span class="text-white">獨立變現通路：</span>專屬的即期惜福變現窗口，與常態正價商品完美隔離，完全不傷害原有的品牌獨立通路與尊嚴價值。</li>
-                    <li><span class="text-white">多元免費曝光流量：</span>即將發動的高爆發短影音與自媒體矩陣行銷流量將無痛注入，直接為您的店面帶來極高的在地實體到店客流與二次消費。</li>
-                    <li><span class="text-white">單店即可發車：</span>打破傳統平台的區域商圈邊界，不受別家店進駐進度的拖累，您的一間店，就是該行政區唯一的綠色焦點！</li>
-                    <li><span class="text-seefoodYellow">0元月費0%抽成：</span>創始一期店家承諾永久免收系統月租費、免收平台利潤抽成費！</li>
-                    <li><span class="text-radarGreen">註冊30秒開賣：</span>極致輕量化系統架構，免下載繁瑣 App，利用 LINE 即可在 30 秒內極速完成填表、建檔卡位。</li>
-                </ul>
-            </div>
-
-            <!-- 詳細步驟指引 -->
-            <div class="space-y-4">
-                <h3 class="text-white font-black text-base border-l-4 border-seefoodYellow pl-2">🛠️ 店家詳細操作與開通防線</h3>
-                
-                <div class="space-y-3">
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3">
-                        <span class="bg-seefoodYellow/20 text-seefoodYellow font-mono font-black text-xs px-2 py-1 rounded-md">01</span>
-                        <div class="text-xs text-gray-400">
-                            <h5 class="text-white font-bold mb-1 text-sm">LINE 線上即時卡位</h5>
-                            <p>點擊「我要入場卡位」表單，輸入您的店鋪名稱、實體地址與基本通訊資料。送出後大腦將在 30 秒內全自動完成雷達經緯度標記，並立即開通後台格位。</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3">
-                        <span class="bg-seefoodYellow/20 text-seefoodYellow font-mono font-black text-xs px-2 py-1 rounded-md">02</span>
-                        <div class="text-xs text-gray-400">
-                            <h5 class="text-white font-bold mb-1 text-sm">電子合約實名完簽 (核心解鎖)</h5>
-                            <p>建檔完成後，系統會同步發送一份「創始店家線上實名制合約」至您的電子信箱。請用手機直接開啟連結，<span class="text-white font-bold">上傳負責人身分證件/統編圖檔，並填寫正確的銀行代碼與撥款帳號，最後以手指完成數位簽名</span>。依電商代收付合規規範，未完簽之店家，其應得款項將會被大腦財務攔截線暫時鎖定，完簽後立即解鎖。</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start space-x-3">
-                        <span class="bg-seefoodYellow/20 text-seefoodYellow font-mono font-black text-xs px-2 py-1 rounded-md">03</span>
-                        <div class="text-xs text-gray-400">
-                            <h5 class="text-white font-bold mb-1 text-sm">日常管理與無痛出餐</h5>
-                            <p>打開專屬後台即可管理上架品項（<span class="text-white font-bold">基礎店鋪預設提供 3 格商品欄位</span>）。當獵人接到線上付款成功的扣款通知並到店自取時，您<span class="text-radarGreen font-black">完全不需要登入系統後台點擊確認</span>，僅需現場核對獵人手機上的 LINE 實時動態核銷畫面即可快速出餐，系統大腦會自動在背景清算帳款！</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 👑 大覺者 VIP 模組詳細介紹 -->
-            <div class="space-y-4">
-                <h3 class="text-white font-black text-base border-l-4 border-amber-500 pl-2">👑 升級大覺者 VIP 旗艦版</h3>
-                <div class="bg-gradient-to-br from-slate-900 to-amber-950/20 border border-amber-500/30 rounded-xl p-4 text-xs space-y-3 leading-normal">
-                    <p class="text-amber-400 font-black text-sm"> 為什麼您該升級「大覺者 VIP」？</p>
-                    <ul class="list-disc pl-4 text-gray-300 space-y-2 font-bold">
-                        <li><span class="text-white">格數物理大拓寬：</span>上架商品欄位直接從基礎的 <span class="text-red-400">3 格爆增至 10 格</span>，讓您能同時上架更多元、更有層次的即期品項與剩餘備品。</li>
-                        <li><span class="text-white">專屬黃金徽章特權：</span>在全台點燈戰情室雷達與列表上，您的店鋪將永久掛上金色閃耀的 <span class="text-seefoodYellow">👑 大覺者</span> 勳章，並享有最高權益優先排序，瞬間在一整片商圈雷達中脫穎而出，搶光周圍所有曝光流量！</li>
-                    </ul>
-                    <div class="border-t border-amber-500/20 pt-2.7 mt-2">
-                        <p class="text-gray-400"><span class="text-white font-bold">💰 消費與續費方式：</span>每月僅需 <span class="text-seefoodYellow font-black text-sm">$299 元</span>。且系統內建極致無痛商模：<span class="underline decoration-amber-500 font-black text-white">完全不需綁定信用卡</span>，每月的 VIP 系統費將直接由您在平台內代收的惜福帳款中自動「無感內扣」，當期沒有賺錢或餘額不足就不會扣款，真正實現零預付負擔！</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 商家硬核物理配額死線 -->
-            <div class="space-y-4">
-                <h3 class="text-white font-black text-base border-l-4 border-seefoodYellow pl-2">🛡️ 店家大腦物理限制與風控天條</h3>
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-gray-400 space-y-3 leading-normal">
-                    <p>📌 <span class="text-white font-bold">基本代收清算費</span>：雖然平台承諾不收取任何系統費與利潤抽成，但金流商收取的 <span class="text-seefoodYellow font-bold">3.15% 基本第三方金流清算手續費</span> 需由店家撥款中扣除自付。</p>
-                    <p>📌 <span class="text-white font-bold">🚨 千元商品防洗安全線</span>：單一品項的「折扣後惜福價」若<span class="text-amber-400 font-bold">超過 $1,000 元 新台幣</span>，大腦會基於防洗錢條例自動將該品項轉為 PENDING_REVIEW（暫時隱藏並送人工實物審查），其餘千元以下品項則維持正常發車不受影響。</p>
-                    <p>📌 <span class="text-white font-bold">🚨 萬元代收打烊鎖</span>：單一店鋪在<span class="text-amber-400 font-bold">單日累積代收營業額若達到 $10,000 元 新台幣</span>，系統大腦會強制商業介入並啟動歇業保護（狀態強制轉 OFF），直到隔日自動重置開放，防止出現惡意人頭洗單與異常高頻交易。</p>
-                    <p>📌 <span class="text-white font-bold">🚨 8小時自動清掃防線</span>：為確保消費者在雷達地圖上看到的都是最即時的情報，商品上架（狀態轉 ON）後，若<span class="text-amber-400 font-bold">整整 8 小時未有任何手動更新動作，大腦清掃器會物理強制將庫存全數清零並下架關店</span>，避免店家忘記關店引發客訴。</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= Partner 點亮獵場夥伴模式內文 =================-->
-        <div id="content-mcn" class="space-y-6 hidden">
-            
-            <div class="bg-gradient-to-br from-purple-900 to-slate-900 border border-purple-500/40 rounded-2xl p-5 shadow-xl relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-purple-500/20 rounded-full blur-xl pointer-events-none"></div>
-                <h3 class="text-purple-300 font-black text-sm flex items-center mb-2 tracking-wide"><span class="text-lg mr-1">🤝</span> 什麼是 Partner 點亮獵場夥伴？</h3>
-                <p class="text-xs text-gray-300 leading-relaxed font-bold">
-                    Partner 點亮獵場模式專為<span class="text-white">自媒體創作者、在地團媽與斜槓業務</span>打造。您無須投資任何資金，只要利用您的影響力與人脈，邀請在地優質餐飲店家進駐 SEEFOOD 惜福聯盟，您就能成為該店的「終身流量合夥人」，<span class="text-seefoodYellow underline">合法、合規地坐享店家未來在平台上產生的每一筆被動收入！</span>
-                </p>
-            </div>
-
-            <!-- 分潤公式核心 -->
-            <div class="space-y-4">
-                <h3 class="text-white font-black text-base border-l-4 border-seefoodPurple pl-2">💰 核爆級雙通道分潤矩陣</h3>
-                
-                <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-4 shadow-sm">
-                    <!-- 通道一 -->
-                    <div>
-                        <h4 class="text-sm font-black text-white flex items-center mb-1"><span class="bg-purple-900/50 text-purple-400 px-2 py-0.5 rounded text-xs mr-2 border border-purple-700/50">通道一</span> 獵人服務費 50% 實時抽成</h4>
-                        <p class="text-xs text-gray-400 leading-relaxed mb-2">平台向買家收取惜福總價的 10% 作為代收服務費（單筆最低 $5，最高 $20）。<span class="text-seefoodYellow font-bold">只要這家店是透過您的連結註冊，系統將實時把該單「服務費的 50%」撥入您的推廣帳戶！</span></p>
-                        <div class="bg-slate-950 p-2.7 rounded-lg border border-slate-800 text-[11px] font-mono text-gray-400">
-                            💡 舉例：獵人購買 $100 元餐點 ➔ 平台收 $10 元服務費 ➔ 您獲得 $5 元/單。<br>
-                            一家熱門店鋪每天賣 10 份，一個月您就能從單店獲得 $1,500 元。
-                        </div>
-                    </div>
-
-                    <div class="border-t border-slate-800"></div>
-
-                    <!-- 通道二 -->
-                    <div>
-                        <h4 class="text-sm font-black text-white flex items-center mb-1"><span class="bg-amber-900/50 text-amber-400 px-2 py-0.5 rounded text-xs mr-2 border border-amber-700/50">通道二</span> 大覺者 VIP 月費 50% 終身分潤</h4>
-                        <p class="text-xs text-gray-400 leading-relaxed mb-2">當您的旗下店家為了獲得 10 格商品數與黃金標籤，升級每月 $299 的「大覺者 VIP」時，<span class="text-seefoodYellow font-bold">系統將直接切出 50%（即 $150 元）作為您的終身系統維護回饋金！</span></p>
-                        <div class="bg-slate-950 p-2.7 rounded-lg border border-slate-800 text-[11px] font-mono text-gray-400">
-                            💡 舉例：您利用自媒體招商了 100 家餐廳升級 VIP。<br>
-                            ➔ 100 家 × $150 元 = <span class="text-seefoodYellow font-black text-xs">$15,000 元 / 每月純被動收入！</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 操作與結帳規則 -->
-            <div class="space-y-4">
-                <h3 class="text-white font-black text-base border-l-4 border-seefoodPurple pl-2">⚙️ 招商綁定與撥款天條</h3>
-                
-                <div class="space-y-3">
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-                        <h5 class="text-white font-bold mb-1 text-sm">如何取得與綁定推廣碼？</h5>
-                        <p class="text-xs text-gray-400 leading-relaxed">請使用 LINE 登入「商家後台」，最頂端即可看見您的「流量合夥人招商中心」。點擊<span class="text-white font-bold">「複製我的專屬招商連結」</span>，只要店家透過該連結填寫表單完成卡位，系統大腦將透過底層 UID 物理鎖定，該店鋪終身歸屬於您的矩陣之下。</p>
-                    </div>
-
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-                        <h5 class="text-white font-bold mb-1 text-sm">結算與撥款週期</h5>
-                        <p class="text-xs text-gray-400 leading-relaxed">平台全面採用雙週帳期清算（每月 15 號與月底結關）。當期累積的佣金會顯示於後台面板，經系統與綠界金流對帳無誤後，將於次期 3~5 個工作天內發放。</p>
-                    </div>
-
-                    <div class="bg-slate-900/60 border border-red-900/30 rounded-xl p-4 relative overflow-hidden">
-                        <div class="absolute left-0 top-0 w-1 h-full bg-red-500"></div>
-                        <h5 class="text-red-400 font-black mb-1 text-sm">🚨 勞務稅務合規防線</h5>
-                        <p class="text-xs text-gray-400 leading-relaxed">為徹底配合台灣防洗錢與國稅局規範，當您單次請款佣金<span class="text-white font-bold">超過新台幣 $20,000 元</span>時，依法必須強制簽署「勞務報酬單」，且平台將自動代扣 10% 所得稅與 2.11% 二代健保補充保費，確保雙方在法律邊界上 100% 合規安全。</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- 🛡️ 法律隔離與誠信切結安全艙 -->
-        <footer class="bg-slate-950/60 border border-slate-900 rounded-2xl p-4 text-[11px] text-gray-500 leading-relaxed text-center font-mono mt-8 mb-6">
-            <p>本平台技術大腦與合約對帳清算系統由【照路有限公司】風控法務艙嚴格監管。</p>
-            <p class="mt-1">特約商店之食品安全衛生、稅務開票責任，皆已於數位合約中完成法律隔離。禁止任何嘗試上架非即期特價品之異常高頻交易，違者系統將自動觸發資金鎖定並報司法機關物理查封。</p>
-        </footer>
-
-    </main>
-
-    <!-- 🔙 底部返回戰情室主功能列 -->
-    <div class="fixed bottom-0 left-0 w-full bg-slate-950/90 backdrop-blur-lg border-t border-slate-800 p-4 z-50 flex pb-7 justify-center shadow-[0_-10px_30px_rgba(0,0,0,0.6)]">
-        <button onclick="window.location.href='radar.html'" class="w-full max-w-md bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 text-white font-black py-3.5 rounded-xl border border-slate-700 shadow-md active:scale-95 transition text-sm tracking-widest flex items-center justify-center">
-            📡 返回全台點燈戰情室雷達
-        </button>
+<section id="partner" class="pane">
+  <div class="hero"><span class="pill">PARTNER NETWORK</span><p><b>點亮新獵場，累積永久分潤。</b></p><p>分享你的專屬招商連結；店家完成綁定後，推薦關係會保存並持續計算分潤。</p></div>
+  <div class="section"><h2>先看你可能賺多少</h2>
+    <div class="money-grid">
+      <div class="money"><small>單店每天 10 筆、平均平台服務費 $10</small><b>約 $1,500 / 月</b><p>依現行服務費 50% 點燈分潤試算。</p></div>
+      <div class="money"><small>該店另外使用 Plus $299</small><b>約 +$150 / 月</b><p>依現行 Plus 50% 分潤規則試算。</p></div>
     </div>
+  </div>
+  <div class="section"><h2>3 步開始點燈</h2>
+    <div class="card step"><div class="num">1</div><div><h3>取得專屬招商連結</h3><p>從成就頁「點亮新獵場」複製你的專屬連結。</p></div></div>
+    <div class="card step"><div class="num">2</div><div><h3>邀請店家加入</h3><p>店家透過你的連結建立店鋪後，推薦來源會與商業主體／店鋪關係一併保存。</p></div></div>
+    <div class="card step"><div class="num">3</div><div><h3>設定收款並追蹤分潤</h3><p>完成分潤收款資料後，即可查看有效店家、交易與累積分潤。</p></div></div>
+  </div>
+  <div class="section"><h2>完整分潤規則</h2>
+    <details class="rule"><summary>服務費分潤怎麼算？<span>＋</span></summary><div class="body">平台向消費者收取服務費；依現行制度，點燈夥伴可取得該店平台服務費的 50% 分潤。實際金額依每筆訂單服務費計算。</div></details>
+    <details class="rule"><summary>Plus 分潤怎麼算？<span>＋</span></summary><div class="body">推薦店家若自願升級每月 $299 Plus，依現行制度可取得約 50% 的 Plus 分潤。</div></details>
+    <details class="rule"><summary>老闆開其他店怎麼算？<span>＋</span></summary><div class="body">推薦關係會與商業主體／店鋪關聯保存。實際哪些新店延續推薦歸屬，依平台當期點燈 Rulebook 為準，避免日後規則調整造成誤解。</div></details>
+    <details class="rule"><summary>多久結算？怎麼收款？<span>＋</span></summary><div class="body">點燈分潤採平台結算週期彙整；完成收款資料後，符合條件的分潤會進入對帳與撥款流程。大額或異常案件可能需要額外身分／稅務文件。</div></details>
+    <details class="rule"><summary>稅務與合規<span>＋</span></summary><div class="body">分潤屬收入性質，平台會依台灣適用法規與實際身分／金額要求必要文件或扣繳。正式門檻與比例以上線時公告及合約為準。</div></details>
+  </div>
+</section>
+</main>
 
-    <script>
-        function switchMode(mode) {
-            const tabs = ['hunter', 'merchant', 'mcn'];
-            
-            tabs.forEach(t => {
-                const btn = document.getElementById('tab-' + t);
-                const content = document.getElementById('content-' + t);
-                const icon = document.getElementById('icon-' + t);
-                const text = document.getElementById('text-' + t);
-                
-                if (t === mode) {
-                    btn.classList.add('tab-active-' + t);
-                    btn.classList.remove('text-gray-500');
-                    if(icon) icon.classList.remove('opacity-60');
-                    content.classList.remove('hidden');
-                } else {
-                    btn.classList.remove('tab-active-' + t);
-                    btn.classList.add('text-gray-500');
-                    if(icon) icon.classList.add('opacity-60');
-                    content.classList.add('hidden');
-                }
-            });
-        }
-    </script>
+<div class="bottom"><a href="index.html">返回 SEEFOOD</a></div>
+<script>
+function showPane(btn){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.pane').forEach(x=>x.classList.remove('active'));document.getElementById(btn.dataset.pane).classList.add('active');scrollTo({top:0,behavior:'smooth'})}
+function showInstallHelp(){alert('【iPhone / Safari】\n1. 用 Safari 開啟 SEEFOOD\n2. 點下方「分享」\n3. 選「加入主畫面」\n4. 點「新增」\n\n【Android / Chrome】\n1. 用 Chrome 開啟 SEEFOOD\n2. 點右上角選單\n3. 選「加到主畫面」或「安裝應用程式」\n4. 完成新增\n\n加入後可像 App 一樣從桌面快速開啟。')}
+</script>
 </body>
 </html>
