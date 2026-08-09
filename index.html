@@ -79,6 +79,41 @@ body{align-items:flex-start!important}
 }
 @media(min-width:1300px){#store-list-container{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
+
+<style id="seefood-3-design-system">
+:root{--sf30-navy:#0B2239;--sf30-navy2:#102E4B;--sf30-gold:#F4B41A;--sf30-ivory:#F6F5F1;--sf30-paper:#FFFFFF;--sf30-ink:#132033;--sf30-muted:#667085;--sf30-line:#E5E9EF;--sf30-green:#19A974;--sf30-red:#C94A4A;--sf30-blue:#2F6FED}
+body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
+.sf-app-shell{background:var(--sf30-ivory)!important}
+.sf-main-scroll{background:var(--sf30-ivory)!important}
+#page-home,#page-orders,#page-achievement,#page-merchant{font-size:15px}
+#page-home p,#page-orders p,#page-achievement p,#page-merchant p{line-height:1.55}
+/* header */
+.sf-app-shell>div:first-child{background:rgba(255,255,255,.96)!important;border-bottom:1px solid var(--sf30-line)!important;backdrop-filter:blur(14px)}
+/* Home cards */
+.sf-hunt-card{border:1px solid var(--sf30-line)!important;border-radius:20px!important;box-shadow:0 7px 24px rgba(11,34,57,.055)!important;padding:18px!important}
+.sf-hunt-priority{border-color:#E7DFC2!important;box-shadow:inset 3px 0 0 #E4B83C,0 7px 24px rgba(11,34,57,.055)!important}
+.sf-priority-tag{display:none!important}
+.sf-stock{position:static!important;background:#F8FAFC!important;color:#344054!important;border:1px solid #E7EBF0!important;font-size:12px!important;padding:5px 8px!important}
+.sf-hunt-body h3{font-size:20px!important;letter-spacing:-.02em}.sf-hunt-location{font-size:12px!important}.sf-hunt-body>p{font-size:13px!important}.sf-hunt-meta{font-size:11px!important}.sf-primary-action{background:var(--sf30-navy)!important;padding:12px 20px!important;border-radius:13px!important}
+/* ticket */
+#page-orders{max-width:760px;margin:0 auto}.sf-ticket30{background:#fff;border:1px solid var(--sf30-line);border-radius:22px;box-shadow:0 8px 26px rgba(11,34,57,.06);overflow:hidden}.sf-ticket30 .ticket-main{padding:20px}.sf-ticket30 .ticket-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#F3F6FA;border:1px solid #E2E8F0;padding:9px 12px;border-radius:11px;font-weight:900;color:var(--sf30-navy)}.sf-ticket30 .awkward-note{background:#FFF8E8;border:1px solid #F2DEAA;border-radius:16px;padding:14px;color:#4A4335}.sf-ticket30 .ticket-action{background:var(--sf30-navy);color:#fff;border-radius:13px;padding:13px 16px;font-weight:900}
+/* achievement */
+#page-achievement>div:first-child{background:#fff!important;border:1px solid var(--sf30-line)!important;border-radius:24px!important;padding:24px!important}.sf-partner-card{background:var(--sf30-navy)!important;border:0!important;box-shadow:none!important}.sf-achievement-section{background:#fff;border:1px solid var(--sf30-line);border-radius:20px;padding:18px}
+/* merchant: light Merchant OS */
+#merchant-dashboard-zone.sf-merchant-os{background:transparent!important;color:var(--sf30-ink)!important;border:0!important;box-shadow:none!important;padding:0!important;overflow:visible!important;max-width:1180px!important}
+#merchant-dashboard-zone .sf-legacy-dark{display:none!important}
+.sf-m30-topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;padding:4px 2px 14px;border-bottom:1px solid var(--sf30-line)}
+.sf-m30-eyebrow{font-size:11px;font-weight:800;color:#98A2B3;letter-spacing:.1em;text-transform:uppercase}.sf-m30-title{font-size:25px;font-weight:950;color:var(--sf30-ink);letter-spacing:-.035em}.sf-m30-sub{font-size:12px;color:var(--sf30-muted);margin-top:3px}.sf-m30-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;background:#ECFDF3;color:#087A54;border:1px solid #CDEDDD;padding:7px 10px;border-radius:999px}.sf-m30-status:before{content:'';width:7px;height:7px;border-radius:50%;background:#16A36A}
+.sf-m30-nav{display:flex;gap:4px;background:#EEF2F6;padding:4px;border-radius:13px;width:max-content;max-width:100%;overflow-x:auto}.sf-m30-nav button{border:0;background:transparent;padding:9px 13px;border-radius:9px;color:#667085;font-weight:850;font-size:12px;white-space:nowrap}.sf-m30-nav button.active{background:#fff;color:var(--sf30-navy);box-shadow:0 1px 4px rgba(16,24,40,.08)}
+.sf-m30-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.sf-m30-kpi{background:#fff;border:1px solid var(--sf30-line);border-radius:17px;padding:16px;min-height:106px}.sf-m30-kpi .label{font-size:11px;color:#667085;font-weight:800}.sf-m30-kpi .value{font-size:25px;font-weight:950;color:var(--sf30-ink);margin-top:7px;letter-spacing:-.03em}.sf-m30-kpi .delta{font-size:10px;color:#14966A;font-weight:800;margin-top:4px}.sf-m30-panel{background:#fff;border:1px solid var(--sf30-line);border-radius:19px;padding:18px}.sf-m30-panel-title{font-weight:900;color:var(--sf30-ink);font-size:14px}.sf-m30-panel-sub{font-size:10px;color:#98A2B3;margin-top:2px}.sf-m30-two{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.8fr);gap:14px}.sf-m30-three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}.sf-m30-chart{height:220px;width:100%;margin-top:12px}.sf-m30-chart svg{width:100%;height:100%;overflow:visible}.sf-m30-axis{stroke:#E7ECF1;stroke-width:1}.sf-m30-line{fill:none;stroke:#2F6FED;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.sf-m30-area{fill:url(#sf30Area)}.sf-m30-dot{fill:#2F6FED;stroke:#fff;stroke-width:3}.sf-m30-hour{display:grid;grid-template-columns:88px 1fr 28px;gap:8px;align-items:center;margin-top:13px;font-size:11px;color:#475467}.sf-m30-hour-track{height:7px;background:#EDF2F7;border-radius:999px;overflow:hidden}.sf-m30-hour-fill{height:100%;background:#2F6FED;border-radius:999px}.sf-m30-hour.best .sf-m30-hour-fill{background:#F4B41A}.sf-m30-insight{background:#F8FAFC;border:1px solid #E8EDF2;border-radius:14px;padding:12px;margin-top:14px;font-size:11px;color:#475467}.sf-m30-insight strong{color:var(--sf30-navy)}.sf-m30-table{width:100%;border-collapse:collapse;margin-top:12px}.sf-m30-table td{padding:10px 2px;border-top:1px solid #EEF1F4;font-size:11px}.sf-m30-table td:last-child{text-align:right;font-weight:900}.sf-m30-actiongrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.sf-m30-action{background:#fff;border:1px solid var(--sf30-line);border-radius:15px;padding:14px;text-align:left;font-size:11px;color:#667085}.sf-m30-action b{display:block;font-size:13px;color:var(--sf30-ink);margin-top:5px}.sf-m30-action.primary{background:#FFF8E6;border-color:#F1D58B}.sf-m30-action i{width:18px;height:18px;color:var(--sf30-navy)}
+#contract-success-wall,#contract-warning-wall{box-shadow:none!important;border-radius:16px!important}.sf-m30-ops{background:#fff;border:1px solid var(--sf30-line);border-radius:20px;padding:18px}.sf-m30-hidden{display:none!important}
+/* support handle */
+.sf-support-handle{width:44px!important;height:44px!important;right:10px!important;border-radius:14px!important;opacity:.9!important}.sf-support-handle span{display:none!important}
+@media(max-width:767px){.sf-m30-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sf-m30-two,.sf-m30-three{grid-template-columns:1fr}.sf-m30-actiongrid{grid-template-columns:repeat(2,1fr)}.sf-m30-title{font-size:21px}.sf-m30-chart{height:180px}#merchant-dashboard-zone.sf-merchant-os{padding:0!important}.sf-m30-topbar{align-items:flex-start}.sf-m30-kpi{min-height:98px;padding:14px}.sf-m30-kpi .value{font-size:22px}#page-home,#page-orders,#page-achievement,#page-merchant{font-size:16px}.sf-hunt-card{padding:16px!important}.sf-hunt-foot{align-items:flex-end!important}.sf-app-shell .text-\[9px\]{font-size:10px!important}.sf-app-shell .text-\[10px\]{font-size:11px!important}.sf-app-shell .text-\[11px\]{font-size:12px!important}}
+@media(min-width:1024px){#page-merchant{max-width:1180px!important;margin:0 auto}.sf-m30-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.sf-m30-actiongrid{grid-template-columns:repeat(4,1fr)}}
+</style>
+
+<style id="seefood-3-ticket-palette">#page-orders .bg-red-50,#page-orders .bg-pink-50{background:#FFF8E8!important}#page-orders .border-red-200,#page-orders .border-pink-200{border-color:#F0DCA7!important}#page-orders .text-red-500,#page-orders .text-pink-500{color:#9A6A00!important}#page-orders .bg-emerald-500,#page-orders .bg-green-500{background:var(--sf30-navy)!important}</style>
 </head>
 <body class="bg-gray-900 min-h-screen flex justify-center items-top">
 
@@ -265,9 +300,44 @@ body{align-items:flex-start!important}
                 </div>
 
                 <div id="merchant-dashboard-zone" class="sf-merchant-os bg-slate-950 text-white rounded-3xl p-5 shadow-lg space-y-4 hidden mb-4 relative overflow-hidden border border-slate-800">
+                    <section id="merchant-30-overview" class="space-y-4">
+                        <div class="sf-m30-topbar">
+                            <div><p class="sf-m30-eyebrow">SEEFOOD Merchant</p><h2 class="sf-m30-title">獵場總覽</h2><p class="sf-m30-sub"><span id="m30-shop-name">載入店鋪中</span> · 用數據少浪費一點、多救一點</p></div>
+                            <div id="m30-live-status" class="sf-m30-status">營業中</div>
+                        </div>
+                        <div class="flex items-center justify-between gap-3 flex-wrap">
+                            <div class="sf-m30-nav"><button class="active" onclick="merchant30Show('overview',this)">總覽</button><button onclick="merchant30Show('analytics',this)">數據分析</button><button onclick="merchant30ScrollOps(this)">快速開賣</button><button onclick="openFinanceModal()">帳務</button></div>
+                            <div class="flex gap-2"><select id="m30-range" onchange="loadMerchantAnalytics30(true)" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-slate-700"><option value="7">近7日</option><option value="30">近30日</option><option value="90">近90日</option></select></div>
+                        </div>
+                        <div class="sf-m30-grid">
+                            <div class="sf-m30-kpi"><div class="label">惜食營收</div><div id="m30-revenue" class="value">$0</div><div id="m30-revenue-delta" class="delta">—</div></div>
+                            <div class="sf-m30-kpi"><div class="label">成功救援</div><div id="m30-orders" class="value">0 <small class="text-xs font-bold text-slate-400">份</small></div><div id="m30-orders-delta" class="delta">—</div></div>
+                            <div class="sf-m30-kpi"><div class="label">待取餐</div><div id="m30-pending" class="value">0 <small class="text-xs font-bold text-slate-400">份</small></div><div class="delta">即時訂單</div></div>
+                            <div class="sf-m30-kpi"><div class="label">新獵人</div><div id="m30-hunters" class="value">0 <small class="text-xs font-bold text-slate-400">人</small></div><div id="m30-hunters-delta" class="delta">—</div></div>
+                            <div class="sf-m30-kpi"><div class="label">平均客單</div><div id="m30-aov" class="value">$0</div><div class="delta">已核銷訂單</div></div>
+                        </div>
+                        <div id="m30-view-overview" class="space-y-4">
+                            <div class="sf-m30-two">
+                                <div class="sf-m30-panel"><div class="flex justify-between items-start"><div><div class="sf-m30-panel-title">營收趨勢</div><div class="sf-m30-panel-sub">依實際已核銷訂單計算</div></div><span id="m30-period-label" class="text-[10px] text-slate-400 font-bold"></span></div><div id="m30-line-chart" class="sf-m30-chart"></div></div>
+                                <div class="sf-m30-panel"><div class="sf-m30-panel-title">獵人出沒時段</div><div class="sf-m30-panel-sub">找出更適合上架的時間</div><div id="m30-hour-bars"></div><div id="m30-hour-insight" class="sf-m30-insight">累積更多訂單後，系統會提供最佳上架時段。</div></div>
+                            </div>
+                            <div class="sf-m30-three">
+                                <div class="sf-m30-panel"><div class="sf-m30-panel-title">熱門獵物</div><div class="sf-m30-panel-sub">依成功救援份數排序</div><table class="sf-m30-table" id="m30-top-items"></table></div>
+                                <div class="sf-m30-panel"><div class="sf-m30-panel-title">惜食效率</div><div class="sf-m30-panel-sub">這段期間的救援結果</div><div class="mt-5"><div class="text-4xl font-black text-slate-900" id="m30-rescue-rate">0%</div><div class="text-xs text-slate-500 mt-2">成功核銷 ÷（成功核銷＋待取餐）</div></div></div>
+                                <div class="sf-m30-panel"><div class="sf-m30-panel-title">本期 SEEFOOD 發現</div><div class="sf-m30-panel-sub">把圖表翻成可以直接行動的建議</div><div id="m30-insights" class="space-y-2 mt-3"></div></div>
+                            </div>
+                        </div>
+                        <div id="m30-view-analytics" class="hidden space-y-4"><div class="sf-m30-panel"><div class="sf-m30-panel-title">進階數據分析</div><div class="sf-m30-panel-sub">Plus / Pro 方案將在這裡提供 30–365 日比較、商品效率、回購與曝光轉換。</div><div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2" id="m30-analytics-summary"></div></div></div>
+                        <div class="sf-m30-actiongrid">
+                            <button class="sf-m30-action primary" onclick="merchant30ScrollOps()"><i data-lucide="zap"></i><b>極速開賣</b>30秒更新今日獵物</button>
+                            <button class="sf-m30-action" onclick="document.getElementById('merchant-active-orders-zone').scrollIntoView({behavior:'smooth'})"><i data-lucide="clipboard-check"></i><b>待取餐訂單</b>確認與核銷</button>
+                            <button class="sf-m30-action" onclick="openFinanceModal()"><i data-lucide="wallet-cards"></i><b>帳務總覽</b>撥款與歷史對帳</button>
+                            <a class="sf-m30-action" href="guide.html" target="_blank"><i data-lucide="book-open"></i><b>操作指南</b>上架與接單須知</a>
+                        </div>
+                    </section>
                     
                     <!-- 🧱 SEEFOOD 2.0.1：多店切換器（Foundation） -->
-                    <div id="merchant-shop-switcher-zone" class="hidden !hidden bg-slate-950/70 border border-slate-700 rounded-2xl p-3 relative z-20">
+                    <div class="sf-legacy-dark" id="merchant-shop-switcher-zone" class="hidden !hidden bg-slate-950/70 border border-slate-700 rounded-2xl p-3 relative z-20">
                         <div class="flex items-center gap-2">
                             <select id="merchant-shop-select" onchange="switchMerchantShop(this.value)" class="flex-1 bg-slate-900 border border-slate-600 text-white rounded-xl px-3 py-2.5 text-xs font-black focus:outline-none focus:border-seefoodYellow"></select>
                             <button type="button" onclick="startAddMerchantShop()" class="bg-seefoodYellow text-slate-900 font-black px-3 py-2.5 rounded-xl text-xs active:scale-95 transition whitespace-nowrap">＋ 新增店鋪</button>
@@ -276,7 +346,7 @@ body{align-items:flex-start!important}
                     </div>
 
                     <!-- 🚀 MCN 自媒體合夥人招商艙 -->
-                    <div id="mcn-affiliate-zone" class="hidden bg-gradient-to-br from-indigo-900 to-purple-900 rounded-2xl p-4 shadow-lg border border-purple-500/30 relative overflow-hidden mb-2">
+                    <div class="sf-legacy-dark" id="mcn-affiliate-zone" class="hidden bg-gradient-to-br from-indigo-900 to-purple-900 rounded-2xl p-4 shadow-lg border border-purple-500/30 relative overflow-hidden mb-2">
                         <div class="absolute -right-4 -top-4 w-20 h-20 bg-purple-500/20 rounded-full blur-xl pointer-events-none"></div>
                         <h4 class="font-black text-white text-sm flex items-center mb-3 tracking-wide"><span class="text-lg mr-1">🚀</span> 流量合夥人招商中心</h4>
                         <div class="grid grid-cols-2 gap-3 mb-3">
@@ -311,9 +381,9 @@ body{align-items:flex-start!important}
                         <span class="bg-slate-900/40 px-2 py-1.5 rounded-lg text-xs font-black shadow-sm flex-none">📄 檢視</span>
                     </div>
 
-                    <div class="flex justify-between items-center border-b border-blue-900 pb-3 relative z-10">
+                    <div class="sf-m30-ops flex justify-between items-center border-b border-slate-200 pb-3 relative z-10">
                         <div>
-                            <h3 id="dashboard-shop-title" class="font-black text-lg text-seefoodYellow">未綁定店鋪</h3>
+                            <h3 id="dashboard-shop-title" class="font-black text-lg text-slate-900">未綁定店鋪</h3>
                             <div class="flex items-center space-x-1 mt-0.5">
                                 <span id="dashboard-plan-badge" class="text-[9px] bg-amber-600 text-white px-1.5 py-0.5 rounded font-bold">創始免費版 (3格)</span>
                             </div>
@@ -323,7 +393,7 @@ body{align-items:flex-start!important}
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2 relative z-10">
+                    <div class="sf-m30-hidden grid grid-cols-2 gap-2 relative z-10">
                         <button type="button" onclick="document.getElementById('dashboard-slots-container').scrollIntoView({behavior:'smooth'})" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left active:scale-95 transition"><p class="text-[10px] text-blue-200 font-bold">今日營運</p><p class="text-sm font-black text-white mt-1">快速開賣</p></button>
                         <button type="button" onclick="openFinanceModal()" class="bg-white/10 border border-white/10 rounded-xl p-3 text-left active:scale-95 transition"><p class="text-[10px] text-blue-200 font-bold">帳務</p><p class="text-sm font-black text-white mt-1">帳務總覽</p></button>
                     </div>
@@ -336,7 +406,7 @@ body{align-items:flex-start!important}
                         <div id="merchant-active-orders-list" class="space-y-2"></div>
                     </div>
 
-                    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-3 flex justify-between items-center shadow-md relative z-10 text-white">
+                    <div class="sf-m30-hidden bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-3 flex justify-between items-center shadow-md relative z-10 text-white">
                         <div>
                             <p class="text-xs font-black flex items-center">將後台加入手機主畫面</p>
                             <p class="text-[9px] text-blue-200 mt-0.5 leading-tight">像 App 一樣，一鍵秒開秒上架！</p>
@@ -344,7 +414,7 @@ body{align-items:flex-start!important}
                         <button onclick="showAppTutorial()" class="bg-white text-indigo-700 font-black text-[10px] px-3 py-2 rounded-lg shadow-sm active:scale-95 transition flex-shrink-0 ml-2">查看教學</button>
                     </div>
 
-                    <a href="guide.html" target="_blank" id="merchant-guide-btn" class="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-xl p-3 flex justify-between items-center shadow-md relative z-10 text-slate-900 block cursor-pointer active:scale-95 transition">
+                    <a href="guide.html" target="_blank" id="merchant-guide-btn" style="display:none" class="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-xl p-3 flex justify-between items-center shadow-md relative z-10 text-slate-900 block cursor-pointer active:scale-95 transition">
                         <div>
                             <p class="text-xs font-black flex items-center tracking-wide">商家操作指南</p>
                             <p class="text-[9px] text-amber-900 mt-0.5 leading-tight font-bold">必看！上架防呆、收款機制與接單須知</p>
@@ -774,7 +844,7 @@ body{align-items:flex-start!important}
             localStorage.setItem('seefood_merchant_shop_id',shop.shopId); localStorage.setItem('seefood_merchant_shop_name',shop.shopName); localStorage.setItem('seefood_merchant_vip',shop.isVip?'true':'false');
             localStorage.setItem('seefood_merchant_bank_code',shop.bCode||''); localStorage.setItem('seefood_merchant_bank_branch',shop.bBranch||''); localStorage.setItem('seefood_merchant_bank_account',shop.bAcc||''); localStorage.setItem('seefood_merchant_bank_owner',shop.bOwner||''); localStorage.setItem('seefood_merchant_contract_status',shop.contractStatus||'PENDING_REVIEW');
             const title=document.getElementById('dashboard-shop-title'); if(title)title.innerText=shop.shopName;
-            document.getElementById('merchant-dashboard-zone')?.classList.remove('hidden'); const rz=document.getElementById('merchant-registration-zone'); if(rz)rz.style.display='none';
+            document.getElementById('merchant-dashboard-zone')?.classList.remove('hidden'); const rz=document.getElementById('merchant-registration-zone'); if(rz)rz.style.display='none'; const m30n=document.getElementById('m30-shop-name'); if(m30n)m30n.textContent=shop.shopName||'目前店鋪'; const m30s=document.getElementById('m30-live-status'); if(m30s)m30s.textContent=(shop.storeStatus==='ON'?'營業中':'休息中'); setTimeout(()=>loadMerchantAnalytics30(false),30);
             userStats.merchantFinance=shop.finance||{}; document.getElementById('tab-merchant-text').innerText='商家後台';
             const cw=document.getElementById('contract-warning-wall'), sw=document.getElementById('contract-success-wall');
             if(shop.contractStatus==='已完成'){cw?.classList.add('hidden');sw?.classList.remove('hidden');localStorage.setItem('seefood_signer_name',shop.signerName||'***');localStorage.setItem('seefood_signer_id',shop.signerId||'***');}else{cw?.classList.remove('hidden');sw?.classList.add('hidden');}
@@ -948,7 +1018,7 @@ body{align-items:flex-start!important}
                 if (!s.lat || !s.lng) { distanceHtml = `<p class="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-0.5 rounded">📍 新商店地圖建置中</p>`; } else if (!userLocation) { distanceHtml = `<p class="text-xs text-blue-500 font-bold cursor-pointer animate-pulse bg-blue-50 px-2 py-0.5 rounded border border-blue-200 shadow-sm" onclick="requestLocation()">📍 點我解鎖真實距離</p>`; } else { let distDisplay = s.distance > 1000 ? (s.distance/1000).toFixed(1) + "km" : s.distance + "m"; distanceHtml = `<p class="text-xs text-gray-400 font-bold">📍 距離 ${distDisplay}</p>`; }
                 let safeJsName = escapeHTML(s.name).replace(/'/g, "\\'"); let safeJsItem = escapeHTML(s.item).replace(/'/g, "\\'"); let safeJsAddress = escapeHTML(s.address).replace(/'/g, "\\'"); let safeJsPhone = escapeHTML(s.phone).replace(/'/g, "\\'"); let safeJsTime = escapeHTML(s.time).replace(/'/g, "\\'");
                 let taxWarningHtml = ''; if (s.merchantType && s.merchantType.includes('個體戶')) { taxWarningHtml = `<p class="text-[9px] text-gray-400 mt-2 border-t border-dashed border-gray-200 pt-2 font-bold leading-tight">⚠️ 本店鋪為個人惜福個體，依法由賣方自負申報，不提供統一發票。</p>`; }
-                container.innerHTML += `<article class="sf-hunt-card ${isGoldenVip ? 'sf-hunt-priority' : ''}">${isGoldenVip ? '<div class="sf-priority-tag"><i data-lucide="sparkles"></i> 優先曝光</div>' : ''}<div class="sf-hunt-head"><div><p class="sf-hunt-location">${escapeHTML(s.district)} · ${escapeHTML(s.name)}</p>${distanceHtml}</div><span class="sf-stock">剩 ${s.remain}</span></div><div class="sf-hunt-body"><h3>${escapeHTML(s.item)}</h3><p>${escapeHTML(s.note||'')}</p><div class="sf-hunt-meta"><span><i data-lucide="clock-3"></i>${escapeHTML(s.time)}</span><span><i data-lucide="store"></i>外帶自取</span></div></div>${taxWarningHtml}<div class="sf-hunt-foot"><div>${s.discountPrice === 0 ? `<span class="sf-free">免費惜福</span>` : `<span class="sf-old-price">$${s.originalPrice}</span><strong>${Math.round(s.discountRate*10)}折 · $${s.discountPrice}</strong>`}</div><button onclick="openCheckout('${safeJsName}', '${safeJsItem}', ${s.discountPrice}, '${safeJsTime}', ${s.itemIndex}, ${s.originalPrice}, '${s.shopId}', '${safeJsAddress}', '${safeJsPhone}')" class="sf-primary-action">獵取</button></div></article>`;
+                container.innerHTML += `<article class="sf-hunt-card ${isGoldenVip ? 'sf-hunt-priority' : ''}"><div class="sf-hunt-head"><div><p class="sf-hunt-location">${escapeHTML(s.district)} · ${escapeHTML(s.name)}${isGoldenVip ? ' <span title="Plus / Pro 獵場" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#D7A928;vertical-align:middle;margin-left:3px"></span>' : ''}</p>${distanceHtml}</div><span class="sf-stock">剩 ${s.remain}</span></div><div class="sf-hunt-body"><h3>${escapeHTML(s.item)}</h3><p>${escapeHTML(s.note||'')}</p><div class="sf-hunt-meta"><span><i data-lucide="clock-3"></i>${escapeHTML(s.time)}</span><span><i data-lucide="store"></i>外帶自取</span></div></div>${taxWarningHtml}<div class="sf-hunt-foot"><div>${s.discountPrice === 0 ? `<span class="sf-free">免費惜福</span>` : `<span class="sf-old-price">$${s.originalPrice}</span><strong>${Math.round(s.discountRate*10)}折 · $${s.discountPrice}</strong>`}</div><button onclick="openCheckout('${safeJsName}', '${safeJsItem}', ${s.discountPrice}, '${safeJsTime}', ${s.itemIndex}, ${s.originalPrice}, '${s.shopId}', '${safeJsAddress}', '${safeJsPhone}')" class="sf-primary-action">獵取</button></div></article>`;
             });
         }
 
@@ -1220,7 +1290,7 @@ body{align-items:flex-start!important}
             
             if (shopId) {
                 let cachedName = localStorage.getItem('seefood_merchant_shop_name') || "SEEFOOD 惜福分店";
-                document.getElementById('merchant-dashboard-zone').classList.remove('hidden'); document.getElementById('dashboard-shop-title').innerText = cachedName; document.getElementById('tab-merchant-text').innerText = "商家後台"; const regZone = document.getElementById('merchant-registration-zone'); if(regZone) regZone.style.display = 'none';
+                document.getElementById('merchant-dashboard-zone').classList.remove('hidden'); document.getElementById('dashboard-shop-title').innerText = cachedName; const m30n=document.getElementById('m30-shop-name');if(m30n)m30n.textContent=cachedName; setTimeout(()=>loadMerchantAnalytics30(false),30); document.getElementById('tab-merchant-text').innerText = "商家後台"; const regZone = document.getElementById('merchant-registration-zone'); if(regZone) regZone.style.display = 'none';
                 let isVip = localStorage.getItem('seefood_merchant_vip') === 'true'; if(isVip) { document.getElementById('vip-upgrade-banner').classList.add('hidden'); document.getElementById('dashboard-plan-badge').innerText = "大覺者 VIP (10格)"; }
                 renderDashboardSlots(); 
                 if (urlShopId || window.location.hash === '#merchant') { switchTab('merchant'); }
@@ -1246,6 +1316,56 @@ body{align-items:flex-start!important}
         function renderBadgesWall() { const container = document.getElementById('badges-container'); if(!container) return; container.innerHTML = ''; let times = userStats.unlockedTimes || {}; let counts = userStats.storeCounts || {}; let saved = Number(userStats.savedAmount) || 0; if (userStats.hasFirstOrder) container.innerHTML += createBadgeHtml("sprout", "初次救援", "完成第一次惜福核銷"); if (saved >= 500) container.innerHTML += createBadgeHtml("wallet-cards", "省下 500", `累計省下 $${saved} 元`); else container.innerHTML += createBadgeHtml("wallet", "惜福新手", `省下 $${saved} / $500`); if (times.lunch) container.innerHTML += createBadgeHtml("sun", "午間救援", "在午間完成一次惜福"); if (times.nightMarket) container.innerHTML += createBadgeHtml("sunset", "晚間救援", "在晚間尖峰完成惜福"); if (times.midnight) container.innerHTML += createBadgeHtml("moon", "深夜救援", "拯救打烊前最後庫存"); for (const [storeName, count] of Object.entries(counts)) { if (count >= 3) container.innerHTML += createBadgeHtml("heart-handshake", `${storeName} 熟客`, `已救援該店 ${count} 次`); else if (count >= 1) container.innerHTML += createBadgeHtml("map-pin-check", `${storeName} 初訪`, `完成首次救援`); } refreshIcons26(); }
         function createBadgeHtml(icon, title, desc) { return `<div class="sf-badge-card"><span class="sf-badge-icon"><i data-lucide="${icon}" class="w-5 h-5"></i></span><div class="min-w-0"><p class="font-black text-xs text-slate-900 truncate w-full">${escapeHTML(title)}</p><p class="text-[10px] text-slate-500 mt-1 leading-tight">${escapeHTML(desc)}</p></div></div>`; }
         
+
+        // =============================
+        // SEEFOOD 3.0 Merchant Analytics
+        // =============================
+        let merchantAnalytics30Cache = {};
+        function money30(n){ return '$' + Math.round(Number(n)||0).toLocaleString('zh-TW'); }
+        function delta30(n){ n=Number(n)||0; if(Math.abs(n)<0.05)return '較前期持平'; return `較前期 ${n>0?'+':''}${n.toFixed(1)}%`; }
+        function merchant30Show(view,btn){
+            document.getElementById('m30-view-overview')?.classList.toggle('hidden',view!=='overview');
+            document.getElementById('m30-view-analytics')?.classList.toggle('hidden',view!=='analytics');
+            document.querySelectorAll('.sf-m30-nav button').forEach(b=>b.classList.remove('active')); if(btn)btn.classList.add('active');
+            if(view==='analytics') loadMerchantAnalytics30();
+        }
+        function merchant30ScrollOps(){ document.getElementById('dashboard-slots-container')?.scrollIntoView({behavior:'smooth',block:'start'}); }
+        function svgLine30(series){
+            if(!series||!series.length) return '<div class="h-full grid place-items-center text-xs text-slate-400">尚無成交資料</div>';
+            const W=720,H=200,p=22, max=Math.max(1,...series.map(x=>Number(x.revenue)||0));
+            const pts=series.map((x,i)=>{const xx=p+(W-p*2)*(series.length===1?0.5:i/(series.length-1)); const yy=H-p-(H-p*2)*(Number(x.revenue)||0)/max; return [xx,yy];});
+            const line=pts.map(p=>p.join(',')).join(' '); const area=`${p},${H-p} ${line} ${W-p},${H-p}`;
+            const labels=series.map((x,i)=> i===0||i===series.length-1||series.length<=7 ? `<text x="${pts[i][0]}" y="196" text-anchor="middle" font-size="10" fill="#98A2B3">${escapeHTML(x.label||'')}</text>`:'').join('');
+            const dots=pts.map((p,i)=>`<circle class="sf-m30-dot" cx="${p[0]}" cy="${p[1]}" r="4"><title>${escapeHTML(series[i].label)} ${money30(series[i].revenue)}</title></circle>`).join('');
+            return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><linearGradient id="sf30Area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2F6FED" stop-opacity=".14"/><stop offset="1" stop-color="#2F6FED" stop-opacity="0"/></linearGradient></defs><line class="sf-m30-axis" x1="${p}" y1="${H-p}" x2="${W-p}" y2="${H-p}"/><polygon class="sf-m30-area" points="${area}"/><polyline class="sf-m30-line" points="${line}"/>${dots}${labels}</svg>`;
+        }
+        function renderMerchantAnalytics30(a){
+            if(!a)return;
+            document.getElementById('m30-revenue').textContent=money30(a.summary.revenue);
+            document.getElementById('m30-orders').innerHTML=`${a.summary.redeemed||0} <small class="text-xs font-bold text-slate-400">份</small>`;
+            document.getElementById('m30-pending').innerHTML=`${a.summary.pending||0} <small class="text-xs font-bold text-slate-400">份</small>`;
+            document.getElementById('m30-hunters').innerHTML=`${a.summary.uniqueHunters||0} <small class="text-xs font-bold text-slate-400">人</small>`;
+            document.getElementById('m30-aov').textContent=money30(a.summary.aov);
+            document.getElementById('m30-revenue-delta').textContent=delta30(a.compare.revenuePct);
+            document.getElementById('m30-orders-delta').textContent=delta30(a.compare.ordersPct);
+            document.getElementById('m30-hunters-delta').textContent=delta30(a.compare.huntersPct);
+            document.getElementById('m30-period-label').textContent=`${a.rangeDays}日回顧`;
+            document.getElementById('m30-line-chart').innerHTML=svgLine30(a.daily||[]);
+            const maxHour=Math.max(1,...(a.hourBuckets||[]).map(x=>x.count));
+            document.getElementById('m30-hour-bars').innerHTML=(a.hourBuckets||[]).map(x=>`<div class="sf-m30-hour ${x.best?'best':''}"><span>${escapeHTML(x.label)}</span><div class="sf-m30-hour-track"><div class="sf-m30-hour-fill" style="width:${Math.round(x.count/maxHour*100)}%"></div></div><b>${x.count}</b></div>`).join('');
+            document.getElementById('m30-hour-insight').innerHTML=a.bestHour?`你的高峰是 <strong>${escapeHTML(a.bestHour.label)}</strong>，建議提前約 30 分鐘完成上架。`:'累積更多訂單後，系統會提供最佳上架時段。';
+            document.getElementById('m30-top-items').innerHTML=(a.topItems||[]).slice(0,5).map((x,i)=>`<tr><td><span class="text-slate-400 mr-2">${i+1}</span>${escapeHTML(x.name)}</td><td>${x.count} 份</td></tr>`).join('')||'<tr><td class="text-slate-400">尚無資料</td><td></td></tr>';
+            const rr=(a.summary.redeemed+a.summary.pending)>0?Math.round(a.summary.redeemed/(a.summary.redeemed+a.summary.pending)*100):0; document.getElementById('m30-rescue-rate').textContent=rr+'%';
+            document.getElementById('m30-insights').innerHTML=(a.insights||[]).map(x=>`<div class="sf-m30-insight !mt-0">${escapeHTML(x)}</div>`).join('')||'<div class="sf-m30-insight !mt-0">開始累積訂單後，SEEFOOD 會在這裡整理經營發現。</div>';
+            document.getElementById('m30-analytics-summary').innerHTML=[['期間營收',money30(a.summary.revenue)],['救援份數',a.summary.redeemed+''],['新獵人',a.summary.uniqueHunters+''],['平均客單',money30(a.summary.aov)]].map(x=>`<div class="bg-slate-50 border border-slate-200 rounded-xl p-3"><div class="text-[10px] text-slate-400 font-bold">${x[0]}</div><div class="font-black text-slate-900 mt-1">${x[1]}</div></div>`).join('');
+            refreshIcons26();
+        }
+        async function loadMerchantAnalytics30(force=false){
+            const uid=userStats.lineUid, shopId=localStorage.getItem('seefood_merchant_shop_id')||''; if(!uid||uid==='LINE_GUEST'||!shopId)return;
+            const days=document.getElementById('m30-range')?.value||'7', key=shopId+'_'+days; if(!force&&merchantAnalytics30Cache[key]&&Date.now()-merchantAnalytics30Cache[key].ts<120000){renderMerchantAnalytics30(merchantAnalytics30Cache[key].data);return;}
+            try{const p=new URLSearchParams({action:'getMerchantAnalytics',uid,shopId,days});const r=await fetch(gasUrl,{method:'POST',body:p});const j=await r.json();if(j.status==='success'){merchantAnalytics30Cache[key]={ts:Date.now(),data:j.analytics};renderMerchantAnalytics30(j.analytics);}}catch(e){console.warn('analytics',e);}
+        }
+
         function switchTab(tabId) {
             ['home', 'orders', 'achievement', 'merchant'].forEach(p => {
                 let el = document.getElementById(`page-${p}`); if(el) el.classList.toggle('hidden', p !== tabId);
