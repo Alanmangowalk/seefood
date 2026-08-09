@@ -133,6 +133,81 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
 /* Mobile keyboard / form focus */
 @media(max-width:767px){#dashboard-slots-container input:focus,#dashboard-slots-container select:focus,#dashboard-slots-container textarea:focus{outline:3px solid rgba(47,111,237,.16)!important;border-color:#2F6FED!important;scroll-margin-top:110px;scroll-margin-bottom:calc(45vh + env(safe-area-inset-bottom))}}
 </style>
+
+<style id="seefood-3-rc2-1-layout-hotfix">
+/* RC2.1 — authoritative layout layer. Keep this AFTER every legacy style block. */
+*{box-sizing:border-box}
+html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
+body{min-height:100dvh}
+.sf-app-shell{min-width:0!important;width:100%!important;max-width:none!important}
+.sf-main-scroll{min-width:0!important;width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+#home-header-zone,#page-home,#page-orders,#page-achievement,#page-merchant{min-width:0!important;width:100%!important}
+#store-list-container>*{min-width:0!important}
+img,svg,canvas,video{max-width:100%}
+select,input,textarea,button{max-width:100%}
+
+/* Phone + small tablet: one coherent column, fixed bottom navigation. */
+@media screen and (max-width:767px){
+  body{display:block!important;padding:0!important;background:var(--sf-rc2-bg,#F5F6F8)!important}
+  .sf-app-shell{height:100dvh!important;min-height:100dvh!important;border-radius:0!important;padding:0!important;overflow:hidden!important}
+  #home-header-zone{flex:none!important}
+  .sf-brandbar{padding:14px 16px!important;gap:10px}
+  .sf-brand-title{font-size:clamp(20px,6vw,28px)!important;line-height:1.15;min-width:0}
+  .sf-version-pill{flex:none}
+  #home-header-zone>div:nth-child(2){padding:10px 16px!important;gap:8px!important}
+  #home-header-zone>div:nth-child(2)>div,#home-header-zone>div:nth-child(2)>select{width:50%!important;min-width:0!important;margin-left:0!important}
+  .sf-main-scroll{padding:14px 14px calc(92px + env(safe-area-inset-bottom))!important}
+  #store-list-container{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+  #store-list-container.space-y-3>*+*{margin-top:0!important}
+  .sf-sortbar{grid-template-columns:repeat(4,minmax(0,1fr))!important;width:100%!important;gap:6px!important}
+  .sf-sort-btn{min-width:0!important;padding:0 4px!important;font-size:11px!important}
+  .sf-hero{width:100%!important;max-width:100%!important;min-height:0!important;grid-template-columns:1fr!important;border-radius:20px!important;margin:0 0 14px!important}
+  .sf-hero-copy{padding:24px 22px 18px!important}
+  .sf-hero-title{font-size:clamp(28px,9vw,38px)!important;overflow-wrap:anywhere}
+  .sf-hero-subtitle{font-size:15px!important}
+  .sf-hero-art{height:180px!important;min-height:180px!important}
+  #bottom-nav{display:block!important;position:absolute!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;height:auto!important;padding:0 0 env(safe-area-inset-bottom)!important;background:var(--sf-rc2-navy,#0B2239)!important;z-index:90!important;border-top:1px solid rgba(255,255,255,.08)!important}
+  #bottom-nav>div{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0!important;padding:8px 4px!important}
+  #bottom-nav button{width:100%!important;min-width:0!important;min-height:58px!important;padding:5px 2px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;border-radius:10px!important;font-size:11px!important}
+  #bottom-nav button i{width:21px!important;height:21px!important;margin:0!important}
+  .sf-support-handle{right:12px!important;bottom:calc(84px + env(safe-area-inset-bottom))!important}
+  #merchant-account-bar,#merchant-dashboard-zone,#merchant-registration-zone{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}
+  #contract-modal>div{width:100%!important;max-width:100%!important}
+}
+
+/* Tablet: bottom nav retained, two-column content where useful. */
+@media screen and (min-width:768px) and (max-width:1023px){
+  body{display:block!important;padding:0!important;background:var(--sf-rc2-bg,#F5F6F8)!important}
+  .sf-app-shell{height:100dvh!important;padding:0!important;border-radius:0!important;overflow:hidden!important}
+  .sf-main-scroll{padding:20px 24px 96px!important}
+  #store-list-container{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+  #store-list-container.space-y-3>*+*{margin-top:0!important}
+  .sf-hero{grid-template-columns:minmax(0,1.1fr) minmax(260px,.9fr)!important}
+  #bottom-nav{position:absolute!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;height:auto!important;padding:0!important;z-index:90!important}
+  #bottom-nav>div{display:grid!important;grid-template-columns:repeat(4,1fr)!important;padding:9px 10px!important}
+}
+
+/* Desktop: fixed sidebar + fluid workspace. */
+@media screen and (min-width:1024px){
+  body{display:flex!important;justify-content:center!important;align-items:flex-start!important;padding:20px!important;background:#EDF0F3!important;overflow:hidden!important}
+  .sf-app-shell{position:relative!important;width:min(1440px,calc(100vw - 40px))!important;max-width:1440px!important;height:calc(100dvh - 40px)!important;padding-left:184px!important;border-radius:24px!important;overflow:hidden!important;box-shadow:0 18px 60px rgba(18,35,52,.14)!important}
+  #bottom-nav{display:block!important;position:absolute!important;left:0!important;top:0!important;bottom:0!important;right:auto!important;width:184px!important;height:100%!important;padding:92px 14px 18px!important;background:var(--sf-rc2-navy,#0B2239)!important;z-index:90!important}
+  #bottom-nav>div{display:flex!important;flex-direction:column!important;gap:8px!important;padding:0!important}
+  #bottom-nav button{width:100%!important;min-height:54px!important;padding:0 14px!important;display:flex!important;flex-direction:row!important;justify-content:flex-start!important;align-items:center!important;gap:12px!important;border-radius:13px!important;font-size:12px!important}
+  #bottom-nav button i{width:19px!important;height:19px!important;margin:0!important}
+  #home-header-zone{width:100%!important}
+  .sf-main-scroll{padding:24px 30px 36px!important}
+  #page-home,#page-orders,#page-achievement,#page-merchant{width:100%!important;max-width:1180px!important;margin-left:auto!important;margin-right:auto!important}
+  #store-list-container{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important;width:100%!important}
+  #store-list-container.space-y-3>*+*{margin-top:0!important}
+  .sf-sortbar{width:min(620px,100%)!important}
+  .sf-hero{width:100%!important;max-width:none!important;min-height:300px!important}
+  #merchant-account-bar,#merchant-dashboard-zone{max-width:1180px!important;width:100%!important}
+  #merchant-registration-zone{max-width:860px!important;width:100%!important;margin-left:auto!important;margin-right:auto!important}
+}
+@media screen and (min-width:1500px){#store-list-container{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+</style>
+
 </head>
 <body class="bg-gray-900 min-h-screen flex justify-center items-top">
 
@@ -199,7 +274,7 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.1</span>
             </div>
             <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -225,8 +300,6 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
             <div id="text-banner-container" class="sf-hero sf-hero-fallback cursor-pointer" onclick="handleBannerClick()">
                 <div class="sf-hero-copy"><div class="sf-hero-kicker">SEEFOOD 美食獵人</div><h2 id="text-banner-text" class="sf-hero-title">美食獵場・全台點亮中</h2><p class="sf-hero-subtitle">探索獵場情報、快速上手，或點亮新獵場賺取分潤。</p><span class="sf-hero-cta">開始探索</span></div>
                 <div class="sf-hero-placeholder"><i data-lucide="map-pinned"></i></div>
-            </div>
-<span class="text-[10px] bg-amber-900/30 px-1.5 py-0.5 rounded font-mono font-bold flex-none ml-2">GO ➔</span>
             </div>
         </div>
 
