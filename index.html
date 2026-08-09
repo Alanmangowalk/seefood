@@ -305,7 +305,7 @@ select,input,textarea,button{max-width:100%}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.3</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.5</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -461,7 +461,7 @@ select,input,textarea,button{max-width:100%}
                         <button type="button" onclick="merchant30ScrollOps()" class="sf-quick-sell-hero"><span class="sf-quick-icon"><i data-lucide="zap"></i></span><span><b>快速開賣</b><small>30 秒更新今日惜食商品</small></span><i data-lucide="arrow-right" class="ml-auto"></i></button>
                         <div class="flex items-center justify-between gap-3 flex-wrap">
                             <div class="sf-m30-nav"><button class="active" onclick="merchant30Show('overview',this)">總覽</button><button onclick="merchant30Show('analytics',this)">數據分析</button><button onclick="openFinanceModal()">帳務</button></div>
-                            <div class="flex gap-2"><select id="m30-range" onchange="loadMerchantAnalytics30(true)" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-slate-700"><option value="7">近7日</option><option value="30">近30日</option><option value="90">近90日</option></select></div>
+                            <div class="flex gap-2"><select id="m30-range" onchange="loadMerchantAnalytics30(false)" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-slate-700"><option value="7">近7日</option><option value="30">近30日</option><option value="90">近90日</option></select></div>
                         </div>
                         <div class="sf-m30-grid">
                             <div class="sf-m30-kpi"><div class="label">惜食營收</div><div id="m30-revenue" class="value">$0</div><div id="m30-revenue-delta" class="delta">—</div></div>
@@ -482,7 +482,7 @@ select,input,textarea,button{max-width:100%}
                             </div>
                         </div>
                         <div id="m30-view-analytics" class="hidden space-y-4"><div class="sf-m30-panel"><div class="sf-m30-panel-title">進階數據分析</div><div class="sf-m30-panel-sub">Plus / Pro 方案將在這裡提供 30–365 日比較、商品效率、回購與曝光轉換。</div><div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2" id="m30-analytics-summary"></div></div></div>
-                        <div class="sf-m30-panel"><div class="flex items-center justify-between"><div><div class="sf-m30-panel-title">訂單與結算狀態</div><div class="sf-m30-panel-sub">老闆最在意的：這一單有沒有成功核銷、是否已計入撥款</div></div><button onclick="loadMerchantOrderLedger30(true)" class="text-xs font-black text-blue-600">重新整理</button></div><div id="m30-order-ledger" class="mt-3 overflow-x-auto"><div class="text-xs text-slate-400 py-3">載入中…</div></div></div>
+                        <details id="m30-order-ledger-panel" class="sf-m30-panel sf-collapsible-panel"><summary><span><b>訂單與結算狀態</b><small>查詢單號、核銷與是否已計入撥款</small></span><i data-lucide="chevron-down"></i></summary><div class="flex justify-end mt-2"><button onclick="event.preventDefault();loadMerchantOrderLedger30(true)" class="text-xs font-black text-blue-600">重新整理</button></div><div id="m30-order-ledger" class="mt-2 overflow-x-auto"><div class="text-xs text-slate-400 py-3">展開後載入訂單…</div></div></details>
                         <div class="sf-m30-actiongrid">
                             <button class="sf-m30-action primary" onclick="merchant30ScrollOps()"><i data-lucide="zap"></i><b>極速開賣</b>30秒更新今日獵物</button>
                             <button class="sf-m30-action" onclick="document.getElementById('merchant-active-orders-zone').scrollIntoView({behavior:'smooth'})"><i data-lucide="clipboard-check"></i><b>待取餐訂單</b>確認與核銷</button>
@@ -592,9 +592,13 @@ select,input,textarea,button{max-width:100%}
                     <div id="dashboard-slots-container" class="space-y-4 text-xs relative z-10 mt-2"></div>
 
                     <div class="text-xs relative z-10 border-t border-slate-700 pt-4 mt-2">
-                        <label class="block text-blue-200 mb-1.5 font-bold text-sm">顧客取餐截止時間</label>
-                        <input type="datetime-local" id="dash-time" step="900" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-400">
-                        <p class="text-[10px] text-gray-400 mt-1.5">請直接選擇明確日期與時間；顧客無法自行輸入模糊文字。每 15 分鐘一格。</p>
+                        <label class="block text-blue-200 mb-1.5 font-bold text-sm">顧客取餐截止日期與時間</label>
+                        <div class="sf-pickup-datetime-grid">
+                            <div><span class="sf-pickup-mini-label">日期</span><input type="date" id="dash-pickup-date" class="sf-pickup-control" onchange="sfSyncPickupDateTime25()"></div>
+                            <div><span class="sf-pickup-mini-label">時間</span><select id="dash-pickup-time" class="sf-pickup-control" onchange="sfSyncPickupDateTime25()"></select></div>
+                        </div>
+                        <input type="hidden" id="dash-time">
+                        <p id="dash-pickup-preview" class="text-[11px] text-slate-400 mt-2 font-bold">請選擇日期與時間；時間每 15 分鐘一格。</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 pt-2 text-xs relative z-10">
@@ -787,7 +791,7 @@ select,input,textarea,button{max-width:100%}
         </div>
 
         <div id="checkout-modal" class="absolute inset-0 bg-black/80 backdrop-blur-sm z-50 flex flex-col justify-end hidden overflow-hidden">
-            <div class="bg-slate-900 w-full max-w-[430px] rounded-t-3xl shadow-2xl border-t border-lime-900/50 flex flex-col relative transition-all mx-auto h-[90dvh]">
+            <div class="sf-checkout-sheet bg-slate-900 w-full max-w-[430px] rounded-t-3xl shadow-2xl border-t border-lime-900/50 flex flex-col relative transition-all mx-auto h-[90dvh]">
                 <div class="w-full p-4 flex justify-between items-center bg-slate-950/80 border-b border-lime-900/50 flex-none">
                     <div class="flex-1 min-w-0 pr-2">
                         <p class="text-[10px] text-lime-500 font-bold hud-text">TARGET LOCKED</p>
@@ -1068,11 +1072,11 @@ select,input,textarea,button{max-width:100%}
             try{const json=await postActionV25('getPartnerHub',{uid:userStats.lineUid});const a=json.affiliate||{};const pc=document.getElementById('partner-shop-count'),pm=document.getElementById('partner-commission'),pb=document.getElementById('partner-breakdown');if(pc)pc.innerHTML=`${a.shopCount||0} <span class="text-xs text-slate-500">家</span>`;if(pm)pm.innerText=`$${Math.round(Number(a.commission)||0)}`;localStorage.setItem('sf_partner_commission',String(Math.round(Number(a.commission)||0)));sfRefreshAttentionDots();if(pb){const shops=Array.isArray(a.shops)?a.shops:[];pb.innerHTML=shops.length?shops.map(s=>`<div class="bg-white/5 border border-white/10 rounded-lg p-2.5"><div class="flex justify-between gap-2"><div class="min-w-0"><p class="text-[11px] font-black text-white truncate">${escapeHTML(s.shopName||s.shopId)}</p><p class="text-[9px] text-slate-500 mt-0.5">${Number(s.transactions)||0} 筆有效交易</p></div><p class="text-sm font-black text-seefoodYellow">$${Math.round(Number(s.totalCommission)||0)}</p></div></div>`).join(''):'<p class="text-[10px] text-slate-500 text-center py-2">尚無夥伴店家資料</p>';}}catch(e){partnerLoadedV25=false;console.error(e);}
         }
 
-        async function syncUserDataFromCloud() {
+        async function syncUserDataFromCloud(force=false) {
             if(userStats.lineUid==='LINE_GUEST')return;
             try{
                 const coreCached=sessionStorage.getItem('sf27_core_'+userStats.lineUid)||sessionStorage.getItem('sf26_core_'+userStats.lineUid); if(coreCached){try{const c=JSON.parse(coreCached);renderCore26(c);}catch(e){}}
-                const json=await postActionV25('syncCore',{uid:userStats.lineUid}); if(json.status!=='success')return; sessionStorage.setItem('sf27_core_'+userStats.lineUid,JSON.stringify(json));
+                const json=await postActionV25('syncCore',{uid:userStats.lineUid,forceRefresh:force?'1':'0'}); if(json.status!=='success')return; sessionStorage.setItem('sf27_core_'+userStats.lineUid,JSON.stringify(json));
                 merchantAccountCache=json.merchantAccount||null; renderCore26(json);
                 const shops=Array.isArray(json.myShops)?json.myShops:[]; const bar=document.getElementById('merchant-account-bar'),sel=document.getElementById('merchant-shop-select-top');
                 if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · VIP':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);const dc=sessionStorage.getItem('sf27_dash_'+active)||sessionStorage.getItem('sf26_dash_'+active);if(dc){try{renderShopDashboardV25(JSON.parse(dc));}catch(e){}}loadShopDashboardV25(active,false);}
@@ -1235,7 +1239,7 @@ select,input,textarea,button{max-width:100%}
             document.getElementById('warning-msg').innerHTML = `<p class="text-[9px] text-lime-400 font-bold hud-text bg-slate-950/90 p-1.5 rounded border border-lime-900/50 shadow-md">[雷達警告] 庫存已鎖定！請在目標逃脫前完成金流裝彈！</p>`;
             document.getElementById('countdown-timer').classList.remove('animate-ping', 'text-red-600'); document.getElementById('countdown-timer').classList.add('text-red-500');
             document.getElementById('target-scale-wrapper').style.transition = "transform 1s linear"; 
-            document.getElementById('checkout-modal').classList.remove('hidden');
+            document.body.classList.add('sf-checkout-open'); document.getElementById('checkout-modal').classList.remove('hidden');
 
             if(countdownInterval) clearInterval(countdownInterval);
             countdownInterval = setInterval(() => {
@@ -1245,7 +1249,7 @@ select,input,textarea,button{max-width:100%}
             }, 100);
         }
 
-        function cancelCheckout() { clearInterval(countdownInterval); document.getElementById('checkout-modal').classList.add('hidden'); }
+        function cancelCheckout() { clearInterval(countdownInterval); document.body.classList.remove('sf-checkout-open'); document.getElementById('checkout-modal').classList.add('hidden'); }
         function sniperEscapeFailed() { clearInterval(countdownInterval); document.getElementById('target-scale-wrapper').style.transform = `scale(0)`; setTimeout(() => { showSniperResult("❌", "目標脫逃", "防線崩潰，庫存名額已釋出給其他獵人。"); setTimeout(cancelCheckout, 1500); }, 500); }
 
         function submitPayment(paymentMethod) {
@@ -1316,16 +1320,16 @@ select,input,textarea,button{max-width:100%}
 
         function renderSavedTicketsWall() {
             const container = document.getElementById('tickets-container'); const emptyState = document.getElementById('empty-ticket'); let savedOrders = JSON.parse(localStorage.getItem('seefood_orders_list') || "[]");
-            let filteredOrders = savedOrders.filter(o => orderSubTab === 'active' ? !o.used : o.used);
+            let filteredOrders = savedOrders.filter(o => orderSubTab === 'active' ? (!o.used && !o.expired && sfPickupState(o.time)!=='EXPIRED') : (o.used || o.expired || sfPickupState(o.time)==='EXPIRED'));
             if (filteredOrders.length === 0) { emptyState.classList.remove('hidden'); container.innerHTML = ""; sfRefreshAttentionDots(); return; }
             emptyState.classList.add('hidden'); container.innerHTML = "";
             filteredOrders.forEach((order, index) => {
                 let displayPhone = (order.phone && order.phone !== "undefined") ? order.phone : "請見官方LINE"; let callAction = displayPhone !== "請見官方LINE" ? `tel:${displayPhone}` : "javascript:void(0)";
                 let orderTime = safeFormatTime(order.time); let safeStoreName = escapeHTML(order.store); let safeItemName = escapeHTML(order.item); let safeOrderId = escapeHTML(order.orderId); let safeJsOrderId = safeOrderId.replace(/'/g, "\\'");
-                let cardHtml = `<div id="ticket-card-${order.id}" class="ticket-edge bg-white border-2 border-seefoodDarkBlue rounded-2xl shadow-md relative overflow-hidden mb-3"><div class="bg-seefoodDarkBlue text-white px-4 py-2.5 flex justify-between items-center"><span class="text-[10px] font-black ${order.used ? 'bg-gray-600' : 'bg-red-500 animate-pulse'} px-2 py-0.5 rounded">${order.used ? '✅ 惜福自取完畢' : '🎫 獵人未取餐憑證'}</span><span class="text-xs font-mono font-bold">單號: ${safeOrderId || '驗證中'}</span></div><div class="p-4 space-y-3"><div class="text-center"><h3 class="text-xl font-black text-gray-900">${safeStoreName}</h3><p class="text-xs font-bold text-gray-500 mt-1">📍 門市地址：${escapeHTML(order.address) || '請見官方LINE'}</p><p class="text-base font-black text-blue-600 bg-blue-50 py-2 rounded-xl border mt-3 px-2 shadow-inner">${safeItemName}</p></div><div class="text-center text-sm font-bold text-gray-500 py-2 border-y border-dashed">⏳ 自取截止：${escapeHTML(orderTime)}</div>`;
-                if (!order.used) { 
+                let cardHtml = `<div id="ticket-card-${order.id}" class="ticket-edge bg-white border-2 border-seefoodDarkBlue rounded-2xl shadow-md relative overflow-hidden mb-3"><div class="bg-seefoodDarkBlue text-white px-4 py-2.5 flex justify-between items-center"><span class="text-[10px] font-black ${order.used ? 'bg-gray-600' : 'bg-red-500 animate-pulse'} px-2 py-0.5 rounded">${order.used ? '✅ 惜福自取完畢' : ((order.expired||sfPickupState(order.time)==='EXPIRED') ? '⌛ 已過取餐期限' : '🎫 獵人未取餐憑證')}</span><span class="text-xs font-mono font-bold">單號: ${safeOrderId || '驗證中'}</span></div><div class="p-4 space-y-3"><div class="text-center"><h3 class="text-xl font-black text-gray-900">${safeStoreName}</h3><p class="text-xs font-bold text-gray-500 mt-1">📍 門市地址：${escapeHTML(order.address) || '請見官方LINE'}</p><p class="text-base font-black text-blue-600 bg-blue-50 py-2 rounded-xl border mt-3 px-2 shadow-inner">${safeItemName}</p></div><div class="text-center text-sm font-bold text-gray-500 py-2 border-y border-dashed">⏳ 自取截止：${escapeHTML(orderTime)}</div>`;
+                if (!order.used && !(order.expired||sfPickupState(order.time)==='EXPIRED')) { 
                     cardHtml += `<div class="sf-ticket30 space-y-2 pt-1"><div class="bg-amber-50 border border-amber-200 p-3 rounded-xl shadow-sm"><p class="text-xs font-black text-amber-600 text-center mb-1.5">⚠️ 確保權益！下單後請務必立刻致電商家確認</p><div class="bg-white p-3 rounded-lg border border-dashed border-amber-300 text-center relative mt-4 shadow-sm"><span class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-black border border-amber-200 whitespace-nowrap shadow-sm">👇 照著唸快速通關 👇</span><p class="text-sm font-black text-gray-800 mt-2 leading-relaxed text-left tracking-wide">「你好，我是美食獵人！我有在 SEEFOOD 下單一份【<span class="text-red-500">${safeItemName}</span>】，我的訂單編號是 <span class="bg-slate-100 border px-1 rounded text-seefoodDarkBlue font-mono">${safeOrderId}</span>，請問最晚幾點前要過去拿？」</p></div></div><a href="${callAction}" class="flex items-center justify-center bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black w-full py-4 rounded-xl text-sm shadow-md active:scale-95 transition mt-2">📞 點我快打致電商家：${displayPhone}</a><div class="swipe-track mt-3 select-none shadow-inner border-[3px]"><span class="text-sm font-black text-red-400 tracking-widest animate-pulse">➡️ 右滑交付店員確認核銷</span><div class="swipe-handle" id="swiper-${order.id}" ontouchstart="initSwipe(event, ${order.id}, '${safeJsOrderId}')" onmousedown="initSwipe(event, ${order.id}, '${safeJsOrderId}')">▶️</div></div></div>`;
-                } else { cardHtml += `<div class="text-center text-xs font-bold text-gray-400 py-3 bg-gray-50 border rounded-xl mt-2">核銷完成時間：${escapeHTML(safeFormatTime(order.verifyTime || order.date))}</div>`; }
+                } else { cardHtml += (order.used ? `<div class="text-center text-xs font-bold text-gray-400 py-3 bg-gray-50 border rounded-xl mt-2">核銷完成時間：${escapeHTML(safeFormatTime(order.verifyTime || order.date))}</div>` : `<div class="text-center text-xs font-bold text-slate-500 py-3 bg-slate-50 border rounded-xl mt-2">已超過取餐期限，票券已歸入歷史紀錄</div>`); }
                 cardHtml += `</div></div>`; container.innerHTML += cardHtml;
             });
             sfRefreshAttentionDots();
@@ -1338,14 +1342,16 @@ select,input,textarea,button{max-width:100%}
 
         let liveTimerInterval = null;
         function triggerLiveVerify(localId, orderId) {
-            document.getElementById('overlay-order-id').innerText = orderId; document.getElementById('verify-success-overlay').classList.remove('hidden');
-            if(liveTimerInterval) clearInterval(liveTimerInterval); liveTimerInterval = setInterval(() => { document.getElementById('overlay-live-time').innerText = new Date().toLocaleString('zh-TW', {hour12:false}); }, 1000);
-            const p = new URLSearchParams(); p.append('action', 'verifyOrder'); p.append('orderId', orderId);
-            fetch(gasUrl, { method: "POST", body: p }).then(() => {
-                let saved = JSON.parse(localStorage.getItem('seefood_orders_list') || "[]"); let idx = saved.findIndex(o => o.id === localId);
-                if(idx !== -1) { saved[idx].used = true; saved[idx].verifyTime = new Date().toLocaleString('zh-TW', {hour12:false}); localStorage.setItem('seefood_orders_list', JSON.stringify(saved)); sfRefreshAttentionDots(); }
-                syncUserDataFromCloud();
-            });
+            const overlay=document.getElementById('verify-success-overlay'); document.getElementById('overlay-order-id').innerText=orderId;
+            const p=new URLSearchParams(); p.append('action','verifyOrder'); p.append('orderId',orderId);
+            const saved=JSON.parse(localStorage.getItem('seefood_orders_list')||'[]'); const row=saved.find(o=>String(o.id)===String(localId)||String(o.orderId)===String(orderId));
+            if(row){row._verifying=true;localStorage.setItem('seefood_orders_list',JSON.stringify(saved));}
+            fetch(gasUrl,{method:'POST',body:p}).then(r=>r.json()).then(j=>{
+                if(j.status!=='success'){if(row)delete row._verifying;localStorage.setItem('seefood_orders_list',JSON.stringify(saved));renderSavedTicketsWall();alert(j.msg||'核銷失敗');return;}
+                const now=new Date().toLocaleString('zh-TW',{hour12:false}); const latest=JSON.parse(localStorage.getItem('seefood_orders_list')||'[]'); const x=latest.find(o=>String(o.id)===String(localId)||String(o.orderId)===String(orderId)); if(x){x.used=true;x.status='Redeemed';x.verifyTime=now;delete x._verifying;} localStorage.setItem('seefood_orders_list',JSON.stringify(latest));
+                renderSavedTicketsWall();sfRefreshAttentionDots(); if(overlay)overlay.classList.remove('hidden'); if(liveTimerInterval)clearInterval(liveTimerInterval);liveTimerInterval=setInterval(()=>{const el=document.getElementById('overlay-live-time');if(el)el.innerText=new Date().toLocaleString('zh-TW',{hour12:false});},1000);
+                sessionStorage.removeItem('sf27_core_'+userStats.lineUid);sessionStorage.removeItem('sf26_core_'+userStats.lineUid);setTimeout(()=>syncUserDataFromCloud(true),1200);
+            }).catch(()=>{if(row)delete row._verifying;localStorage.setItem('seefood_orders_list',JSON.stringify(saved));renderSavedTicketsWall();alert('核銷連線失敗，請稍後重試');});
         }
         function closeVerifyOverlay() { if(liveTimerInterval) clearInterval(liveTimerInterval); document.getElementById('verify-success-overlay').classList.add('hidden'); switchOrderSubTab('active'); }
 
@@ -1565,8 +1571,15 @@ select,input,textarea,button{max-width:100%}
         }
         async function loadMerchantAnalytics30(force=false){
             const uid=userStats.lineUid, shopId=localStorage.getItem('seefood_merchant_shop_id')||''; if(!uid||uid==='LINE_GUEST'||!shopId)return;
-            const days=document.getElementById('m30-range')?.value||'7', key=shopId+'_'+days; if(!force&&merchantAnalytics30Cache[key]&&Date.now()-merchantAnalytics30Cache[key].ts<120000){renderMerchantAnalytics30(merchantAnalytics30Cache[key].data);return;}
-            try{const p=new URLSearchParams({action:'getMerchantAnalytics',uid,shopId,days});const r=await fetch(gasUrl,{method:'POST',body:p});const j=await r.json();if(j.status==='success'){merchantAnalytics30Cache[key]={ts:Date.now(),data:j.analytics};renderMerchantAnalytics30(j.analytics);}}catch(e){console.warn('analytics',e);}
+            const days=String(document.getElementById('m30-range')?.value||'7'), key=shopId+'_'+days;
+            if(merchantAnalytics30Cache[key]){renderMerchantAnalytics30(merchantAnalytics30Cache[key].data); if(!force)return;}
+            const select=document.getElementById('m30-range'); if(select)select.disabled=true;
+            try{
+                const p=new URLSearchParams({action:'getMerchantAnalyticsBundle',uid,shopId,forceRefresh:force?'1':'0'});
+                const r=await fetch(gasUrl,{method:'POST',body:p}); const j=await r.json();
+                if(j.status==='success'&&j.analyticsByRange){Object.entries(j.analyticsByRange).forEach(([d,a])=>{merchantAnalytics30Cache[shopId+'_'+d]={ts:Date.now(),data:a};}); const target=j.analyticsByRange[days]||j.analyticsByRange['7']; if(target)renderMerchantAnalytics30(target);}
+            }catch(e){console.warn('analytics bundle',e);}
+            finally{if(select)select.disabled=false;}
         }
 
         function setupMobileFormFocus30(){
@@ -1576,7 +1589,7 @@ select,input,textarea,button{max-width:100%}
         }
 
         function sfActiveTicketIds(){
-            try{return JSON.parse(localStorage.getItem('seefood_orders_list')||'[]').filter(o=>!o.used).map(o=>String(o.orderId||o.id||'')).filter(Boolean).sort();}catch(e){return [];}
+            try{return JSON.parse(localStorage.getItem('seefood_orders_list')||'[]').filter(o=>!o.used && !o.expired && sfPickupState(o.time)!=='EXPIRED').map(o=>String(o.orderId||o.id||'')).filter(Boolean).sort();}catch(e){return [];}
         }
         function sfSetNavDot(id,on){const el=document.getElementById(id);if(el)el.classList.toggle('hidden',!on);}
         function sfRefreshAttentionDots(){
@@ -1722,14 +1735,24 @@ select,input,textarea,button{max-width:100%}
 <style id="sf-rc24-style">
 .sf-m30-line-prev{fill:none;stroke:#98A2B3;stroke-width:2;stroke-dasharray:7 7;opacity:.85}.sf-m30-dot{cursor:pointer}.sf-chart-tip{position:absolute;z-index:20;background:#0B1F33;color:white;padding:9px 11px;border-radius:10px;font-size:11px;pointer-events:none;box-shadow:0 10px 28px rgba(0,0,0,.18)}
 .sf-expiring{border-color:#F59E0B!important;box-shadow:0 0 0 3px rgba(245,158,11,.12)}.sf-expired{filter:saturate(.5);opacity:.82}.sf-order-status{display:inline-flex;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:900;background:#EEF2F6;color:#344054}.sf-order-status.ok{background:#E8F8F0;color:#087A55}.sf-order-status.warn{background:#FFF4E5;color:#B54708}
+
+/* RC2.5 Stability / mobile obstruction fixes */
+.sf-pickup-datetime-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.sf-pickup-mini-label{display:block;font-size:10px;font-weight:800;color:#94A3B8;margin-bottom:5px}.sf-pickup-control{width:100%;min-width:0;background:#0F172A;border:1px solid #475569;border-radius:12px;padding:12px 10px;color:#fff;font-size:14px;font-weight:800;text-align:center;text-align-last:center;appearance:auto}.sf-collapsible-panel>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer}.sf-collapsible-panel>summary::-webkit-details-marker{display:none}.sf-collapsible-panel>summary span{display:block}.sf-collapsible-panel>summary b{display:block;font-size:14px;color:#182230}.sf-collapsible-panel>summary small{display:block;margin-top:3px;font-size:11px;color:#667085;font-weight:600}.sf-collapsible-panel[open]>summary svg{transform:rotate(180deg)}
+#checkout-modal .sf-checkout-sheet{max-height:calc(100dvh - 12px);overflow-y:auto;overscroll-behavior:contain;padding-bottom:calc(96px + env(safe-area-inset-bottom))!important}body.sf-checkout-open #sf-support-handle{display:none!important}body.sf-checkout-open #bottom-nav{visibility:hidden!important;pointer-events:none!important}
+#finance-modal>div{max-height:calc(100dvh - 18px)!important;overflow-y:auto!important;padding-bottom:calc(112px + env(safe-area-inset-bottom))!important;overscroll-behavior:contain}#contract-modal>div{padding-bottom:calc(100px + env(safe-area-inset-bottom))!important}.sf-main-scroll{scroll-padding-bottom:120px}
+@media(max-width:767px){.sf-pickup-datetime-grid{grid-template-columns:1fr 1fr}.sf-pickup-control{font-size:16px;min-height:48px;padding-left:8px;padding-right:8px}.sf-support-handle{right:8px!important;bottom:calc(92px + env(safe-area-inset-bottom))!important;width:40px!important;height:40px!important}.sf-main-scroll{padding-bottom:calc(118px + env(safe-area-inset-bottom))!important}#page-merchant{padding-bottom:36px!important}#finance-modal>div{width:100%!important;border-radius:24px 24px 0 0!important}.sf-order-ledger-row{grid-template-columns:1fr!important;gap:7px!important}.sf-order-ledger-row .sf-order-money{text-align:left!important}}
+
 </style>
 <script id="sf-rc24-script">
 (function(){
   function pad(n){return String(n).padStart(2,'0')}
   window.sfLocalInputValue=function(v){let d=v?new Date(v):new Date(Date.now()+2*3600000);if(isNaN(d))d=new Date(Date.now()+2*3600000);return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(Math.floor(d.getMinutes()/15)*15)}`}
+  window.sfBuildTimeOptions25=function(){const sel=document.getElementById('dash-pickup-time');if(!sel||sel.options.length)return;for(let h=0;h<24;h++)for(let m=0;m<60;m+=15){const v=`${pad(h)}:${pad(m)}`;sel.add(new Option(v,v));}};
+  window.sfSyncPickupDateTime25=function(){const d=document.getElementById('dash-pickup-date'),t=document.getElementById('dash-pickup-time'),hidden=document.getElementById('dash-time'),preview=document.getElementById('dash-pickup-preview');if(!d||!t||!hidden)return;hidden.value=(d.value&&t.value)?`${d.value}T${t.value}`:'';if(preview)preview.textContent=hidden.value?`顧客票券將顯示：${d.value.replace(/-/g,'/')} ${t.value} 前`:'請選擇日期與時間；時間每 15 分鐘一格。';};
+  window.sfSetPickupControls25=function(v){sfBuildTimeOptions25();let d=v?new Date(v):new Date(Date.now()+2*3600000);if(isNaN(d))d=new Date(Date.now()+2*3600000);d.setMinutes(Math.ceil(d.getMinutes()/15)*15,0,0);const date=document.getElementById('dash-pickup-date'),time=document.getElementById('dash-pickup-time');if(date){date.min=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;date.value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}if(time)time.value=`${pad(d.getHours())}:${pad(d.getMinutes())}`;sfSyncPickupDateTime25();};
   window.sfPickupState=function(v){const d=new Date(v);if(isNaN(d))return 'ACTIVE';const ms=d-Date.now();if(ms<=0)return 'EXPIRED';if(ms<=60*60*1000)return 'EXPIRING';return 'ACTIVE'};
   const oldRender=window.renderShopDashboardV25;
-  if(oldRender) window.renderShopDashboardV25=function(shop){oldRender(shop);const t=document.getElementById('dash-time');if(t){t.min=sfLocalInputValue(new Date());t.value=sfLocalInputValue(shop?.storeTime)};setTimeout(()=>loadMerchantOrderLedger30(false),80)};
+  if(oldRender) window.renderShopDashboardV25=function(shop){oldRender(shop);sfSetPickupControls25(shop?.storeTime);const panel=document.getElementById('m30-order-ledger-panel');if(panel&&!panel.dataset.ready){panel.dataset.ready='1';panel.addEventListener('toggle',()=>{if(panel.open)loadMerchantOrderLedger30(false);});}};
   const oldUpdate=window.updateStoreOnlineStatus;
   if(oldUpdate) window.updateStoreOnlineStatus=async function(status){const t=document.getElementById('dash-time');if(status==='ON'&&t){if(!t.value){alert('請先選擇顧客取餐截止日期與時間');return}const d=new Date(t.value);if(isNaN(d)||d<=new Date()){alert('取餐截止時間必須晚於現在');return}}return oldUpdate(status)};
   window.sfRenderChart24=function(a){const cur=a.daily||[],prev=a.previousDaily||[];if(!cur.length)return '<div class="h-full grid place-items-center text-xs text-slate-400">尚無成交資料</div>';const W=720,H=200,p=22,max=Math.max(1,...cur.map(x=>+x.revenue||0),...prev.map(x=>+x.revenue||0));const pts=s=>s.map((x,i)=>[p+(W-p*2)*(s.length===1?.5:i/(s.length-1)),H-p-(H-p*2)*(+x.revenue||0)/max]);const c=pts(cur),q=pts(prev);const pl=x=>x.map(z=>z.join(',')).join(' ');const circles=c.map((z,i)=>`<circle class="sf-m30-dot" cx="${z[0]}" cy="${z[1]}" r="5" onclick="sfShowDayDetail24(${i},event)"><title>${cur[i].date}｜$${Math.round(cur[i].revenue)}｜${cur[i].orders}份</title></circle>`).join('');return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><line class="sf-m30-axis" x1="${p}" y1="${H-p}" x2="${W-p}" y2="${H-p}"/>${q.length?`<polyline class="sf-m30-line-prev" points="${pl(q)}"/>`:''}<polyline class="sf-m30-line" points="${pl(c)}"/>${circles}</svg>`};
@@ -1737,7 +1760,7 @@ select,input,textarea,button{max-width:100%}
   window.sfShowDayDetail24=function(i,e){const a=sfLastAnalytics24,d=a?.daily?.[i],p=a?.previousDaily?.[i];if(!d)return;document.querySelectorAll('.sf-chart-tip').forEach(x=>x.remove());const el=document.createElement('div');el.className='sf-chart-tip';el.innerHTML=`<b>${d.date}</b><br>本期：$${Math.round(d.revenue).toLocaleString()} · ${d.orders} 份${p?`<br>上期對應：$${Math.round(p.revenue).toLocaleString()} · ${p.orders} 份`:''}`;document.body.appendChild(el);const r=e.target.getBoundingClientRect();el.style.left=Math.min(innerWidth-el.offsetWidth-8,r.left+10)+'px';el.style.top=(r.top+scrollY-el.offsetHeight-8)+'px';setTimeout(()=>el.remove(),3500)};
   const oldRAM=window.renderMerchantAnalytics30;
   if(oldRAM) window.renderMerchantAnalytics30=function(a){oldRAM(a);sfLastAnalytics24=a;const chart=document.getElementById('m30-line-chart');if(chart)chart.innerHTML=sfRenderChart24(a);const rr=document.getElementById('m30-rescue-rate'),note=document.getElementById('m30-sellthrough-note');if(rr)rr.textContent=a.sellThrough&&a.sellThrough.available>0?Math.round(a.sellThrough.rate*100)+'%':'—';if(note)note.textContent=a.sellThrough&&a.sellThrough.available>0?`有效供給 ${a.sellThrough.available} 份 · SEEFOOD 售出 ${a.sellThrough.sold} 份 · 主動調減 ${a.sellThrough.withdrawn} 份`:'新版開始記錄庫存生命週期後，這裡會自動累積。';loadMerchantOrderLedger30(false)};
-  window.loadMerchantOrderLedger30=async function(force){const uid=userStats.lineUid,shopId=localStorage.getItem('seefood_merchant_shop_id')||'',box=document.getElementById('m30-order-ledger');if(!uid||!shopId||!box)return;try{const p=new URLSearchParams({action:'getMerchantOrders',uid,shopId,limit:'30'});const r=await fetch(gasUrl,{method:'POST',body:p});const j=await r.json();if(j.status!=='success')return;box.innerHTML=(j.orders||[]).map(o=>`<div class="grid grid-cols-[1.2fr_1fr_auto] gap-3 items-center py-3 border-t border-slate-100 text-xs"><div><b class="font-mono text-slate-800">${escapeHTML(o.orderId)}</b><div class="text-slate-500 mt-1">${escapeHTML(o.item)}</div></div><div><span class="sf-order-status ${o.status==='Redeemed'?'ok':o.status==='Paid'?'warn':''}">${escapeHTML(o.statusLabel)}</span><div class="text-slate-400 mt-1">${escapeHTML(o.settlementLabel||'')}</div></div><div class="text-right"><b class="text-slate-900">$${Math.round(o.itemPrice||0)}</b><div class="text-slate-500 mt-1">應收 $${Math.round(o.netIncome||0)}</div></div></div>`).join('')||'<div class="text-xs text-slate-400 py-4">尚無訂單</div>'}catch(e){box.innerHTML='<div class="text-xs text-red-400 py-3">訂單載入失敗，請稍後重試</div>'}};
+  window.loadMerchantOrderLedger30=async function(force){const uid=userStats.lineUid,shopId=localStorage.getItem('seefood_merchant_shop_id')||'',box=document.getElementById('m30-order-ledger');if(!uid||!shopId||!box)return;try{const p=new URLSearchParams({action:'getMerchantOrders',uid,shopId,limit:'30'});const r=await fetch(gasUrl,{method:'POST',body:p});const j=await r.json();if(j.status!=='success')return;box.innerHTML=(j.orders||[]).map(o=>`<div class="sf-order-ledger-row grid grid-cols-[1.2fr_1fr_auto] gap-3 items-center py-3 border-t border-slate-100 text-xs"><div><b class="font-mono text-slate-800">${escapeHTML(o.orderId)}</b><div class="text-slate-500 mt-1">${escapeHTML(o.item)}</div></div><div><span class="sf-order-status ${o.status==='Redeemed'?'ok':o.status==='Paid'?'warn':''}">${escapeHTML(o.statusLabel)}</span><div class="text-slate-400 mt-1">${escapeHTML(o.settlementLabel||'')}</div></div><div class="sf-order-money text-right"><b class="text-slate-900">$${Math.round(o.itemPrice||0)}</b><div class="text-slate-500 mt-1">應收 $${Math.round(o.netIncome||0)}</div></div></div>`).join('')||'<div class="text-xs text-slate-400 py-4">尚無訂單</div>'}catch(e){box.innerHTML='<div class="text-xs text-red-400 py-3">訂單載入失敗，請稍後重試</div>'}};
   window.sfReportOrderIssue24=async function(orderId){const reason=prompt('訂單遇到什麼問題？\n1 店家無法提供商品\n2 商品與訂單明顯不符\n3 店家表示無此訂單\n4 已付款但無法取餐\n5 其他\n\n請輸入 1–5');if(!reason)return;const map={'1':'店家無法提供商品','2':'商品與訂單明顯不符','3':'店家表示無此訂單','4':'已付款但無法取餐','5':'其他'};if(!map[reason]){alert('請輸入 1–5');return}const detail=prompt('請簡短說明發生什麼事（平台會先審核，不代表自動退款）')||'';const p=new URLSearchParams({action:'createDispute',uid:userStats.lineUid,orderId,reason:map[reason],detail});const r=await fetch(gasUrl,{method:'POST',body:p});const j=await r.json();alert(j.status==='success'?'已送交 SEEFOOD 審核。我們不會因提出問題就自動退款，會依訂單紀錄與雙方資料判斷。':(j.msg||'送出失敗'))};
   const oldTickets=window.renderSavedTicketsWall;
   if(oldTickets) window.renderSavedTicketsWall=function(){let arr=[];try{arr=JSON.parse(localStorage.getItem('seefood_orders_list')||'[]')}catch(e){};let changed=false;arr.forEach(o=>{if(!o.used&&sfPickupState(o.time)==='EXPIRED'){o.expired=true;changed=true}});if(changed)localStorage.setItem('seefood_orders_list',JSON.stringify(arr));oldTickets();document.querySelectorAll('[id^="ticket-card-"]').forEach(card=>{const id=card.querySelector('.font-mono')?.textContent?.replace('單號:','').trim();const o=arr.find(x=>String(x.orderId)===id);if(!o)return;const st=sfPickupState(o.time);if(st==='EXPIRING')card.classList.add('sf-expiring');if(st==='EXPIRED'){card.classList.add('sf-expired');const swipe=card.querySelector('.swipe-track');if(swipe)swipe.outerHTML='<div class="bg-slate-100 border rounded-xl p-3 text-center text-xs font-bold text-slate-500">已超過取餐期限，正常核銷已鎖定。若有特殊狀況可使用「訂單遇到問題」。</div>'}const body=card.querySelector('.p-4');if(body&&!body.querySelector('.sf-issue-btn'))body.insertAdjacentHTML('beforeend',`<button class="sf-issue-btn w-full mt-2 text-xs font-black text-slate-500 underline" onclick="sfReportOrderIssue24('${String(o.orderId||'').replace(/'/g,'')}')">訂單遇到問題</button>`)})};
