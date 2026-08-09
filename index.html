@@ -114,6 +114,25 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
 </style>
 
 <style id="seefood-3-ticket-palette">#page-orders .bg-red-50,#page-orders .bg-pink-50{background:#FFF8E8!important}#page-orders .border-red-200,#page-orders .border-pink-200{border-color:#F0DCA7!important}#page-orders .text-red-500,#page-orders .text-pink-500{color:#9A6A00!important}#page-orders .bg-emerald-500,#page-orders .bg-green-500{background:var(--sf30-navy)!important}</style>
+
+<style id="seefood-3-rc2">
+:root{--sf-rc2-navy:#0B2239;--sf-rc2-gold:#F4B41A;--sf-rc2-bg:#F5F6F8;--sf-rc2-line:#E4E8ED;--sf-rc2-ink:#182230}
+/* Responsive app shell: mobile bottom nav, desktop sidebar */
+@media(min-width:1024px){body{padding:20px!important;background:#EDF0F3!important}.sf-app-shell{max-width:1440px!important;width:min(1440px,calc(100vw - 40px))!important;height:calc(100vh - 40px)!important;padding-left:176px;position:relative}.sf-main-scroll{padding:28px 34px 40px!important}#bottom-nav{position:absolute!important;left:0;top:0;bottom:0;width:176px;height:100%;z-index:70!important;background:var(--sf-rc2-navy)!important;border:0!important;padding:96px 12px 18px}#bottom-nav>div{display:flex!important;flex-direction:column;gap:7px;padding:0!important}#bottom-nav button{width:100%;min-height:54px;flex-direction:row!important;justify-content:flex-start!important;gap:12px;padding:0 14px;border-radius:13px;color:#B9C7D5!important;font-size:12px}#bottom-nav button i{margin:0!important;width:19px;height:19px}#bottom-nav button.text-seefoodYellow{background:rgba(244,180,26,.14);color:#FFD36A!important}#home-header-zone{border-radius:0!important}.sf-brandbar{padding-left:28px!important;padding-right:28px!important}#page-home,#page-orders,#page-achievement,#page-merchant{max-width:1200px!important}#store-list-container{grid-template-columns:repeat(3,minmax(0,1fr))!important}.sf-support-handle{display:none!important}}
+@media(min-width:1500px){#store-list-container{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(max-width:1023px){body{padding:0!important;background:#fff!important}.sf-app-shell{width:100%!important;height:100dvh!important;border-radius:0!important;max-width:none!important}.sf-main-scroll{padding:16px 16px 28px!important}#bottom-nav{display:block!important}}
+/* Hero / Banner engine: artwork and copy are separate */
+.sf-hero{position:relative;min-height:clamp(230px,31vw,390px);border-radius:24px;overflow:hidden;background:linear-gradient(120deg,#0B2239 0%,#102F4D 56%,#173B5A 100%);color:white;border:1px solid rgba(255,255,255,.06);box-shadow:0 10px 30px rgba(11,34,57,.09);cursor:pointer;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(280px,.95fr);align-items:stretch;margin:0 0 18px}.sf-hero.hidden{display:none!important}.sf-hero-copy{padding:clamp(26px,4vw,52px);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;z-index:2}.sf-hero-kicker{font-size:11px;font-weight:900;letter-spacing:.16em;color:#FFD36A}.sf-hero-title{font-size:clamp(28px,3.2vw,48px);line-height:1.08;font-weight:950;letter-spacing:-.045em;margin-top:10px;max-width:680px}.sf-hero-subtitle{font-size:clamp(13px,1.25vw,17px);color:#D4DFEA;margin-top:12px;max-width:580px;line-height:1.65}.sf-hero-cta{display:inline-flex;margin-top:22px;background:var(--sf-rc2-gold);color:#17212B;padding:11px 17px;border-radius:12px;font-size:13px;font-weight:950}.sf-hero-art{min-width:0;position:relative;background:rgba(255,255,255,.03)}.sf-hero-art img{width:100%;height:100%;object-fit:contain;object-position:center right;display:block}.sf-hero-noart .sf-hero-art:after,.sf-hero-placeholder{content:'';position:absolute;inset:0;background:radial-gradient(circle at 65% 45%,rgba(244,180,26,.22),transparent 35%),linear-gradient(135deg,transparent,rgba(255,255,255,.04))}.sf-hero-dots{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:5px;z-index:4}.sf-hero-dots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}.sf-hero-dots span.active{width:18px;border-radius:10px;background:#F4B41A}.sf-hero-fallback .sf-hero-placeholder{position:relative;display:flex;align-items:center;justify-content:center}.sf-hero-placeholder svg{width:80px;height:80px;color:rgba(255,211,106,.75)}
+@media(max-width:767px){.sf-hero{grid-template-columns:1fr;min-height:360px;border-radius:20px}.sf-hero-copy{padding:24px 22px 8px;justify-content:flex-start}.sf-hero-title{font-size:31px}.sf-hero-subtitle{font-size:14px}.sf-hero-cta{margin-top:16px}.sf-hero-art{height:155px;align-self:end}.sf-hero-art img{object-position:center bottom}.sf-hero-dots{bottom:9px}}
+/* Merchant primary action */
+.sf-quick-sell-hero{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:linear-gradient(100deg,#F4B41A,#FFD56D);color:#182230;border:0;border-radius:17px;padding:14px 16px;box-shadow:0 8px 20px rgba(244,180,26,.16)}.sf-quick-sell-hero .sf-quick-icon{width:38px;height:38px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center}.sf-quick-sell-hero svg{width:18px;height:18px}.sf-quick-sell-hero b{display:block;font-size:15px;font-weight:950}.sf-quick-sell-hero small{display:block;font-size:11px;color:#6B5420;margin-top:1px;font-weight:700}
+/* Finance and contract use the same light design system */
+#finance-modal{background:rgba(11,34,57,.48)!important}#finance-modal>div{background:#F7F8FA!important;color:#182230!important;border:0!important;max-width:760px;margin:0 auto;border-radius:28px 28px 0 0!important}#finance-modal .bg-slate-900,#finance-modal .bg-slate-800,#finance-modal .from-slate-800,#finance-modal .to-indigo-950,#finance-modal .to-slate-900{background:#fff!important;background-image:none!important;border-color:#E4E8ED!important}#finance-modal .text-white,#finance-modal .text-gray-300{color:#182230!important}#finance-modal .text-gray-400,#finance-modal .text-gray-500{color:#667085!important}#finance-modal .text-seefoodYellow{color:#A56F00!important}#contract-modal{background:#F7F8FA!important;color:#182230!important}#contract-modal>div:first-child{background:#fff!important;border-color:#E4E8ED!important;box-shadow:none!important;position:relative!important}#contract-modal h2{color:#182230!important}#contract-modal .bg-slate-800,#contract-modal .bg-slate-900,#contract-modal .bg-slate-950{background:#fff!important;color:#182230!important;border-color:#E4E8ED!important}#contract-modal .text-white,#contract-modal .text-gray-300,#contract-modal .text-gray-200{color:#182230!important}#contract-modal .text-gray-400{color:#667085!important}#contract-modal input{background:#fff!important;color:#182230!important;border-color:#D7DDE5!important}#contract-modal>div:last-child{background:rgba(247,248,250,.96)!important;border-color:#E4E8ED!important}
+/* Ticket/achievement polish */
+#page-orders .swipe-track{background:#F4F6F8!important;border:1px solid #DCE2E8!important;color:#667085!important}#page-orders .swipe-handle{background:#0B2239!important}#page-orders a[href^="tel:"]{background:#0B2239!important;background-image:none!important}#page-orders .bg-amber-50{background:#F8FAFC!important;border-color:#E2E8F0!important}#page-orders .text-amber-600{color:#0B2239!important}#page-achievement{max-width:980px!important}#page-achievement #badges-container{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))!important}.sf-badge-card{padding:15px!important;border-radius:16px!important}.sf-badge-icon{background:#F4F6F8!important;color:#0B2239!important}
+/* Mobile keyboard / form focus */
+@media(max-width:767px){#dashboard-slots-container input:focus,#dashboard-slots-container select:focus,#dashboard-slots-container textarea:focus{outline:3px solid rgba(47,111,237,.16)!important;border-color:#2F6FED!important;scroll-margin-top:110px;scroll-margin-bottom:calc(45vh + env(safe-area-inset-bottom))}}
+</style>
 </head>
 <body class="bg-gray-900 min-h-screen flex justify-center items-top">
 
@@ -151,6 +170,17 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
             </div>
         </div>
 
+        <div id="auth-choice-modal" class="absolute inset-0 z-[120] hidden items-end sm:items-center justify-center bg-slate-950/45 backdrop-blur-sm p-0 sm:p-5">
+            <div class="sf-auth-card w-full sm:max-w-md bg-white rounded-t-[28px] sm:rounded-[28px] p-6 shadow-2xl">
+                <div class="w-12 h-12 rounded-2xl bg-[#F4B41A]/15 text-[#0B2239] flex items-center justify-center mb-4"><i data-lucide="user-round-check" class="w-6 h-6"></i></div>
+                <h2 class="text-2xl font-black text-slate-900 tracking-tight">歡迎來到 SEEFOOD</h2>
+                <p class="text-sm text-slate-500 mt-2 leading-relaxed">登入後可購買、保存票券、累積成就與管理獵場；也可以先以訪客身分逛逛。</p>
+                <button onclick="loginWithLine30()" class="w-full mt-6 bg-[#06C755] text-white font-black py-3.5 rounded-2xl">使用 LINE 登入</button>
+                <button onclick="continueAsGuest30()" class="w-full mt-2 bg-slate-100 text-slate-700 font-black py-3.5 rounded-2xl">先以訪客瀏覽</button>
+                <p class="text-[11px] text-slate-400 text-center mt-4">首次使用仍需閱讀並同意平台服務與隱私聲明。</p>
+            </div>
+        </div>
+
         <div id="verify-success-overlay" class="absolute inset-0 bg-emerald-600 z-50 flex flex-col items-center justify-center p-6 text-white hidden">
             <span class="text-7xl animate-bounce">✅</span>
             <h2 class="text-3xl font-black mt-4 tracking-wider">惜福自取成功</h2>
@@ -169,7 +199,7 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">2.7 PREVIEW</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2</span>
             </div>
             <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -182,15 +212,21 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
                     <option value="全部行政區">全部行政區</option>
                 </select>
             </div>
-            
-            <div id="image-banner-container" class="w-full h-32 bg-gray-200 relative overflow-hidden hidden cursor-pointer shadow-inner" onclick="handleBannerClick()">
-                <img id="image-banner-img" src="" class="w-full h-full object-cover transition-opacity duration-500">
-                <div id="image-banner-title" class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent text-white text-[11px] font-bold px-3 py-1.5 pb-2 truncate">載入中...</div>
+            <section id="image-banner-container" class="sf-hero hidden" onclick="handleBannerClick()" role="button" tabindex="0" aria-label="SEEFOOD 精選入口">
+                <div class="sf-hero-copy">
+                    <div id="image-banner-kicker" class="sf-hero-kicker">SEEFOOD 美食獵人</div>
+                    <h2 id="image-banner-title" class="sf-hero-title">美食獵場・全台點亮中</h2>
+                    <p id="image-banner-subtitle" class="sf-hero-subtitle">探索附近惜食獵場，讓今天的美味不被浪費。</p>
+                    <span id="image-banner-cta" class="sf-hero-cta">探索獵場</span>
+                </div>
+                <div class="sf-hero-art"><img id="image-banner-img" src="" alt="" decoding="async"></div>
+                <div id="hero-dots" class="sf-hero-dots" aria-hidden="true"></div>
+            </section>
+            <div id="text-banner-container" class="sf-hero sf-hero-fallback cursor-pointer" onclick="handleBannerClick()">
+                <div class="sf-hero-copy"><div class="sf-hero-kicker">SEEFOOD 美食獵人</div><h2 id="text-banner-text" class="sf-hero-title">美食獵場・全台點亮中</h2><p class="sf-hero-subtitle">探索獵場情報、快速上手，或點亮新獵場賺取分潤。</p><span class="sf-hero-cta">開始探索</span></div>
+                <div class="sf-hero-placeholder"><i data-lucide="map-pinned"></i></div>
             </div>
-
-            <div id="text-banner-container" class="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2 text-xs font-bold flex items-center justify-between shadow-inner select-none transition-all duration-500 cursor-pointer" onclick="handleBannerClick()">
-                <div class="flex items-center space-x-2 truncate"><span id="text-banner-emoji">🌍</span><span id="text-banner-text" class="truncate tracking-wide">系統連線中...</span></div>
-                <span class="text-[10px] bg-amber-900/30 px-1.5 py-0.5 rounded font-mono font-bold flex-none ml-2">GO ➔</span>
+<span class="text-[10px] bg-amber-900/30 px-1.5 py-0.5 rounded font-mono font-bold flex-none ml-2">GO ➔</span>
             </div>
         </div>
 
@@ -305,8 +341,9 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
                             <div><p class="sf-m30-eyebrow">SEEFOOD Merchant</p><h2 class="sf-m30-title">獵場總覽</h2><p class="sf-m30-sub"><span id="m30-shop-name">載入店鋪中</span> · 用數據少浪費一點、多救一點</p></div>
                             <div id="m30-live-status" class="sf-m30-status">營業中</div>
                         </div>
+                        <button type="button" onclick="merchant30ScrollOps()" class="sf-quick-sell-hero"><span class="sf-quick-icon"><i data-lucide="zap"></i></span><span><b>快速開賣</b><small>30 秒更新今日惜食商品</small></span><i data-lucide="arrow-right" class="ml-auto"></i></button>
                         <div class="flex items-center justify-between gap-3 flex-wrap">
-                            <div class="sf-m30-nav"><button class="active" onclick="merchant30Show('overview',this)">總覽</button><button onclick="merchant30Show('analytics',this)">數據分析</button><button onclick="merchant30ScrollOps(this)">快速開賣</button><button onclick="openFinanceModal()">帳務</button></div>
+                            <div class="sf-m30-nav"><button class="active" onclick="merchant30Show('overview',this)">總覽</button><button onclick="merchant30Show('analytics',this)">數據分析</button><button onclick="openFinanceModal()">帳務</button></div>
                             <div class="flex gap-2"><select id="m30-range" onchange="loadMerchantAnalytics30(true)" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-slate-700"><option value="7">近7日</option><option value="30">近30日</option><option value="90">近90日</option></select></div>
                         </div>
                         <div class="sf-m30-grid">
@@ -499,7 +536,7 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
             </div>
         </div>
 
-        <div class="flex-none bg-seefoodDarkBlue text-white border-t border-blue-950 z-40 relative">
+        <div id="bottom-nav" class="flex-none bg-seefoodDarkBlue text-white border-t border-blue-950 z-40 relative">
             <div class="grid grid-cols-4 text-center py-2.5 text-[10px] font-bold">
                 <button onclick="switchTab('home')" id="tab-home" class="flex flex-col items-center justify-center text-seefoodYellow cursor-pointer transition"><i data-lucide="radar" class="w-5 h-5 mb-1"></i><span>獵物</span></button>
                 <button onclick="switchTab('orders')" id="tab-orders" class="flex flex-col items-center justify-center text-blue-200 relative cursor-pointer transition"><i data-lucide="ticket-check" class="w-5 h-5 mb-1"></i><span>票券</span><div id="badge" class="absolute top-1 right-6 w-2 h-2 bg-red-500 rounded-full hidden shadow-sm"></div></button>
@@ -791,25 +828,47 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
             if (str.includes('T') && str.endsWith('Z')) { try { let d = new Date(str); if (d.getFullYear() < 1970) return d.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false }); return d.toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }); } catch(e) {} } return str;
         }
 
-        function checkTos() { if (!localStorage.getItem('seefood_tos_agreed')) { document.getElementById('tos-modal').classList.remove('hidden'); } }
-        function acceptTos(){localStorage.setItem('seefood_tos_agreed','true');localStorage.setItem('seefood_tos_version','2.6');document.getElementById('tos-modal').classList.add('hidden');fetchLiveStores();if(userStats.lineUid&&userStats.lineUid!=='LINE_GUEST')postActionV25('recordConsent',{uid:userStats.lineUid,documentType:'TOS',version:'2.6',source:'WEB'}).catch(()=>{});}
-
-        function startBannerCarousel() {
-            setInterval(() => {
-                if (cloudBanners.length > 0) {
-                    bannerIndex = (bannerIndex + 1) % cloudBanners.length; const bImg = document.getElementById('image-banner-img'); const bTitle = document.getElementById('image-banner-title');
-                    if (bImg && bTitle) { bImg.style.opacity = 0; setTimeout(() => { bImg.src = cloudBanners[bannerIndex].imgUrl; bTitle.innerText = cloudBanners[bannerIndex].title; bImg.style.opacity = 1; }, 300); }
-                } else if (textBannerTemplates.length > 0) {
-                    bannerIndex = (bannerIndex + 1) % textBannerTemplates.length; const bEmoji = document.getElementById('text-banner-emoji'); const bText = document.getElementById('text-banner-text');
-                    if (bEmoji && bText) { bEmoji.innerText = textBannerTemplates[bannerIndex].emoji; bText.innerText = textBannerTemplates[bannerIndex].text; }
-                }
-            }, 4000);
+        function formatPickupTime30(val) {
+            if (!val) return '今日打烊前';
+            const raw=String(val).trim();
+            if (/^(今天|明天|今日)/.test(raw)) return raw;
+            const hm=raw.match(/(?:^|\s)([01]?\d|2[0-3]):([0-5]\d)(?:$|\s)/);
+            if (hm && !/[\/\-]/.test(raw)) return `今天 ${hm[1].padStart(2,'0')}:${hm[2]} 前`;
+            let d=null; try { const t=new Date(raw); if(!isNaN(t.getTime())&&t.getFullYear()>2000)d=t; } catch(e){}
+            if(!d) return raw;
+            const now=new Date(), tomorrow=new Date(now); tomorrow.setDate(now.getDate()+1);
+            const same=x=>x.getFullYear()===d.getFullYear()&&x.getMonth()===d.getMonth()&&x.getDate()===d.getDate();
+            const time=d.toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false});
+            if(same(now)) return `今天 ${time} 前`; if(same(tomorrow)) return `明天 ${time} 前`;
+            const week='日一二三四五六'[d.getDay()]; return `${d.getMonth()+1}/${d.getDate()}（${week}）${time} 前`;
         }
 
+        function checkTos() { if (!localStorage.getItem('seefood_tos_agreed')) { document.getElementById('tos-modal').classList.remove('hidden'); } }
+        function acceptTos(){localStorage.setItem('seefood_tos_agreed','true');localStorage.setItem('seefood_tos_version','3.0');document.getElementById('tos-modal').classList.add('hidden');fetchLiveStores();if(userStats.lineUid&&userStats.lineUid!=='LINE_GUEST')postActionV25('recordConsent',{uid:userStats.lineUid,documentType:'TOS',version:'3.0',source:'WEB'}).catch(()=>{});}
+
+        const defaultHeroBanners30 = [
+            {title:'獵場情報地圖', subtitle:'探索全台惜食獵場與即時商家情報。', cta:'打開戰情室', type:'頁面', link:'radar.html'},
+            {title:'萌新獵人指南', subtitle:'第一次狩獵也不怕，快速了解購買、取餐與核銷。', cta:'快速上手', type:'頁面', link:'guide.html'},
+            {title:'點亮獵場・賺取分潤', subtitle:'邀請更多好店加入 SEEFOOD，建立你的點燈版圖。', cta:'查看分潤成就', type:'內部', link:'#achievement'}
+        ];
+        function renderHeroBanner30(i=0){
+            const list=cloudBanners.length?cloudBanners:defaultHeroBanners30; if(!list.length)return; bannerIndex=((i%list.length)+list.length)%list.length; const b=list[bannerIndex];
+            const wrap=document.getElementById('image-banner-container'), fallback=document.getElementById('text-banner-container');
+            const img=document.getElementById('image-banner-img'); document.getElementById('image-banner-title').textContent=b.title||'SEEFOOD 美食獵人'; document.getElementById('image-banner-subtitle').textContent=b.subtitle||'探索惜食獵場，讓美味不被浪費。'; document.getElementById('image-banner-cta').textContent=b.cta||'開始探索'; document.getElementById('image-banner-kicker').textContent=b.kicker||'SEEFOOD 美食獵人';
+            if(b.imgUrl){img.src=b.imgUrl;img.alt=b.title||'SEEFOOD Banner';wrap.classList.remove('sf-hero-noart');}else{img.removeAttribute('src');img.alt='';wrap.classList.add('sf-hero-noart');}
+            wrap.classList.remove('hidden'); fallback.classList.add('hidden');
+            const dots=document.getElementById('hero-dots'); if(dots)dots.innerHTML=list.map((_,n)=>`<span class="${n===bannerIndex?'active':''}"></span>`).join('');
+        }
+        function startBannerCarousel() {
+            if(window.sfHeroTimer)clearInterval(window.sfHeroTimer); renderHeroBanner30(0); const list=cloudBanners.length?cloudBanners:defaultHeroBanners30; if(list.length>1)window.sfHeroTimer=setInterval(()=>renderHeroBanner30(bannerIndex+1),6500);
+        }
         function handleBannerClick() {
-            if (cloudBanners.length === 0) return switchTab('merchant');
-            const currentB = cloudBanners[bannerIndex];
-            if (currentB.type === '內部' && currentB.link) { window.location.hash = currentB.link; checkHashAndSwitch(); } else if (currentB.type === '外部' && currentB.link) { window.open(currentB.link, '_blank'); }
+            const list=cloudBanners.length?cloudBanners:defaultHeroBanners30, b=list[bannerIndex]||list[0]; if(!b)return; const link=b.link||'';
+            if(link==='#achievement'||link==='achievement'){switchTab('achievement');return;}
+            if(link.startsWith('#')){window.location.hash=link;checkHashAndSwitch();return;}
+            if(/^(radar|guide)\.html(?:$|\?)/.test(link)){window.location.href=link;return;}
+            if(/^https?:\/\//.test(link)){window.open(link,'_blank','noopener');return;}
+            if(b.type==='內部'&&link){window.location.href=link;}
         }
 
         function toggleTaxWarning() {
@@ -817,21 +876,20 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
             if (type.includes('個人個體戶')) { warning.classList.remove('hidden'); } else { warning.classList.add('hidden'); }
         }
 
-        // 🚨 終極修復：無痕訪客可看首頁，但碰到綁定操作時強制喚起 LINE 網頁登入
+        // SEEFOOD 3.0：LINE 內自動登入；外部瀏覽器提供「登入 / 訪客」選擇。
+        function showAuthChoice30(){const m=document.getElementById('auth-choice-modal');if(m){m.classList.remove('hidden');m.classList.add('flex');refreshIcons26();}}
+        function hideAuthChoice30(){const m=document.getElementById('auth-choice-modal');if(m){m.classList.add('hidden');m.classList.remove('flex');}}
+        function loginWithLine30(){sessionStorage.removeItem('sf_guest_choice');if(window.liff&&liff.login)liff.login({redirectUri:window.location.href});}
+        function continueAsGuest30(){sessionStorage.setItem('sf_guest_choice','1');userStats.lineUid='LINE_GUEST';hideAuthChoice30();loadUserStats();checkTos();if(localStorage.getItem('seefood_tos_agreed'))fetchLiveStores();}
         async function initLiffAuth() {
-            if (window.location.protocol === 'file:') { loadUserStats(); return; }
+            if (window.location.protocol === 'file:') { loadUserStats(); return 'guest'; }
             try {
                 await liff.init({ liffId: "2010392646-KEEBg8gS" });
-                if (liff.isLoggedIn()) { 
-                    const p = await liff.getProfile(); 
-                    userStats.lineUid = p.userId; 
-                    syncUserDataFromCloud(); 
-                } else {
-                    // 若未登入，絕對不強制跳轉！直接配發訪客通行證允許瀏覽！
-                    userStats.lineUid = "LINE_GUEST";
-                    loadUserStats(); 
-                }
-            } catch (err) { console.error("LIFF 錯誤", err); loadUserStats(); }
+                if (liff.isLoggedIn()) { const p=await liff.getProfile(); userStats.lineUid=p.userId; hideAuthChoice30(); syncUserDataFromCloud(); return 'login'; }
+                userStats.lineUid='LINE_GUEST'; loadUserStats();
+                if(liff.isInClient && liff.isInClient()){ liff.login({redirectUri:window.location.href}); return 'redirect'; }
+                if(sessionStorage.getItem('sf_guest_choice')!=='1')showAuthChoice30(); return 'guest';
+            } catch (err) { console.error("LIFF 錯誤", err); userStats.lineUid='LINE_GUEST';loadUserStats();if(sessionStorage.getItem('sf_guest_choice')!=='1')showAuthChoice30();return 'guest'; }
         }
 
         async function postActionV25(action, params={}) {
@@ -852,7 +910,7 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
             (shop.liveSlots||[]).forEach(slot=>{localStorage.setItem(slotDataKey(slot.index,shop.shopId),JSON.stringify({type:slot.type,name:slot.name,desc:slot.desc,orig:slot.orig,rate:slot.rate,rem:slot.rem}));if(slot.type==='固定菜單'&&slot.name&&slot.name!=='【未啟用】')localStorage.setItem(slotLockKey(slot.index,shop.shopId),slot.name);});
             document.getElementById('dash-time').value=safeFormatTime(shop.storeTime)||'今日打烊前'; const b=document.getElementById('dashboard-status-badge');
             if(shop.storeStatus==='ON'){b.innerText='營業中';b.className='text-xs bg-emerald-600 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px] animate-pulse';}else{b.innerText='休息中';b.className='text-xs bg-slate-500 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px]';}
-            const oz=document.getElementById('merchant-active-orders-zone'),ol=document.getElementById('merchant-active-orders-list'); if(oz&&ol){oz.classList.remove('hidden');ol.innerHTML=(shop.activeOrders||[]).length?(shop.activeOrders||[]).map(o=>`<div class="bg-slate-900 border border-emerald-500/50 rounded-xl p-3 flex justify-between items-center"><div><p class="text-emerald-400 font-mono font-black text-sm">${escapeHTML(o.orderId)}</p><p class="text-white text-sm mt-1 font-black">${escapeHTML(o.item)}</p></div><div class="text-right"><p class="text-gray-400 text-[10px]">自取截止: ${escapeHTML(safeFormatTime(o.time))}</p><p class="text-seefoodYellow font-black text-sm">$${o.price}</p></div></div>`).join(''):'<p class="text-center text-slate-500 text-xs py-4 font-bold">目前尚無待取餐訂單</p>';}
+            const oz=document.getElementById('merchant-active-orders-zone'),ol=document.getElementById('merchant-active-orders-list'); if(oz&&ol){oz.classList.remove('hidden');ol.innerHTML=(shop.activeOrders||[]).length?(shop.activeOrders||[]).map(o=>`<div class="bg-slate-900 border border-emerald-500/50 rounded-xl p-3 flex justify-between items-center"><div><p class="text-emerald-400 font-mono font-black text-sm">${escapeHTML(o.orderId)}</p><p class="text-white text-sm mt-1 font-black">${escapeHTML(o.item)}</p></div><div class="text-right"><p class="text-gray-400 text-[10px]">自取截止：${escapeHTML(formatPickupTime30(o.time))}</p><p class="text-seefoodYellow font-black text-sm">$${o.price}</p></div></div>`).join(''):'<p class="text-center text-slate-500 text-xs py-4 font-bold">目前尚無待取餐訂單</p>';}
             renderDashboardSlots(); checkMerchantUrlParameters();
         }
 
@@ -966,7 +1024,7 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
                 const response = await fetch(gasUrl + "?t=" + new Date().getTime()); const resJson = await response.json(); const rawData = resJson.stores || []; const baseSavedKg = resJson.totalSavedKg || 1285.5;
                 let totalReg = resJson.registeredStores || 0; textBannerTemplates[0].text = `獵人雷達點燈：全台已進駐 ${totalReg}/100 店，滿百即刻開車解鎖！`; const bText = document.getElementById('text-banner-text');
                 if(bText && bannerIndex === 0) bText.innerText = textBannerTemplates[0].text;
-                cloudBanners = resJson.banners || []; if (cloudBanners.length > 0) { document.getElementById('image-banner-container').classList.remove('hidden'); document.getElementById('text-banner-container').classList.add('hidden'); document.getElementById('image-banner-img').src = cloudBanners[0].imgUrl; document.getElementById('image-banner-title').innerText = escapeHTML(cloudBanners[0].title); } startBannerCarousel(); storesData = [];
+                cloudBanners = resJson.banners || []; startBannerCarousel(); storesData = [];
                 let typeDict = {}; if (resJson.allMerchants) { resJson.allMerchants.forEach(m => { typeDict[m.shopId] = m.merchantType || "公司/行號"; }); }
                 rawData.forEach(store => {
                     let finalNote = store.note; if (!finalNote) { finalNote = store.itemType === '固定菜單' ? "這很有名耶..還需要介紹嗎？直接搶就對了！" : "※ 餐廳新鮮現做優質備品"; }
@@ -1018,7 +1076,7 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
                 if (!s.lat || !s.lng) { distanceHtml = `<p class="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-0.5 rounded">📍 新商店地圖建置中</p>`; } else if (!userLocation) { distanceHtml = `<p class="text-xs text-blue-500 font-bold cursor-pointer animate-pulse bg-blue-50 px-2 py-0.5 rounded border border-blue-200 shadow-sm" onclick="requestLocation()">📍 點我解鎖真實距離</p>`; } else { let distDisplay = s.distance > 1000 ? (s.distance/1000).toFixed(1) + "km" : s.distance + "m"; distanceHtml = `<p class="text-xs text-gray-400 font-bold">📍 距離 ${distDisplay}</p>`; }
                 let safeJsName = escapeHTML(s.name).replace(/'/g, "\\'"); let safeJsItem = escapeHTML(s.item).replace(/'/g, "\\'"); let safeJsAddress = escapeHTML(s.address).replace(/'/g, "\\'"); let safeJsPhone = escapeHTML(s.phone).replace(/'/g, "\\'"); let safeJsTime = escapeHTML(s.time).replace(/'/g, "\\'");
                 let taxWarningHtml = ''; if (s.merchantType && s.merchantType.includes('個體戶')) { taxWarningHtml = `<p class="text-[9px] text-gray-400 mt-2 border-t border-dashed border-gray-200 pt-2 font-bold leading-tight">⚠️ 本店鋪為個人惜福個體，依法由賣方自負申報，不提供統一發票。</p>`; }
-                container.innerHTML += `<article class="sf-hunt-card ${isGoldenVip ? 'sf-hunt-priority' : ''}"><div class="sf-hunt-head"><div><p class="sf-hunt-location">${escapeHTML(s.district)} · ${escapeHTML(s.name)}${isGoldenVip ? ' <span title="Plus / Pro 獵場" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#D7A928;vertical-align:middle;margin-left:3px"></span>' : ''}</p>${distanceHtml}</div><span class="sf-stock">剩 ${s.remain}</span></div><div class="sf-hunt-body"><h3>${escapeHTML(s.item)}</h3><p>${escapeHTML(s.note||'')}</p><div class="sf-hunt-meta"><span><i data-lucide="clock-3"></i>${escapeHTML(s.time)}</span><span><i data-lucide="store"></i>外帶自取</span></div></div>${taxWarningHtml}<div class="sf-hunt-foot"><div>${s.discountPrice === 0 ? `<span class="sf-free">免費惜福</span>` : `<span class="sf-old-price">$${s.originalPrice}</span><strong>${Math.round(s.discountRate*10)}折 · $${s.discountPrice}</strong>`}</div><button onclick="openCheckout('${safeJsName}', '${safeJsItem}', ${s.discountPrice}, '${safeJsTime}', ${s.itemIndex}, ${s.originalPrice}, '${s.shopId}', '${safeJsAddress}', '${safeJsPhone}')" class="sf-primary-action">獵取</button></div></article>`;
+                container.innerHTML += `<article class="sf-hunt-card ${isGoldenVip ? 'sf-hunt-priority' : ''}"><div class="sf-hunt-head"><div><p class="sf-hunt-location">${escapeHTML(s.district)} · ${escapeHTML(s.name)}${isGoldenVip ? ' <span title="Plus / Pro 獵場" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#D7A928;vertical-align:middle;margin-left:3px"></span>' : ''}</p>${distanceHtml}</div><span class="sf-stock">剩 ${s.remain}</span></div><div class="sf-hunt-body"><h3>${escapeHTML(s.item)}</h3><p>${escapeHTML(s.note||'')}</p><div class="sf-hunt-meta"><span><i data-lucide="clock-3"></i>${escapeHTML(formatPickupTime30(s.time))}</span><span><i data-lucide="store"></i>外帶自取</span></div></div>${taxWarningHtml}<div class="sf-hunt-foot"><div>${s.discountPrice === 0 ? `<span class="sf-free">免費惜福</span>` : `<span class="sf-old-price">$${s.originalPrice}</span><strong>${Math.round(s.discountRate*10)}折 · $${s.discountPrice}</strong>`}</div><button onclick="openCheckout('${safeJsName}', '${safeJsItem}', ${s.discountPrice}, '${safeJsTime}', ${s.itemIndex}, ${s.originalPrice}, '${s.shopId}', '${safeJsAddress}', '${safeJsPhone}')" class="sf-primary-action">獵取</button></div></article>`;
             });
         }
 
@@ -1122,7 +1180,7 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
                 let orderTime = safeFormatTime(order.time); let safeStoreName = escapeHTML(order.store); let safeItemName = escapeHTML(order.item); let safeOrderId = escapeHTML(order.orderId); let safeJsOrderId = safeOrderId.replace(/'/g, "\\'");
                 let cardHtml = `<div id="ticket-card-${order.id}" class="ticket-edge bg-white border-2 border-seefoodDarkBlue rounded-2xl shadow-md relative overflow-hidden mb-3"><div class="bg-seefoodDarkBlue text-white px-4 py-2.5 flex justify-between items-center"><span class="text-[10px] font-black ${order.used ? 'bg-gray-600' : 'bg-red-500 animate-pulse'} px-2 py-0.5 rounded">${order.used ? '✅ 惜福自取完畢' : '🎫 獵人未取餐憑證'}</span><span class="text-xs font-mono font-bold">單號: ${safeOrderId || '驗證中'}</span></div><div class="p-4 space-y-3"><div class="text-center"><h3 class="text-xl font-black text-gray-900">${safeStoreName}</h3><p class="text-xs font-bold text-gray-500 mt-1">📍 門市地址：${escapeHTML(order.address) || '請見官方LINE'}</p><p class="text-base font-black text-blue-600 bg-blue-50 py-2 rounded-xl border mt-3 px-2 shadow-inner">${safeItemName}</p></div><div class="text-center text-sm font-bold text-gray-500 py-2 border-y border-dashed">⏳ 自取截止：${escapeHTML(orderTime)}</div>`;
                 if (!order.used) { 
-                    cardHtml += `<div class="space-y-2 pt-1"><div class="bg-amber-50 border border-amber-200 p-3 rounded-xl shadow-sm"><p class="text-xs font-black text-amber-600 text-center mb-1.5">⚠️ 確保權益！下單後請務必立刻致電商家確認</p><div class="bg-white p-3 rounded-lg border border-dashed border-amber-300 text-center relative mt-4 shadow-sm"><span class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-black border border-amber-200 whitespace-nowrap shadow-sm">👇 照著唸快速通關 👇</span><p class="text-sm font-black text-gray-800 mt-2 leading-relaxed text-left tracking-wide">「你好，我是美食獵人！我有在 SEEFOOD 下單一份【<span class="text-red-500">${safeItemName}</span>】，我的訂單編號是 <span class="bg-slate-100 border px-1 rounded text-seefoodDarkBlue font-mono">${safeOrderId}</span>，請問最晚幾點前要過去拿？」</p></div></div><a href="${callAction}" class="flex items-center justify-center bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black w-full py-4 rounded-xl text-sm shadow-md active:scale-95 transition mt-2">📞 點我快打致電商家：${displayPhone}</a><div class="swipe-track mt-3 select-none shadow-inner border-[3px]"><span class="text-sm font-black text-red-400 tracking-widest animate-pulse">➡️ 右滑交付店員確認核銷</span><div class="swipe-handle" id="swiper-${order.id}" ontouchstart="initSwipe(event, ${order.id}, '${safeJsOrderId}')" onmousedown="initSwipe(event, ${order.id}, '${safeJsOrderId}')">▶️</div></div></div>`;
+                    cardHtml += `<div class="sf-ticket30 space-y-2 pt-1"><div class="bg-amber-50 border border-amber-200 p-3 rounded-xl shadow-sm"><p class="text-xs font-black text-amber-600 text-center mb-1.5">⚠️ 確保權益！下單後請務必立刻致電商家確認</p><div class="bg-white p-3 rounded-lg border border-dashed border-amber-300 text-center relative mt-4 shadow-sm"><span class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-black border border-amber-200 whitespace-nowrap shadow-sm">👇 照著唸快速通關 👇</span><p class="text-sm font-black text-gray-800 mt-2 leading-relaxed text-left tracking-wide">「你好，我是美食獵人！我有在 SEEFOOD 下單一份【<span class="text-red-500">${safeItemName}</span>】，我的訂單編號是 <span class="bg-slate-100 border px-1 rounded text-seefoodDarkBlue font-mono">${safeOrderId}</span>，請問最晚幾點前要過去拿？」</p></div></div><a href="${callAction}" class="flex items-center justify-center bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black w-full py-4 rounded-xl text-sm shadow-md active:scale-95 transition mt-2">📞 點我快打致電商家：${displayPhone}</a><div class="swipe-track mt-3 select-none shadow-inner border-[3px]"><span class="text-sm font-black text-red-400 tracking-widest animate-pulse">➡️ 右滑交付店員確認核銷</span><div class="swipe-handle" id="swiper-${order.id}" ontouchstart="initSwipe(event, ${order.id}, '${safeJsOrderId}')" onmousedown="initSwipe(event, ${order.id}, '${safeJsOrderId}')">▶️</div></div></div>`;
                 } else { cardHtml += `<div class="text-center text-xs font-bold text-gray-400 py-3 bg-gray-50 border rounded-xl mt-2">核銷完成時間：${escapeHTML(safeFormatTime(order.verifyTime || order.date))}</div>`; }
                 cardHtml += `</div></div>`; container.innerHTML += cardHtml;
             });
@@ -1366,6 +1424,12 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
             try{const p=new URLSearchParams({action:'getMerchantAnalytics',uid,shopId,days});const r=await fetch(gasUrl,{method:'POST',body:p});const j=await r.json();if(j.status==='success'){merchantAnalytics30Cache[key]={ts:Date.now(),data:j.analytics};renderMerchantAnalytics30(j.analytics);}}catch(e){console.warn('analytics',e);}
         }
 
+        function setupMobileFormFocus30(){
+            const zone=document.getElementById('dashboard-slots-container'); if(!zone||zone.dataset.focusReady==='1')return; zone.dataset.focusReady='1';
+            zone.addEventListener('focusin',e=>{if(!/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName))return;setTimeout(()=>{try{e.target.scrollIntoView({behavior:'smooth',block:'center'});}catch(_){e.target.scrollIntoView();}},220);});
+            if(window.visualViewport){window.visualViewport.addEventListener('resize',()=>{const a=document.activeElement;if(a&&zone.contains(a)&&/^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName))setTimeout(()=>a.scrollIntoView({behavior:'smooth',block:'center'}),80);});}
+        }
+
         function switchTab(tabId) {
             ['home', 'orders', 'achievement', 'merchant'].forEach(p => {
                 let el = document.getElementById(`page-${p}`); if(el) el.classList.toggle('hidden', p !== tabId);
@@ -1376,7 +1440,7 @@ body{background:var(--sf30-ivory)!important;color:var(--sf30-ink)}
         }
         function checkHashAndSwitch() { const hash = window.location.hash.replace('#', ''); switchTab(['home', 'orders', 'achievement', 'merchant'].includes(hash) ? hash : 'home'); }
         
-        window.addEventListener('DOMContentLoaded', async () => { checkTos(); await initLiffAuth(); checkHashAndSwitch(); checkMerchantUrlParameters(); if(localStorage.getItem('seefood_tos_agreed')) fetchLiveStores(); });
+        window.addEventListener('DOMContentLoaded', async () => { const authState=await initLiffAuth(); checkHashAndSwitch(); checkMerchantUrlParameters(); checkTos(); if(authState!=='redirect' && localStorage.getItem('seefood_tos_agreed')) fetchLiveStores(); setupMobileFormFocus30(); });
         window.addEventListener('hashchange', checkHashAndSwitch);
 
         function openContractModal(isReadOnly = false) {
