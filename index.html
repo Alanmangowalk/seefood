@@ -319,7 +319,7 @@ select,input,textarea,button{max-width:100%}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.8</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.8.2</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -491,7 +491,7 @@ select,input,textarea,button{max-width:100%}
                                 <div class="sf-m30-panel"><div class="sf-m30-panel-title">本期 SEEFOOD 發現</div><div class="sf-m30-panel-sub">把圖表翻成可以直接行動的建議</div><div id="m30-insights" class="space-y-2 mt-3"></div></div>
                             </div>
                         </div>
-                        <div id="m30-view-analytics" class="hidden space-y-4"><div class="sf-m30-panel"><div class="flex items-start justify-between gap-3"><div><div class="sf-m30-panel-title">Plus 經營分析</div><div id="m30-analytics-sub" class="sf-m30-panel-sub">以真實成交資料整理可執行的經營回顧。</div></div><span id="m30-analytics-plan" class="sf-plan-pill26">PLUS</span></div><div id="m30-analytics-locked" class="hidden sf-analytics-lock26"><b>升級 Plus 解鎖完整數據</b><span>30 / 90 日比較、熱門商品、尖峰時段與上架售出率。</span><button onclick="triggerGrandMasterUpgrade()">升級 $299 / 月</button></div><div id="m30-analytics-content"><div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2" id="m30-analytics-summary"></div><div class="mt-4 grid md:grid-cols-2 gap-3"><div class="sf-analytics-detail26"><small>本期熱門商品</small><b id="m30-analytics-topitem">—</b></div><div class="sf-analytics-detail26"><small>最佳成交時段</small><b id="m30-analytics-peakhour">—</b></div><div class="sf-analytics-detail26"><small>較上期營收</small><b id="m30-analytics-growth">—</b></div><div class="sf-analytics-detail26"><small>上架售出率</small><b id="m30-analytics-sellthrough">—</b></div></div></div></div></div>
+                        <div id="m30-view-analytics" class="hidden space-y-4"><div class="sf-m30-panel"><div class="flex items-start justify-between gap-3"><div><div class="sf-m30-panel-title">Plus 經營分析</div><div id="m30-analytics-sub" class="sf-m30-panel-sub">以真實成交資料整理可執行的經營回顧。</div></div><span id="m30-analytics-plan" class="sf-plan-pill26">PLUS</span></div><div id="m30-analytics-locked" class="hidden sf-analytics-lock26"><b>升級 Plus 解鎖完整數據</b><span>獵物曝光排序加權、30 / 90 日比較、熱門商品、尖峰時段與上架售出率。</span><button onclick="triggerGrandMasterUpgrade()">升級 $299 / 月</button></div><div id="m30-analytics-content"><div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2" id="m30-analytics-summary"></div><div class="mt-4 grid md:grid-cols-2 gap-3"><div class="sf-analytics-detail26"><small>本期熱門商品</small><b id="m30-analytics-topitem">—</b></div><div class="sf-analytics-detail26"><small>最佳成交時段</small><b id="m30-analytics-peakhour">—</b></div><div class="sf-analytics-detail26"><small>較上期營收</small><b id="m30-analytics-growth">—</b></div><div class="sf-analytics-detail26"><small>上架售出率</small><b id="m30-analytics-sellthrough">—</b></div></div></div></div></div>
                         <details id="m30-order-ledger-panel" class="sf-m30-panel sf-collapsible-panel"><summary><span><b>訂單與結算狀態</b><small>查詢單號、核銷與是否已計入撥款</small></span><i data-lucide="chevron-down"></i></summary><div class="flex justify-end mt-2"><button onclick="event.preventDefault();loadMerchantOrderLedger30(true)" class="text-xs font-black text-blue-600">重新整理</button></div><div id="m30-order-ledger" class="mt-2 overflow-x-auto"><div class="text-xs text-slate-400 py-3">展開後載入訂單…</div></div></details>
                         <div class="sf-m30-actiongrid">
                             <button class="sf-m30-action primary" onclick="merchant30ScrollOps()"><i data-lucide="zap"></i><b>極速開賣</b>30秒更新今日獵物</button>
@@ -588,7 +588,7 @@ select,input,textarea,button{max-width:100%}
                         <span class="bg-white/20 text-slate-900 font-black text-[10px] px-3 py-2 rounded-lg shadow-sm">前往閱讀</span>
                     </a>
 
-                    <section id="vip-upgrade-banner" class="sf-plus-card"><div class="sf-plus-copy"><span class="sf-plus-kicker">SEEFOOD PLUS · 目前店鋪</span><h3>把每天的營運數據，變成看得懂的決策。</h3><p>10 格商品欄位＋30／90 日進階分析＋前期趨勢比較。每間店獨立升級，不影響其他店鋪。</p></div><div class="sf-plus-price"><b>$299</b><span>/ 月</span></div><button type="button" onclick="triggerGrandMasterUpgrade()" class="sf-plus-cta">查看 Plus 並升級</button></section><button type="button" onclick="openFinanceModal()" class="w-full bg-slate-800 border border-slate-600 text-blue-300 font-black py-3 rounded-xl text-sm transition active:scale-95 hover:bg-slate-700 flex justify-center items-center relative z-10 shadow-sm">
+                    <section id="vip-upgrade-banner" class="sf-plus-card"><div class="sf-plus-copy"><span class="sf-plus-kicker">SEEFOOD PLUS · 目前店鋪</span><h3>讓好獵物，更容易被看見。</h3><p>獵物曝光排序加權＋10 格商品欄位＋30／90 日進階分析＋前期趨勢比較。每間店獨立升級，不影響其他店鋪。</p></div><div class="sf-plus-price"><b>$299</b><span>/ 月</span></div><button type="button" onclick="triggerGrandMasterUpgrade()" class="sf-plus-cta">查看 Plus 並升級</button></section><button type="button" onclick="openFinanceModal()" class="w-full bg-slate-800 border border-slate-600 text-blue-300 font-black py-3 rounded-xl text-sm transition active:scale-95 hover:bg-slate-700 flex justify-center items-center relative z-10 shadow-sm">
                         查看帳務與對帳
                     </button>
 
@@ -934,7 +934,50 @@ select,input,textarea,button{max-width:100%}
         function fileDataUrl28(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||'').split(',')[1]||'');r.onerror=reject;r.readAsDataURL(file)})}
         async function submitPartnerIdentity28(){const name=document.getElementById('p28-name')?.value.trim(),id=document.getElementById('p28-id')?.value.trim().toUpperCase(),file=document.getElementById('p28-idimg')?.files?.[0];if(!name||!id||!file){seefoodAlert('請完成姓名、身分證字號與證件照片。',{title:'資料尚未完成'});return}showGlobalLoading('送出身分認證','正在安全傳送資料…');try{const img=await fileDataUrl28(file),j=await postActionV25('submitPartnerIdentity',{uid:userStats.lineUid,legalName:name,legalId:id,idCardImage:img});hideGlobalLoading();if(j.status!=='success'){seefoodAlert(j.msg||'送出失敗',{title:'無法送出'});return}partnerOnboarding28=j.onboarding;renderPartnerOnboarding28(j.onboarding);document.getElementById('partner-onboarding-body').innerHTML=partnerFormHtml28(j.onboarding);seefoodAlert(j.msg||'資料已送出。',{title:'已收到資料',tone:'success'})}catch(e){hideGlobalLoading();seefoodAlert('資料傳送失敗，請稍後重試。',{title:'連線異常'})}}
         async function signPartnerContract28(){if(!document.getElementById('p28-agree')?.checked){seefoodAlert('請先閱讀並勾選同意分潤合作約定。',{title:'還差一步'});return}const signed=document.getElementById('p28-sign')?.value.trim();const j=await postActionV25('signReferralContract',{uid:userStats.lineUid,signedName:signed});if(j.status!=='success'){seefoodAlert(j.msg||'簽署失敗',{title:'無法完成'});return}partnerOnboarding28=j.onboarding;renderPartnerOnboarding28(j.onboarding);document.getElementById('partner-onboarding-body').innerHTML=partnerFormHtml28(j.onboarding);}
-        async function savePartnerPayout28(){const j=await postActionV25('savePartnerPayout',{uid:userStats.lineUid,bankCode:document.getElementById('p28-bank')?.value.trim(),bankBranch:document.getElementById('p28-branch')?.value.trim(),bankAccount:document.getElementById('p28-account')?.value.trim(),bankOwner:document.getElementById('p28-owner')?.value.trim()});if(j.status!=='success'){seefoodAlert(j.msg||'儲存失敗',{title:'請檢查資料'});return}partnerOnboarding28=j.onboarding;renderPartnerOnboarding28(j.onboarding);document.getElementById('partner-onboarding-body').innerHTML=partnerFormHtml28(j.onboarding);seefoodAlert('分潤收款資格已完成。之後符合條件的分潤即可進入總部對帳與撥款流程。',{title:'設定完成',tone:'success'})}
+        async function savePartnerPayout28(){
+            const bankEl=document.getElementById('p28-bank'),
+                  branchEl=document.getElementById('p28-branch'),
+                  accountEl=document.getElementById('p28-account'),
+                  ownerEl=document.getElementById('p28-owner');
+
+            const bankCode=String(bankEl?.value||'').replace(/\D/g,''),
+                  bankBranch=String(branchEl?.value||'').trim(),
+                  bankAccount=String(accountEl?.value||'').replace(/\D/g,''),
+                  bankOwner=String(ownerEl?.value||'').trim();
+
+            if(bankEl) bankEl.value=bankCode;
+            if(accountEl) accountEl.value=bankAccount;
+
+            if(!/^\d{3}$/.test(bankCode)){
+                bankEl?.focus();
+                seefoodAlert('請輸入 3 碼銀行代碼，例如 004、808。',{title:'銀行代碼格式不正確'});
+                return;
+            }
+            if(!/^[0-9]{6,18}$/.test(bankAccount)){
+                accountEl?.focus();
+                seefoodAlert('請確認帳號為 6～18 碼數字。空白與「-」可直接輸入，系統會自動忽略。',{title:'銀行帳號格式不正確'});
+                return;
+            }
+            if(bankOwner.length<2){
+                ownerEl?.focus();
+                seefoodAlert('請填寫實際收款帳戶戶名。',{title:'戶名尚未完成'});
+                return;
+            }
+
+            const j=await postActionV25('savePartnerPayout',{
+                uid:userStats.lineUid,bankCode,bankBranch,bankAccount,bankOwner
+            });
+            if(j.status!=='success'){
+                const fieldMap={bankCode:bankEl,bankAccount:accountEl,bankOwner:ownerEl};
+                fieldMap[j.field]?.focus();
+                seefoodAlert(j.msg||'儲存失敗，請重新確認資料。',{title:'收款資料未儲存'});
+                return;
+            }
+            partnerOnboarding28=j.onboarding;
+            renderPartnerOnboarding28(j.onboarding);
+            document.getElementById('partner-onboarding-body').innerHTML=partnerFormHtml28(j.onboarding);
+            seefoodAlert('分潤收款資格已完成。之後符合條件的分潤即可進入總部對帳與撥款流程。',{title:'設定完成',tone:'success'});
+        }
 
         function handleBannerClick() {
             const list=getHeroBannerList30(), b=list[bannerIndex]||list[0]; if(!b)return; const link=b.link||'';
@@ -1283,7 +1326,7 @@ select,input,textarea,button{max-width:100%}
         }
         function closeVerifyOverlay() { if(liveTimerInterval) clearInterval(liveTimerInterval); document.getElementById('verify-success-overlay').classList.add('hidden'); switchOrderSubTab('active'); }
 
-        async function triggerGrandMasterUpgrade(){const shopId=localStorage.getItem('seefood_merchant_shop_id')||'SFB-001',shopName=localStorage.getItem('seefood_merchant_shop_name')||'目前店鋪';const html=`<div class="sf-plus-dialog"><div class="sf-plus-dialog-price"><b>$299</b><span>/ 月・每店獨立</span></div><div class="sf-benefit"><b>10 格商品欄位</b><span>Basic 3 格升級為 10 格，商品配置更有彈性。</span></div><div class="sf-benefit"><b>30／90 日進階分析</b><span>查看較長週期營收、熱門商品與尖峰時段。</span></div><div class="sf-benefit"><b>前期趨勢比較</b><span>用同期間資料看成長與變化，不只看單日數字。</span></div><p class="sf-plus-note">本次升級只套用於「${sfDialogEscape(shopName)}」，其他店鋪維持各自方案。Plus 為自願升級，不影響基本方案使用。</p></div>`;const ok=await seefoodConfirm(html,{html:true,title:'升級 SEEFOOD Plus',tone:'plus',icon:'<i data-lucide="sparkles"></i>',confirmText:'確認升級 $299 / 月',cancelText:'先不用'});if(!ok)return;const p=new URLSearchParams();p.append('action','upgradeVip');p.append('shopId',shopId);p.append('uid',userStats.lineUid);fetch(gasUrl,{method:'POST',body:p}).then(r=>r.json()).then(res=>{if(res.status==='success'){localStorage.setItem('seefood_merchant_vip','true');seefoodAlert('這間店已升級 Plus。10 格商品欄位與進階分析已開啟。',{title:'Plus 已開通',tone:'success'});merchantAnalytics30Cache={};loadShopDashboardV25(shopId,true)}else seefoodAlert(res.msg||'升級未完成，請稍後再試。',{title:'升級未完成',tone:'danger'})}).catch(()=>seefoodAlert('目前無法連線，請稍後再試。',{title:'連線異常',tone:'danger'}))} async function showAppTutorial(){const isiOS=/iPhone|iPad|iPod/i.test(navigator.userAgent),isAndroid=/Android/i.test(navigator.userAgent),inLine=/Line\//i.test(navigator.userAgent);let intro=inLine?'<div class="sf-browser-note"><b>目前在 LINE 內建瀏覽器</b><span>請先使用右上角選單，以 Safari／Chrome 開啟，再加入主畫面。</span></div>':'';let steps=isiOS?['使用 Safari 開啟 SEEFOOD','點 Safari 的「分享」按鈕','向下找到「加入主畫面」','確認名稱後點「新增」']:isAndroid?['使用 Chrome 開啟 SEEFOOD','點右上角「⋮」選單','選「加到主畫面」或「安裝應用程式」','依畫面提示完成新增']:['iPhone：Safari「分享 → 加入主畫面」','Android：Chrome「⋮ → 加到主畫面／安裝應用程式」'];const html=intro+'<div class="sf-install-steps">'+steps.map((x,i)=>`<div><b>${i+1}</b><span>${x}</span></div>`).join('')+'</div><p class="sf-plus-note">加入後會像 App 圖示一樣出現在桌面，但不需要另外下載 App。</p>';await seefoodConfirm(html,{html:true,title:'加入手機主畫面',icon:'<i data-lucide="smartphone"></i>',confirmText:'我知道了',cancelText:'關閉'})} function activeShopId() { return localStorage.getItem('seefood_merchant_shop_id') || 'NO_SHOP'; }
+        async function triggerGrandMasterUpgrade(){const shopId=localStorage.getItem('seefood_merchant_shop_id')||'SFB-001',shopName=localStorage.getItem('seefood_merchant_shop_name')||'目前店鋪';const html=`<div class="sf-plus-dialog"><div class="sf-plus-dialog-price"><b>$299</b><span>/ 月・每店獨立</span></div><div class="sf-benefit"><b>獵物曝光排序加權</b><span>在距離、供給狀態與平台公平性規則下取得推薦權重加成，提高被獵人看見的機會；不保證固定第一名或固定曝光量。</span></div><div class="sf-benefit"><b>10 格商品欄位</b><span>Basic 3 格升級為 10 格，商品配置更有彈性。</span></div><div class="sf-benefit"><b>30／90 日進階分析</b><span>查看較長週期營收、熱門商品與尖峰時段。</span></div><div class="sf-benefit"><b>前期趨勢比較</b><span>用同期間資料看成長與變化，不只看單日數字。</span></div><p class="sf-plus-note">本次升級只套用於「${sfDialogEscape(shopName)}」，其他店鋪維持各自方案。Plus 為自願升級，不影響基本方案使用。</p></div>`;const ok=await seefoodConfirm(html,{html:true,title:'升級 SEEFOOD Plus',tone:'plus',icon:'<i data-lucide="sparkles"></i>',confirmText:'確認升級 $299 / 月',cancelText:'先不用'});if(!ok)return;const p=new URLSearchParams();p.append('action','upgradeVip');p.append('shopId',shopId);p.append('uid',userStats.lineUid);fetch(gasUrl,{method:'POST',body:p}).then(r=>r.json()).then(res=>{if(res.status==='success'){localStorage.setItem('seefood_merchant_vip','true');seefoodAlert('這間店已升級 Plus。獵物曝光排序加權、10 格商品欄位與進階分析已開啟。',{title:'Plus 已開通',tone:'success'});merchantAnalytics30Cache={};loadShopDashboardV25(shopId,true)}else seefoodAlert(res.msg||'升級未完成，請稍後再試。',{title:'升級未完成',tone:'danger'})}).catch(()=>seefoodAlert('目前無法連線，請稍後再試。',{title:'連線異常',tone:'danger'}))} async function showAppTutorial(){const isiOS=/iPhone|iPad|iPod/i.test(navigator.userAgent),isAndroid=/Android/i.test(navigator.userAgent),inLine=/Line\//i.test(navigator.userAgent);let intro=inLine?'<div class="sf-browser-note"><b>目前在 LINE 內建瀏覽器</b><span>請先使用右上角選單，以 Safari／Chrome 開啟，再加入主畫面。</span></div>':'';let steps=isiOS?['使用 Safari 開啟 SEEFOOD','點 Safari 的「分享」按鈕','向下找到「加入主畫面」','確認名稱後點「新增」']:isAndroid?['使用 Chrome 開啟 SEEFOOD','點右上角「⋮」選單','選「加到主畫面」或「安裝應用程式」','依畫面提示完成新增']:['iPhone：Safari「分享 → 加入主畫面」','Android：Chrome「⋮ → 加到主畫面／安裝應用程式」'];const html=intro+'<div class="sf-install-steps">'+steps.map((x,i)=>`<div><b>${i+1}</b><span>${x}</span></div>`).join('')+'</div><p class="sf-plus-note">加入後會像 App 圖示一樣出現在桌面，但不需要另外下載 App。</p>';await seefoodConfirm(html,{html:true,title:'加入手機主畫面',icon:'<i data-lucide="smartphone"></i>',confirmText:'我知道了',cancelText:'關閉'})} function activeShopId() { return localStorage.getItem('seefood_merchant_shop_id') || 'NO_SHOP'; }
         function slotDataKey(index, shopId = activeShopId()) { return `seefood_shop_${shopId}_slot_data_${index}`; }
         function slotLockKey(index, shopId = activeShopId()) { return `seefood_shop_${shopId}_slot_${index}_locked`; }
         function getSlotSaved(index) { return localStorage.getItem(slotDataKey(index)); }
