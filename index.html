@@ -206,6 +206,28 @@ select,input,textarea,button{max-width:100%}
   #merchant-registration-zone{max-width:860px!important;width:100%!important;margin-left:auto!important;margin-right:auto!important}
 }
 @media screen and (min-width:1500px){#store-list-container{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+
+/* RC2.2 — compact mobile hero + attention dots */
+.sf-nav-dot{position:absolute;width:9px;height:9px;border-radius:999px;background:#E5484D;box-shadow:0 0 0 2px #0B2239;top:7px;right:24%;z-index:3}
+.sf-nav-dot.hidden{display:none!important}
+@media screen and (max-width:767px){
+  #home-header-zone{box-shadow:none!important}
+  #home-discovery-filter{display:flex}
+  .sf-hero{display:block!important;min-height:0!important;height:auto!important;border-radius:20px!important;margin:0 0 14px!important;overflow:hidden!important}
+  .sf-hero.hidden{display:none!important}
+  .sf-hero-copy{padding:22px 22px 24px!important;min-height:252px!important;justify-content:center!important}
+  .sf-hero-title{font-size:clamp(28px,8.6vw,36px)!important;line-height:1.08!important;max-width:100%!important}
+  .sf-hero-subtitle{font-size:15px!important;margin-top:12px!important;line-height:1.55!important}
+  .sf-hero-cta{margin-top:18px!important;padding:11px 16px!important}
+  .sf-hero-art,.sf-hero-placeholder{display:none!important;height:0!important;min-height:0!important}
+  .sf-hero-dots{bottom:9px!important}
+  #image-banner-container,#text-banner-container{touch-action:pan-y!important}
+  #bottom-nav .sf-nav-dot{right:calc(50% - 22px)!important;top:5px!important}
+}
+@media screen and (min-width:768px){
+  #bottom-nav .sf-nav-dot{right:14px!important;top:10px!important}
+}
+
 </style>
 
 </head>
@@ -274,9 +296,9 @@ select,input,textarea,button{max-width:100%}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.1</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.2</span>
             </div>
-            <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
+            <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
                     <span class="text-red-500">📍</span>
                     <select id="select-region" onchange="handleRegionChange()" class="bg-transparent focus:outline-none text-gray-700 w-full cursor-pointer truncate">
@@ -612,9 +634,9 @@ select,input,textarea,button{max-width:100%}
         <div id="bottom-nav" class="flex-none bg-seefoodDarkBlue text-white border-t border-blue-950 z-40 relative">
             <div class="grid grid-cols-4 text-center py-2.5 text-[10px] font-bold">
                 <button onclick="switchTab('home')" id="tab-home" class="flex flex-col items-center justify-center text-seefoodYellow cursor-pointer transition"><i data-lucide="radar" class="w-5 h-5 mb-1"></i><span>獵物</span></button>
-                <button onclick="switchTab('orders')" id="tab-orders" class="flex flex-col items-center justify-center text-blue-200 relative cursor-pointer transition"><i data-lucide="ticket-check" class="w-5 h-5 mb-1"></i><span>票券</span><div id="badge" class="absolute top-1 right-6 w-2 h-2 bg-red-500 rounded-full hidden shadow-sm"></div></button>
-                <button onclick="switchTab('achievement')" id="tab-achievement" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition"><i data-lucide="award" class="w-5 h-5 mb-1"></i><span>成就</span></button>
-                <button onclick="switchTab('merchant')" id="tab-merchant" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition"><i data-lucide="store" class="w-5 h-5 mb-1"></i><span id="tab-merchant-text">商家</span></button>
+                <button onclick="switchTab('orders')" id="tab-orders" class="flex flex-col items-center justify-center text-blue-200 relative cursor-pointer transition"><i data-lucide="ticket-check" class="w-5 h-5 mb-1"></i><span>票券</span><div id="badge" class="sf-nav-dot hidden"></div></button>
+                <button onclick="switchTab('achievement')" id="tab-achievement" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition relative"><i data-lucide="award" class="w-5 h-5 mb-1"></i><span>成就</span><div id="badge-achievement" class="sf-nav-dot hidden"></div></button>
+                <button onclick="switchTab('merchant')" id="tab-merchant" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition relative"><i data-lucide="store" class="w-5 h-5 mb-1"></i><span id="tab-merchant-text">商家</span><div id="badge-merchant" class="sf-nav-dot hidden"></div></button>
             </div>
         </div>
 
@@ -930,7 +952,7 @@ select,input,textarea,button{max-width:100%}
             const img=document.getElementById('image-banner-img'); document.getElementById('image-banner-title').textContent=b.title||'SEEFOOD 美食獵人'; document.getElementById('image-banner-subtitle').textContent=b.subtitle||'探索惜食獵場，讓美味不被浪費。'; document.getElementById('image-banner-cta').textContent=b.cta||'開始探索'; document.getElementById('image-banner-kicker').textContent=b.kicker||'SEEFOOD 美食獵人';
             if(b.imgUrl){img.src=b.imgUrl;img.alt=b.title||'SEEFOOD Banner';wrap.classList.remove('sf-hero-noart');}else{img.removeAttribute('src');img.alt='';wrap.classList.add('sf-hero-noart');}
             wrap.classList.remove('hidden'); fallback.classList.add('hidden');
-            const dots=document.getElementById('hero-dots'); if(dots)dots.innerHTML=list.map((_,n)=>`<span class="${n===bannerIndex?'active':''}"></span>`).join('');
+            const dots=document.getElementById('hero-dots'); if(dots)dots.innerHTML=list.map((_,n)=>`<span class="${n===bannerIndex?'active':''}"></span>`).join(''); const activeTab=(window.location.hash||'#home').replace('#','')||'home'; if(activeTab!=='home'){wrap.classList.add('hidden');fallback.classList.add('hidden');}
         }
         function startBannerCarousel() {
             if(window.sfHeroTimer)clearInterval(window.sfHeroTimer); renderHeroBanner30(0); const list=cloudBanners.length?cloudBanners:defaultHeroBanners30; if(list.length>1)window.sfHeroTimer=setInterval(()=>renderHeroBanner30(bannerIndex+1),6500);
@@ -983,6 +1005,7 @@ select,input,textarea,button{max-width:100%}
             (shop.liveSlots||[]).forEach(slot=>{localStorage.setItem(slotDataKey(slot.index,shop.shopId),JSON.stringify({type:slot.type,name:slot.name,desc:slot.desc,orig:slot.orig,rate:slot.rate,rem:slot.rem}));if(slot.type==='固定菜單'&&slot.name&&slot.name!=='【未啟用】')localStorage.setItem(slotLockKey(slot.index,shop.shopId),slot.name);});
             document.getElementById('dash-time').value=safeFormatTime(shop.storeTime)||'今日打烊前'; const b=document.getElementById('dashboard-status-badge');
             if(shop.storeStatus==='ON'){b.innerText='營業中';b.className='text-xs bg-emerald-600 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px] animate-pulse';}else{b.innerText='休息中';b.className='text-xs bg-slate-500 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px]';}
+            const merchantActiveSig=(shop.activeOrders||[]).map(o=>String(o.orderId||'')).filter(Boolean).sort().join('|');localStorage.setItem('sf_merchant_active_sig',merchantActiveSig);sfRefreshAttentionDots();
             const oz=document.getElementById('merchant-active-orders-zone'),ol=document.getElementById('merchant-active-orders-list'); if(oz&&ol){oz.classList.remove('hidden');ol.innerHTML=(shop.activeOrders||[]).length?(shop.activeOrders||[]).map(o=>`<div class="bg-slate-900 border border-emerald-500/50 rounded-xl p-3 flex justify-between items-center"><div><p class="text-emerald-400 font-mono font-black text-sm">${escapeHTML(o.orderId)}</p><p class="text-white text-sm mt-1 font-black">${escapeHTML(o.item)}</p></div><div class="text-right"><p class="text-gray-400 text-[10px]">自取截止：${escapeHTML(formatPickupTime30(o.time))}</p><p class="text-seefoodYellow font-black text-sm">$${o.price}</p></div></div>`).join(''):'<p class="text-center text-slate-500 text-xs py-4 font-bold">目前尚無待取餐訂單</p>';}
             renderDashboardSlots(); checkMerchantUrlParameters();
         }
@@ -994,7 +1017,7 @@ select,input,textarea,button{max-width:100%}
 
         async function loadPartnerHubV25() {
             if(partnerLoadedV25||userStats.lineUid==='LINE_GUEST')return; partnerLoadedV25=true;
-            try{const json=await postActionV25('getPartnerHub',{uid:userStats.lineUid});const a=json.affiliate||{};const pc=document.getElementById('partner-shop-count'),pm=document.getElementById('partner-commission'),pb=document.getElementById('partner-breakdown');if(pc)pc.innerHTML=`${a.shopCount||0} <span class="text-xs text-slate-500">家</span>`;if(pm)pm.innerText=`$${Math.round(Number(a.commission)||0)}`;if(pb){const shops=Array.isArray(a.shops)?a.shops:[];pb.innerHTML=shops.length?shops.map(s=>`<div class="bg-white/5 border border-white/10 rounded-lg p-2.5"><div class="flex justify-between gap-2"><div class="min-w-0"><p class="text-[11px] font-black text-white truncate">${escapeHTML(s.shopName||s.shopId)}</p><p class="text-[9px] text-slate-500 mt-0.5">${Number(s.transactions)||0} 筆有效交易</p></div><p class="text-sm font-black text-seefoodYellow">$${Math.round(Number(s.totalCommission)||0)}</p></div></div>`).join(''):'<p class="text-[10px] text-slate-500 text-center py-2">尚無夥伴店家資料</p>';}}catch(e){partnerLoadedV25=false;console.error(e);}
+            try{const json=await postActionV25('getPartnerHub',{uid:userStats.lineUid});const a=json.affiliate||{};const pc=document.getElementById('partner-shop-count'),pm=document.getElementById('partner-commission'),pb=document.getElementById('partner-breakdown');if(pc)pc.innerHTML=`${a.shopCount||0} <span class="text-xs text-slate-500">家</span>`;if(pm)pm.innerText=`$${Math.round(Number(a.commission)||0)}`;localStorage.setItem('sf_partner_commission',String(Math.round(Number(a.commission)||0)));sfRefreshAttentionDots();if(pb){const shops=Array.isArray(a.shops)?a.shops:[];pb.innerHTML=shops.length?shops.map(s=>`<div class="bg-white/5 border border-white/10 rounded-lg p-2.5"><div class="flex justify-between gap-2"><div class="min-w-0"><p class="text-[11px] font-black text-white truncate">${escapeHTML(s.shopName||s.shopId)}</p><p class="text-[9px] text-slate-500 mt-0.5">${Number(s.transactions)||0} 筆有效交易</p></div><p class="text-sm font-black text-seefoodYellow">$${Math.round(Number(s.totalCommission)||0)}</p></div></div>`).join(''):'<p class="text-[10px] text-slate-500 text-center py-2">尚無夥伴店家資料</p>';}}catch(e){partnerLoadedV25=false;console.error(e);}
         }
 
         async function syncUserDataFromCloud() {
@@ -1246,7 +1269,7 @@ select,input,textarea,button{max-width:100%}
         function renderSavedTicketsWall() {
             const container = document.getElementById('tickets-container'); const emptyState = document.getElementById('empty-ticket'); let savedOrders = JSON.parse(localStorage.getItem('seefood_orders_list') || "[]");
             let filteredOrders = savedOrders.filter(o => orderSubTab === 'active' ? !o.used : o.used);
-            if (filteredOrders.length === 0) { emptyState.classList.remove('hidden'); container.innerHTML = ""; return; }
+            if (filteredOrders.length === 0) { emptyState.classList.remove('hidden'); container.innerHTML = ""; sfRefreshAttentionDots(); return; }
             emptyState.classList.add('hidden'); container.innerHTML = "";
             filteredOrders.forEach((order, index) => {
                 let displayPhone = (order.phone && order.phone !== "undefined") ? order.phone : "請見官方LINE"; let callAction = displayPhone !== "請見官方LINE" ? `tel:${displayPhone}` : "javascript:void(0)";
@@ -1257,6 +1280,7 @@ select,input,textarea,button{max-width:100%}
                 } else { cardHtml += `<div class="text-center text-xs font-bold text-gray-400 py-3 bg-gray-50 border rounded-xl mt-2">核銷完成時間：${escapeHTML(safeFormatTime(order.verifyTime || order.date))}</div>`; }
                 cardHtml += `</div></div>`; container.innerHTML += cardHtml;
             });
+            sfRefreshAttentionDots();
         }
 
         let swipeState = { startX: 0, currentX: 0, maxDelta: 0, activeId: null, orderId: '' };
@@ -1271,7 +1295,7 @@ select,input,textarea,button{max-width:100%}
             const p = new URLSearchParams(); p.append('action', 'verifyOrder'); p.append('orderId', orderId);
             fetch(gasUrl, { method: "POST", body: p }).then(() => {
                 let saved = JSON.parse(localStorage.getItem('seefood_orders_list') || "[]"); let idx = saved.findIndex(o => o.id === localId);
-                if(idx !== -1) { saved[idx].used = true; saved[idx].verifyTime = new Date().toLocaleString('zh-TW', {hour12:false}); localStorage.setItem('seefood_orders_list', JSON.stringify(saved)); }
+                if(idx !== -1) { saved[idx].used = true; saved[idx].verifyTime = new Date().toLocaleString('zh-TW', {hour12:false}); localStorage.setItem('seefood_orders_list', JSON.stringify(saved)); sfRefreshAttentionDots(); }
                 syncUserDataFromCloud();
             });
         }
@@ -1503,17 +1527,46 @@ select,input,textarea,button{max-width:100%}
             if(window.visualViewport){window.visualViewport.addEventListener('resize',()=>{const a=document.activeElement;if(a&&zone.contains(a)&&/^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName))setTimeout(()=>a.scrollIntoView({behavior:'smooth',block:'center'}),80);});}
         }
 
+        function sfActiveTicketIds(){
+            try{return JSON.parse(localStorage.getItem('seefood_orders_list')||'[]').filter(o=>!o.used).map(o=>String(o.orderId||o.id||'')).filter(Boolean).sort();}catch(e){return [];}
+        }
+        function sfSetNavDot(id,on){const el=document.getElementById(id);if(el)el.classList.toggle('hidden',!on);}
+        function sfRefreshAttentionDots(){
+            const active=sfActiveTicketIds(); const sig=active.join('|'); const seen=localStorage.getItem('sf_seen_ticket_sig')||'';
+            sfSetNavDot('badge',active.length>0 && sig!==seen);
+            const contract=(localStorage.getItem('seefood_merchant_contract_status')||'');
+            const contractPending=!!localStorage.getItem('seefood_merchant_shop_id') && contract!=='已完成';
+            const moSig=localStorage.getItem('sf_merchant_active_sig')||''; const moSeen=localStorage.getItem('sf_seen_merchant_sig')||'';
+            sfSetNavDot('badge-merchant',contractPending || (!!moSig && moSig!==moSeen));
+            const commission=Number(localStorage.getItem('sf_partner_commission')||0); const seenCommission=Number(localStorage.getItem('sf_seen_partner_commission')||0);
+            sfSetNavDot('badge-achievement',commission>0 && commission!==seenCommission);
+        }
+        function sfMarkTabSeen(tabId){
+            if(tabId==='orders'){localStorage.setItem('sf_seen_ticket_sig',sfActiveTicketIds().join('|'));}
+            if(tabId==='merchant'){localStorage.setItem('sf_seen_merchant_sig',localStorage.getItem('sf_merchant_active_sig')||'');}
+            if(tabId==='achievement'){localStorage.setItem('sf_seen_partner_commission',localStorage.getItem('sf_partner_commission')||'0');}
+            sfRefreshAttentionDots();
+        }
+        function setupHeroSwipe30(){
+            const targets=[document.getElementById('image-banner-container'),document.getElementById('text-banner-container')].filter(Boolean);
+            targets.forEach(el=>{if(el.dataset.swipeReady==='1')return;el.dataset.swipeReady='1';let sx=0,sy=0;el.addEventListener('touchstart',e=>{if(!e.touches||!e.touches[0])return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});el.addEventListener('touchend',e=>{const t=e.changedTouches&&e.changedTouches[0];if(!t)return;const dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2){renderHeroBanner30(bannerIndex+(dx<0?1:-1));if(window.sfHeroTimer){clearInterval(window.sfHeroTimer);window.sfHeroTimer=setInterval(()=>renderHeroBanner30(bannerIndex+1),6500);}}},{passive:true});});
+        }
+
         function switchTab(tabId) {
             ['home', 'orders', 'achievement', 'merchant'].forEach(p => {
                 let el = document.getElementById(`page-${p}`); if(el) el.classList.toggle('hidden', p !== tabId);
                 const btn = document.getElementById(`tab-${p}`); if (btn) { if (p === tabId) { btn.classList.remove('text-blue-200'); btn.classList.add('text-seefoodYellow'); } else { btn.classList.add('text-blue-200'); btn.classList.remove('text-seefoodYellow'); } }
             });
-            const headerZone = document.getElementById('home-header-zone'); if(headerZone) { if(tabId === 'merchant') { headerZone.classList.add('hidden'); } else { headerZone.classList.remove('hidden'); } }
-            if(tabId==='achievement')loadPartnerHubV25(); refreshIcons26(); if(window.location.hash!==`#${tabId}`)history.pushState(null,null,`#${tabId}`);
+            const headerZone=document.getElementById('home-header-zone'), discovery=document.getElementById('home-discovery-filter'), imageHero=document.getElementById('image-banner-container'), textHero=document.getElementById('text-banner-container');
+            if(headerZone)headerZone.classList.toggle('hidden',tabId==='merchant');
+            const showDiscovery=tabId==='home'; if(discovery)discovery.classList.toggle('hidden',!showDiscovery);
+            if(imageHero){const hasImage=!!(cloudBanners.length?cloudBanners[bannerIndex]?.imgUrl:false); imageHero.classList.toggle('hidden',!showDiscovery || !hasImage);}
+            if(textHero)textHero.classList.toggle('hidden',!showDiscovery || (showDiscovery && !!(cloudBanners.length?cloudBanners[bannerIndex]?.imgUrl:false)));
+            if(tabId==='achievement')loadPartnerHubV25(); sfMarkTabSeen(tabId); refreshIcons26(); if(window.location.hash!==`#${tabId}`)history.pushState(null,null,`#${tabId}`);
         }
         function checkHashAndSwitch() { const hash = window.location.hash.replace('#', ''); switchTab(['home', 'orders', 'achievement', 'merchant'].includes(hash) ? hash : 'home'); }
         
-        window.addEventListener('DOMContentLoaded', async () => { const authState=await initLiffAuth(); checkHashAndSwitch(); checkMerchantUrlParameters(); checkTos(); if(authState!=='redirect' && localStorage.getItem('seefood_tos_agreed')) fetchLiveStores(); setupMobileFormFocus30(); });
+        window.addEventListener('DOMContentLoaded', async () => { const authState=await initLiffAuth(); checkHashAndSwitch(); checkMerchantUrlParameters(); checkTos(); if(authState!=='redirect' && localStorage.getItem('seefood_tos_agreed')) fetchLiveStores(); setupMobileFormFocus30(); setupHeroSwipe30(); sfRefreshAttentionDots(); });
         window.addEventListener('hashchange', checkHashAndSwitch);
 
         function openContractModal(isReadOnly = false) {
