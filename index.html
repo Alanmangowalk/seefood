@@ -239,6 +239,19 @@ select,input,textarea,button{max-width:100%}
 
 </style>
 
+
+<style id="sf-rc261-ui">
+.sf-policy-card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;overflow:hidden}
+.sf-policy-card summary{list-style:none;display:grid;grid-template-columns:38px 1fr 20px;align-items:center;gap:10px;padding:16px;color:#0F2740;cursor:pointer}
+.sf-policy-card summary::-webkit-details-marker{display:none}.sf-policy-card summary span{width:34px;height:34px;border-radius:11px;background:#FFF5D8;color:#B77900;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px}
+.sf-policy-card>div{padding:0 16px 16px 64px;color:#64748b;font-size:12px;line-height:1.8}
+.sf-finance-primary,.sf-settlement-history{background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:18px}
+.sf-settlement-history summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;cursor:pointer}.sf-settlement-history summary::-webkit-details-marker{display:none}
+.sf-status-pill{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.04em}
+.sf-status-pill.accumulating{background:#eef2f7;color:#475569}.sf-status-pill.auditing{background:#fff5d8;color:#9a6700}.sf-status-pill.ready{background:#e8f7ef;color:#137a4b}.sf-status-pill.paid{background:#dcfce7;color:#166534}.sf-status-pill.failed{background:#fee2e2;color:#b91c1c}
+@media(max-width:480px){#tos-modal .sf-legal-head{padding-top:max(18px,env(safe-area-inset-top))}.sf-finance-sheet{padding-bottom:calc(28px + env(safe-area-inset-bottom))}}
+</style>
+
 </head>
 <body class="bg-gray-900 min-h-screen flex justify-center items-top">
 
@@ -250,29 +263,30 @@ select,input,textarea,button{max-width:100%}
             <p id="loading-desc" class="text-sm text-emerald-400 font-bold px-6 text-center animate-pulse">請勿關閉畫面...</p>
         </div>
 
-        <div id="tos-modal" class="absolute inset-0 bg-slate-900 z-[100] flex flex-col hidden">
-            <div class="flex-1 overflow-y-auto p-6 text-gray-300 space-y-4 no-scrollbar">
-                <h2 class="text-2xl font-black text-seefoodYellow tracking-wider mb-2">📜 平台服務與免責聲明</h2>
-                <div class="text-xs leading-relaxed space-y-4">
-                    <p class="text-white font-bold">歡迎使用 SEEFOOD 美食獵人！為保障雙方權益與因應法規，請務必詳細閱讀以下條款：</p>
-                    
-                    <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
-                        <p class="text-emerald-400 font-bold mb-1">1. 依據法規排除七天鑑賞期 (重要)</p>
-                        <p>依據《通訊交易解除權合理例外情事適用準則》第2條第1項，本平台媒合之餐飲與即期惜福品，屬於「易於腐敗、保存期限較短或解約時即將逾期」之商品。<b>一經消費者線上付款訂購完成，即不適用消費者保護法第19條之七天鑑賞期規定，亦不接受無條件退換貨。</b></p>
-                    </div>
-
-                    <p><span class="text-emerald-400 font-bold">2. 平台免責聲明：</span>本平台僅提供資訊撮合與代收付服務。餐點之製造、包裝、保存與衛生安全，全由供餐商家獨立承擔法律責任。若生消費糾紛或食安問題，概由商家負責。</p>
-                    <p><span class="text-emerald-400 font-bold">3. 逾期未取沒收：</span>若未於商家規定之「取餐限時」內自取，視同自願放棄。商家有權直接銷毀食品，且<span class="text-red-400 font-bold">平台不予退款</span>。</p>
-                    <p><span class="text-emerald-400 font-bold">4. 交易防線與防洗錢聲明：</span>若經系統偵測有疑似洗錢、盜刷等異常行為，平台有權無限期凍結帳款並配合調查。</p>
-                    
-                    <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
-                        <p class="text-emerald-400 font-bold mb-1">5. 營運與客服資訊</p>
-                        <p>營運單位：照路有限公司<br>客服管道：請透過官方 LINE (@398ndwec) 聯繫，系統將於營業時間內為您協助。</p>
-                    </div>
+        <div id="tos-modal" class="absolute inset-0 z-[100] hidden bg-[#F8F6F1] flex-col">
+            <div class="sf-legal-head flex-none px-5 pt-5 pb-4 bg-white border-b border-slate-200">
+                <div class="flex items-start justify-between gap-4">
+                    <div><p class="text-[10px] font-black tracking-[.22em] text-amber-600">SEEFOOD POLICY CENTER</p>
+                    <h2 class="text-xl font-black text-[#0F2740] mt-1">隱私聲明與交易服務條款</h2>
+                    <p class="text-[11px] text-slate-400 mt-1">版本 3.0.1｜最後更新 2026/08/10</p></div>
+                    <button onclick="document.getElementById('tos-modal').classList.add('hidden')" class="w-10 h-10 rounded-full bg-slate-100 text-slate-500 text-xl">×</button>
+                </div>
+                <div class="mt-4 rounded-2xl bg-[#0F2740] text-white p-4">
+                    <b class="text-sm">先看重點</b>
+                    <p class="text-xs text-slate-200 leading-6 mt-1">惜食品具時效性；付款成功後才成立有效訂單與票券。付款失敗不產生票券。逾期未取、退款與爭議依下列規範處理。</p>
                 </div>
             </div>
-            <div class="p-6 bg-slate-800 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
-                <button onclick="acceptTos()" class="w-full bg-seefoodYellow text-slate-900 font-black py-4 rounded-xl shadow-lg active:scale-95 transition text-sm">✅ 我已詳閱並完全同意條款</button>
+            <div class="flex-1 overflow-y-auto px-5 py-4 pb-32 no-scrollbar space-y-3">
+                <details class="sf-policy-card" open><summary><span>01</span><b>交易成立與付款</b><i data-lucide="chevron-down"></i></summary><div>系統於獵人進入付款時短暫保留商品；只有金流確認付款成功後，訂單才進入「已付款／待取餐」，並產生有效票券。付款失敗或保留逾時，商品會重新釋出，且不得產生可核銷票券。</div></details>
+                <details class="sf-policy-card"><summary><span>02</span><b>退換貨與惜食品例外</b><i data-lucide="chevron-down"></i></summary><div>本平台商品多屬易腐敗、保存期限較短或即期餐飲。依適用法令之合理例外，完成交易後不提供無條件七日鑑賞期。若發生店家無法供餐、品項重大不符、已付款卻無法取餐等情形，可由訂單提出問題，由平台依交易紀錄審核，不代表提出即自動退款。</div></details>
+                <details class="sf-policy-card"><summary><span>03</span><b>取餐期限與逾期票券</b><i data-lucide="chevron-down"></i></summary><div>獵人應於票券標示的日期與時間前完成取餐。逾期後正常核銷會鎖定，票券移入歷史紀錄；特殊爭議可使用「訂單遇到問題」提出審核。</div></details>
+                <details class="sf-policy-card"><summary><span>04</span><b>平台、商家與食品責任</b><i data-lucide="chevron-down"></i></summary><div>SEEFOOD 提供資訊撮合、交易與代收付工具。餐點製作、保存、標示及食品安全由實際供餐商家依相關法令負責；平台保留依交易紀錄協助爭議處理與風險控管的權利。</div></details>
+                <details class="sf-policy-card"><summary><span>05</span><b>個人資料與隱私</b><i data-lucide="chevron-down"></i></summary><div>平台僅於提供帳號、訂單、票券、商家管理、付款、客服、風控與法定義務所必要範圍處理資料。商家實名、銀行與簽約資料應限制於授權流程使用，並保留必要的操作與同意紀錄。</div></details>
+                <details class="sf-policy-card"><summary><span>06</span><b>異常交易、爭議與客服</b><i data-lucide="chevron-down"></i></summary><div>疑似盜刷、洗錢、自動化洗單、重複異常交易或付款／庫存衝突，可暫停交易並交由人工審核。客服與爭議案件應保留案件編號及處理狀態，避免直接以退款作為唯一處理方式。</div></details>
+                <div class="text-[11px] text-slate-400 leading-5 px-1">營運單位：照路有限公司。正式上線前，涉及消保、個資、金流、退款與平台責任之最終文字仍建議交由台灣執業法律專業人士確認。</div>
+            </div>
+            <div class="absolute bottom-0 inset-x-0 p-4 bg-white/95 backdrop-blur border-t border-slate-200">
+                <button onclick="acceptTos()" class="w-full bg-[#F4B41A] text-[#0F2740] font-black py-4 rounded-2xl shadow-sm active:scale-[.98] transition">我已閱讀並同意</button>
             </div>
         </div>
 
@@ -481,13 +495,14 @@ select,input,textarea,button{max-width:100%}
                                 <div class="sf-m30-panel"><div class="sf-m30-panel-title">本期 SEEFOOD 發現</div><div class="sf-m30-panel-sub">把圖表翻成可以直接行動的建議</div><div id="m30-insights" class="space-y-2 mt-3"></div></div>
                             </div>
                         </div>
-                        <div id="m30-view-analytics" class="hidden space-y-4"><div class="sf-m30-panel"><div class="sf-m30-panel-title">進階數據分析</div><div class="sf-m30-panel-sub">Plus / Pro 方案將在這裡提供 30–365 日比較、商品效率、回購與曝光轉換。</div><div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2" id="m30-analytics-summary"></div></div></div>
+                        <div id="m30-view-analytics" class="hidden space-y-4"><div class="sf-m30-panel"><div class="flex items-start justify-between gap-3"><div><div class="sf-m30-panel-title">Plus 經營分析</div><div id="m30-analytics-sub" class="sf-m30-panel-sub">以真實成交資料整理可執行的經營回顧。</div></div><span id="m30-analytics-plan" class="sf-plan-pill26">PLUS</span></div><div id="m30-analytics-locked" class="hidden sf-analytics-lock26"><b>升級 Plus 解鎖完整數據</b><span>30 / 90 日比較、熱門商品、尖峰時段與上架售出率。</span><button onclick="triggerGrandMasterUpgrade()">升級 $299 / 月</button></div><div id="m30-analytics-content"><div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2" id="m30-analytics-summary"></div><div class="mt-4 grid md:grid-cols-2 gap-3"><div class="sf-analytics-detail26"><small>本期熱門商品</small><b id="m30-analytics-topitem">—</b></div><div class="sf-analytics-detail26"><small>最佳成交時段</small><b id="m30-analytics-peakhour">—</b></div><div class="sf-analytics-detail26"><small>較上期營收</small><b id="m30-analytics-growth">—</b></div><div class="sf-analytics-detail26"><small>上架售出率</small><b id="m30-analytics-sellthrough">—</b></div></div></div></div></div>
                         <details id="m30-order-ledger-panel" class="sf-m30-panel sf-collapsible-panel"><summary><span><b>訂單與結算狀態</b><small>查詢單號、核銷與是否已計入撥款</small></span><i data-lucide="chevron-down"></i></summary><div class="flex justify-end mt-2"><button onclick="event.preventDefault();loadMerchantOrderLedger30(true)" class="text-xs font-black text-blue-600">重新整理</button></div><div id="m30-order-ledger" class="mt-2 overflow-x-auto"><div class="text-xs text-slate-400 py-3">展開後載入訂單…</div></div></details>
                         <div class="sf-m30-actiongrid">
                             <button class="sf-m30-action primary" onclick="merchant30ScrollOps()"><i data-lucide="zap"></i><b>極速開賣</b>30秒更新今日獵物</button>
                             <button class="sf-m30-action" onclick="document.getElementById('merchant-active-orders-zone').scrollIntoView({behavior:'smooth'})"><i data-lucide="clipboard-check"></i><b>待取餐訂單</b>確認與核銷</button>
                             <button class="sf-m30-action" onclick="openFinanceModal()"><i data-lucide="wallet-cards"></i><b>帳務總覽</b>撥款與歷史對帳</button>
                             <a class="sf-m30-action" href="guide.html" target="_blank"><i data-lucide="book-open"></i><b>操作指南</b>上架與接單須知</a>
+                            <button class="sf-m30-action" onclick="showAppTutorial()"><i data-lucide="smartphone"></i><b>加入主畫面</b>像 App 一樣快速開啟</button>
                         </div>
                     </section>
                     
@@ -592,13 +607,13 @@ select,input,textarea,button{max-width:100%}
                     <div id="dashboard-slots-container" class="space-y-4 text-xs relative z-10 mt-2"></div>
 
                     <div class="text-xs relative z-10 border-t border-slate-700 pt-4 mt-2">
-                        <label class="block text-blue-200 mb-1.5 font-bold text-sm">顧客取餐截止日期與時間</label>
-                        <div class="sf-pickup-datetime-grid">
-                            <div><span class="sf-pickup-mini-label">日期</span><input type="date" id="dash-pickup-date" class="sf-pickup-control" onchange="sfSyncPickupDateTime25()"></div>
-                            <div><span class="sf-pickup-mini-label">時間</span><select id="dash-pickup-time" class="sf-pickup-control" onchange="sfSyncPickupDateTime25()"></select></div>
-                        </div>
+                        <label class="block text-blue-200 mb-1.5 font-bold text-sm">顧客取餐截止時間</label>
+                        <button type="button" id="pickup-picker-button" onclick="sfOpenPickupPicker26()" class="sf-pickup-unified">
+                            <span><small>票券截止</small><b id="pickup-picker-display">尚未設定</b></span><i data-lucide="calendar-clock"></i>
+                        </button>
                         <input type="hidden" id="dash-time">
-                        <p id="dash-pickup-preview" class="text-[11px] text-slate-400 mt-2 font-bold">請選擇日期與時間；時間每 15 分鐘一格。</p>
+                        <input type="hidden" id="dash-pickup-date"><input type="hidden" id="dash-pickup-time">
+                        <p id="dash-pickup-preview" class="text-[11px] text-slate-400 mt-2 font-bold">點一下即可設定日期與時間。</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 pt-2 text-xs relative z-10">
@@ -667,46 +682,32 @@ select,input,textarea,button{max-width:100%}
             </div>
         </div>
 
-        <div id="finance-modal" class="absolute inset-0 bg-black/80 backdrop-blur-sm z-50 flex flex-col justify-end hidden">
-            <div class="bg-slate-900 w-full rounded-t-3xl p-5 space-y-4 shadow-2xl border-t border-slate-700 max-h-[90dvh] overflow-y-auto no-scrollbar">
-                <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-                    <h3 class="font-black text-lg text-white">📊 雲端金庫與對帳單</h3>
-                    <button onclick="closeFinanceModal()" class="text-gray-400 hover:text-white text-3xl font-bold px-2 leading-none">&times;</button>
+        <div id="finance-modal" class="absolute inset-0 bg-slate-950/45 backdrop-blur-sm z-50 flex flex-col justify-end hidden">
+            <div class="sf-finance-sheet bg-[#F8F6F1] w-full rounded-t-[28px] p-5 shadow-2xl max-h-[90dvh] overflow-y-auto no-scrollbar">
+                <div class="flex justify-between items-start pb-4 border-b border-slate-200">
+                    <div><p class="text-[10px] font-black tracking-[.2em] text-amber-600">SEEFOOD SETTLEMENT</p><h3 class="font-black text-xl text-[#0F2740]">帳務與撥款</h3><p class="text-xs text-slate-400 mt-1">只看三件事：本期多少、何時撥款、上期是否完成。</p></div>
+                    <button onclick="closeFinanceModal()" class="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-500 text-2xl">×</button>
                 </div>
-                <div class="bg-gradient-to-br from-slate-800 to-indigo-950 rounded-2xl p-4 border border-blue-900/60 shadow-lg relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-indigo-600 text-white text-[9px] font-black px-2.5 py-0.5 rounded-bl font-mono tracking-wider">CURRENT / 進行中</div>
-                    <p class="text-blue-300 text-xs font-bold mb-0.5">🔥 本期即時累積</p>
-                    <p id="current-period-title" class="text-white font-black text-sm font-mono">載入中...</p>
-                    <div class="mt-3 space-y-1.5 text-xs border-t border-slate-800/60 pt-2.5">
-                        <div class="flex justify-between text-gray-400"><span>當期已核銷營收</span><span id="fin-sales" class="font-bold text-white">$0</span></div>
-                        <div class="flex justify-between text-gray-500"><span>扣金流手續費 (3.15% 最低$5)</span><span id="fin-fee" class="text-red-400">-$0</span></div>
-                        <div class="pt-2 mt-1 border-t border-slate-800/40 flex justify-between items-end">
-                            <span class="text-gray-300 font-bold">🏦 當期預估實得</span><span id="finance-net-income" class="text-seefoodYellow font-black text-2xl">$0</span>
-                        </div>
+                <section class="sf-finance-primary mt-4">
+                    <div class="flex justify-between gap-3 items-start"><div><span class="sf-status-pill accumulating">本期累積中</span><p id="current-period-title" class="text-sm font-black text-slate-500 mt-2">載入中...</p></div><div class="text-right"><small class="text-slate-400">預計入帳</small><div id="finance-net-income" class="text-3xl font-black text-[#0F2740]">$0</div></div></div>
+                    <div class="mt-5 pt-4 border-t border-slate-200 space-y-2 text-sm">
+                        <div class="flex justify-between"><span class="text-slate-500">已核銷營收</span><b id="fin-sales">$0</b></div>
+                        <div class="flex justify-between"><span class="text-slate-500">金流／服務費</span><b id="fin-fee" class="text-slate-600">-$0</b></div>
                     </div>
-                </div>
-                <div class="bg-gradient-to-br from-slate-800/70 to-slate-900 rounded-2xl p-4 border border-slate-700 shadow-md relative overflow-hidden opacity-90 space-y-3">
-                    <div class="absolute top-0 right-0 bg-emerald-700 text-white text-[9px] font-black px-2.5 py-0.5 rounded-bl font-mono tracking-wider">AUDITING / 對帳中</div>
-                    <div>
-                        <p class="text-emerald-400 text-xs font-bold mb-0.5">📦 上期已關帳核算</p>
-                        <p id="history-period-title" class="text-gray-300 font-black text-sm font-mono">載入中... <span class="text-[10px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-800/60 ml-1">對帳中</span></p>
+                </section>
+                <details class="sf-settlement-history mt-3" open>
+                    <summary><div><span id="history-status-pill" class="sf-status-pill auditing">總部對帳中</span><b class="block mt-2 text-[#0F2740]">上一期結算</b><small id="history-period-title" class="text-slate-400">載入中...</small></div><div class="text-right"><small class="text-slate-400">商家應收</small><b id="hist-net-income" class="block text-xl text-[#0F2740]">$0</b></div></summary>
+                    <div class="pt-4 mt-4 border-t border-slate-200 space-y-2 text-sm">
+                        <div class="flex justify-between"><span class="text-slate-500">核銷總額</span><b id="hist-sales">$0</b></div>
+                        <div class="flex justify-between"><span class="text-slate-500">金流／服務費</span><b id="hist-fee">-$0</b></div>
+                        <div id="finance-vip-fee" class="hidden flex justify-between"><span class="text-slate-500">Plus 方案</span><b>-$299</b></div>
+                        <div id="bank-alert-box" class="mt-3 rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800">關帳後由總部完成對帳與撥款；狀態更新後會同步顯示於此。</div>
                     </div>
-                    <div id="bank-alert-box" class="bg-amber-500/10 border border-amber-500/40 rounded-xl p-3 text-amber-400 text-[11px] leading-relaxed font-bold">
-                        📢 <span class="text-white">系統提示：</span>上期營收已鎖定。若您已完成實名簽約，預計於 3~5 個工作天內匯至合約綁定帳戶。
-                    </div>
-                    <div class="space-y-1.5 text-xs border-t border-slate-800/60 pt-2">
-                        <div class="flex justify-between text-gray-400"><span>上期自取核銷總額</span><span id="hist-sales" class="font-bold text-gray-300">$0</span></div>
-                        <div class="flex justify-between text-gray-500"><span>扣金流手續費 (3.15% 最低$5)</span><span id="hist-fee" class="text-red-400/80">-$0</span></div>
-                        <div id="finance-vip-fee" class="flex justify-between text-gray-500 hidden"><span>大覺者 VIP 月費</span><span class="text-red-400/80">-$299</span></div>
-                        <div class="pt-2 mt-1 border-t border-slate-800/40 flex justify-between items-end">
-                            <span class="text-gray-400 font-bold">🏦 上期最終應撥金額</span><span id="hist-net-income" class="text-emerald-400 font-black text-2xl">$0</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-slate-800 rounded-2xl p-4 border border-slate-700 space-y-2">
-                    <p class="font-black text-sm text-blue-300 flex items-center">🏦 撥款帳戶 (已綁定至實名合約)</p>
-                    <p class="text-xs text-gray-400 leading-relaxed">您的銀行帳戶資料已隨實名合約加密寫入雲端。如需查詢，請至「商家後台 ➔ 檢視實名合約」中查看唯讀資料。如需變更，請聯繫客服中心。</p>
-                </div>
+                </details>
+                <details class="sf-settlement-history mt-3">
+                    <summary><div><b class="text-[#0F2740]">撥款帳戶</b><small class="block text-slate-400 mt-1">已綁定至實名合約</small></div><i data-lucide="chevron-down"></i></summary>
+                    <div class="pt-4 mt-4 border-t border-slate-200 text-xs text-slate-500 leading-6">銀行資料以實名合約為準。如需變更，應透過商家後台的合約／客服流程處理；總部後台將保留每次撥款與狀態變更紀錄。</div>
+                </details>
             </div>
         </div>
 
@@ -966,7 +967,7 @@ select,input,textarea,button{max-width:100%}
         }
 
         function checkTos() { if (!localStorage.getItem('seefood_tos_agreed')) { document.getElementById('tos-modal').classList.remove('hidden'); } }
-        function acceptTos(){localStorage.setItem('seefood_tos_agreed','true');localStorage.setItem('seefood_tos_version','3.0');document.getElementById('tos-modal').classList.add('hidden');fetchLiveStores();if(userStats.lineUid&&userStats.lineUid!=='LINE_GUEST')postActionV25('recordConsent',{uid:userStats.lineUid,documentType:'TOS',version:'3.0',source:'WEB'}).catch(()=>{});}
+        function acceptTos(){localStorage.setItem('seefood_tos_agreed','true');localStorage.setItem('seefood_tos_version','3.0.1');document.getElementById('tos-modal').classList.add('hidden');fetchLiveStores();if(userStats.lineUid&&userStats.lineUid!=='LINE_GUEST')postActionV25('recordConsent',{uid:userStats.lineUid,documentType:'TOS',version:'3.0.1',source:'WEB'}).catch(()=>{});}
 
         const defaultHeroBanners30 = [
             {title:'獵場情報地圖', subtitle:'探索全台惜食獵場與即時商家情報。', cta:'開始探索', kicker:'SEEFOOD 情報', type:'頁面', link:'radar.html'},
@@ -1046,7 +1047,7 @@ select,input,textarea,button{max-width:100%}
 
         function renderShopDashboardV25(shop) {
             if(!shop) return;
-            localStorage.setItem('seefood_merchant_shop_id',shop.shopId); localStorage.setItem('seefood_merchant_shop_name',shop.shopName); localStorage.setItem('seefood_merchant_vip',shop.isVip?'true':'false');
+            localStorage.setItem('seefood_merchant_shop_id',shop.shopId); localStorage.setItem('seefood_merchant_shop_name',shop.shopName); localStorage.setItem('seefood_merchant_vip',shop.isVip?'true':'false'); sfApplyVipEntitlements26(shop);
             localStorage.setItem('seefood_merchant_bank_code',shop.bCode||''); localStorage.setItem('seefood_merchant_bank_branch',shop.bBranch||''); localStorage.setItem('seefood_merchant_bank_account',shop.bAcc||''); localStorage.setItem('seefood_merchant_bank_owner',shop.bOwner||''); localStorage.setItem('seefood_merchant_contract_status',shop.contractStatus||'PENDING_REVIEW');
             const title=document.getElementById('dashboard-shop-title'); if(title)title.innerText=shop.shopName;
             document.getElementById('merchant-dashboard-zone')?.classList.remove('hidden'); const rz=document.getElementById('merchant-registration-zone'); if(rz)rz.style.display='none'; const m30n=document.getElementById('m30-shop-name'); if(m30n)m30n.textContent=shop.shopName||'目前店鋪'; const m30s=document.getElementById('m30-live-status'); if(m30s)m30s.textContent=(shop.storeStatus==='ON'?'營業中':'休息中'); setTimeout(()=>loadMerchantAnalytics30(false),30);
@@ -1320,7 +1321,7 @@ select,input,textarea,button{max-width:100%}
 
         function renderSavedTicketsWall() {
             const container = document.getElementById('tickets-container'); const emptyState = document.getElementById('empty-ticket'); let savedOrders = JSON.parse(localStorage.getItem('seefood_orders_list') || "[]");
-            let filteredOrders = savedOrders.filter(o => orderSubTab === 'active' ? (!o.used && !o.expired && sfPickupState(o.time)!=='EXPIRED') : (o.used || o.expired || sfPickupState(o.time)==='EXPIRED'));
+            let filteredOrders = savedOrders.filter(o => { const st=String(o.status||''); if(st==='Pending'||st==='Failed'||st==='PaymentFailed') return false; return orderSubTab === 'active' ? (!o.used && !o.expired && st==='Paid' && sfPickupState(o.time)!=='EXPIRED') : (o.used || o.expired || st==='Redeemed' || st==='Expired' || sfPickupState(o.time)==='EXPIRED'); });
             if (filteredOrders.length === 0) { emptyState.classList.remove('hidden'); container.innerHTML = ""; sfRefreshAttentionDots(); return; }
             emptyState.classList.add('hidden'); container.innerHTML = "";
             filteredOrders.forEach((order, index) => {
@@ -1359,14 +1360,14 @@ select,input,textarea,button{max-width:100%}
             const shopId = localStorage.getItem('seefood_merchant_shop_id') || "SFB-001";
             let userConfirmed = await seefoodConfirm("🔮 【先享受後扣款】\n升級大覺者將解鎖 10 格商品欄位與「今日最殺推薦」特權！\n月費 $299 將於雙週結帳時自動從營業額抵扣，若餘額不足自動降級。\n\n確定要立即升級嗎？");
             if(userConfirmed) {
-                const p = new URLSearchParams(); p.append('action', 'upgradeVip'); p.append('shopId', shopId);
+                const p = new URLSearchParams(); p.append('action', 'upgradeVip'); p.append('shopId', shopId); p.append('uid', userStats.lineUid);
                 fetch(gasUrl, { method: "POST", body: p }).then(res => res.json()).then(resJson => {
-                    if (resJson.status === "success") { localStorage.setItem('seefood_merchant_vip', 'true'); alert("🎉 升級成功！您現在是 SEEFOOD 大覺者，VIP 資格已綁定雲端！"); document.getElementById('vip-upgrade-banner').classList.add('hidden'); document.getElementById('dashboard-plan-badge').innerText = "大覺者 VIP (10格)"; renderDashboardSlots(); } else { alert("升級失敗，請洽客服"); }
+                    if (resJson.status === "success") { localStorage.setItem('seefood_merchant_vip', 'true'); alert("🎉 這間店已升級 Plus！10 格商品與進階數據已解鎖。"); merchantAnalytics30Cache={}; loadShopDashboardV25(shopId,true); } else { alert(resJson.msg||"升級失敗，請洽客服"); }
                 }).catch(() => alert("連線異常"));
             }
         }
 
-        function showAppTutorial() { alert("【🍏 iPhone 蘋果教學】\n1. 點擊 Safari 下方「分享」圖示 🔗\n2. 往下滑點擊「加入主畫面\" ➕\n\n【🤖 Android 安卓教學】\n1. 點擊 Chrome 右上角「三個點」設定 ⋮\n2. 點擊「加到主畫面」➕\n\n加入後免開 LINE，像 App 一樣秒開秒上架！"); }
+        function showAppTutorial() { seefoodConfirm("📱 把 SEEFOOD 放到手機主畫面\n\niPhone Safari：點『分享』→『加入主畫面』。\nAndroid Chrome：點右上角『⋮』→『加到主畫面／安裝應用程式』。\n\n商家每天開賣會更快，不需要每次從 LINE 對話找入口。", false); }
 
         function activeShopId() { return localStorage.getItem('seefood_merchant_shop_id') || 'NO_SHOP'; }
         function slotDataKey(index, shopId = activeShopId()) { return `seefood_shop_${shopId}_slot_data_${index}`; }
@@ -1500,7 +1501,7 @@ select,input,textarea,button{max-width:100%}
             if (shopId) {
                 let cachedName = localStorage.getItem('seefood_merchant_shop_name') || "SEEFOOD 惜福分店";
                 document.getElementById('merchant-dashboard-zone').classList.remove('hidden'); document.getElementById('dashboard-shop-title').innerText = cachedName; const m30n=document.getElementById('m30-shop-name');if(m30n)m30n.textContent=cachedName; setTimeout(()=>loadMerchantAnalytics30(false),30); document.getElementById('tab-merchant-text').innerText = "商家後台"; const regZone = document.getElementById('merchant-registration-zone'); if(regZone) regZone.style.display = 'none';
-                let isVip = localStorage.getItem('seefood_merchant_vip') === 'true'; if(isVip) { document.getElementById('vip-upgrade-banner').classList.add('hidden'); document.getElementById('dashboard-plan-badge').innerText = "大覺者 VIP (10格)"; }
+                let isVip = localStorage.getItem('seefood_merchant_vip') === 'true'; sfApplyVipEntitlements26({isVip});
                 renderDashboardSlots(); 
                 if (urlShopId || window.location.hash === '#merchant') { switchTab('merchant'); }
             }
@@ -1532,6 +1533,14 @@ select,input,textarea,button{max-width:100%}
         let merchantAnalytics30Cache = {};
         function money30(n){ return '$' + Math.round(Number(n)||0).toLocaleString('zh-TW'); }
         function delta30(n){ n=Number(n)||0; if(Math.abs(n)<0.05)return '較前期持平'; return `較前期 ${n>0?'+':''}${n.toFixed(1)}%`; }
+        function sfApplyVipEntitlements26(shop){
+            const isVip=!!shop?.isVip; localStorage.setItem('seefood_merchant_vip',isVip?'true':'false');
+            const banner=document.getElementById('vip-upgrade-banner'); if(banner)banner.classList.toggle('hidden',isVip);
+            const badge=document.getElementById('dashboard-plan-badge'); if(badge)badge.innerText=isVip?'Plus（10格＋進階分析）':'基礎免費版（3格）';
+            const range=document.getElementById('m30-range'); if(range){[...range.options].forEach(o=>{o.disabled=!isVip && Number(o.value)>7}); if(!isVip&&Number(range.value)>7)range.value='7';}
+            const lock=document.getElementById('m30-analytics-locked'),content=document.getElementById('m30-analytics-content'),pill=document.getElementById('m30-analytics-plan'); if(lock)lock.classList.toggle('hidden',isVip);if(content)content.classList.toggle('hidden',!isVip);if(pill)pill.textContent=isVip?'PLUS 已解鎖':'PLUS';
+        }
+
         function merchant30Show(view,btn){
             document.getElementById('m30-view-overview')?.classList.toggle('hidden',view!=='overview');
             document.getElementById('m30-view-analytics')?.classList.toggle('hidden',view!=='analytics');
@@ -1566,7 +1575,7 @@ select,input,textarea,button{max-width:100%}
             document.getElementById('m30-top-items').innerHTML=(a.topItems||[]).slice(0,5).map((x,i)=>`<tr><td><span class="text-slate-400 mr-2">${i+1}</span>${escapeHTML(x.name)}</td><td>${x.count} 份</td></tr>`).join('')||'<tr><td class="text-slate-400">尚無資料</td><td></td></tr>';
             const rr=(a.summary.redeemed+a.summary.pending)>0?Math.round(a.summary.redeemed/(a.summary.redeemed+a.summary.pending)*100):0; document.getElementById('m30-rescue-rate').textContent=rr+'%';
             document.getElementById('m30-insights').innerHTML=(a.insights||[]).map(x=>`<div class="sf-m30-insight !mt-0">${escapeHTML(x)}</div>`).join('')||'<div class="sf-m30-insight !mt-0">開始累積訂單後，SEEFOOD 會在這裡整理經營發現。</div>';
-            document.getElementById('m30-analytics-summary').innerHTML=[['期間營收',money30(a.summary.revenue)],['救援份數',a.summary.redeemed+''],['新獵人',a.summary.uniqueHunters+''],['平均客單',money30(a.summary.aov)]].map(x=>`<div class="bg-slate-50 border border-slate-200 rounded-xl p-3"><div class="text-[10px] text-slate-400 font-bold">${x[0]}</div><div class="font-black text-slate-900 mt-1">${x[1]}</div></div>`).join('');
+            document.getElementById('m30-analytics-summary').innerHTML=[['期間營收',money30(a.summary.revenue)],['救援份數',a.summary.redeemed+''],['新獵人',a.summary.uniqueHunters+''],['平均客單',money30(a.summary.aov)]].map(x=>`<div class="bg-slate-50 border border-slate-200 rounded-xl p-3"><div class="text-[10px] text-slate-400 font-bold">${x[0]}</div><div class="font-black text-slate-900 mt-1">${x[1]}</div></div>`).join(''); const top=a.topItems?.[0];const topEl=document.getElementById('m30-analytics-topitem');if(topEl)topEl.textContent=top?`${top.name} · ${top.count}份`:'—';const peak=document.getElementById('m30-analytics-peakhour');if(peak)peak.textContent=a.bestHour?.label||'—';const growth=document.getElementById('m30-analytics-growth');if(growth)growth.textContent=delta30(a.compare.revenuePct);const sell=document.getElementById('m30-analytics-sellthrough');if(sell)sell.textContent=a.sellThrough?.available?Math.round(a.sellThrough.rate*100)+'%':'—';
             refreshIcons26();
         }
         async function loadMerchantAnalytics30(force=false){
@@ -1589,7 +1598,7 @@ select,input,textarea,button{max-width:100%}
         }
 
         function sfActiveTicketIds(){
-            try{return JSON.parse(localStorage.getItem('seefood_orders_list')||'[]').filter(o=>!o.used && !o.expired && sfPickupState(o.time)!=='EXPIRED').map(o=>String(o.orderId||o.id||'')).filter(Boolean).sort();}catch(e){return [];}
+            try{return JSON.parse(localStorage.getItem('seefood_orders_list')||'[]').filter(o=>String(o.status||'')==='Paid' && !o.used && !o.expired && sfPickupState(o.time)!=='EXPIRED').map(o=>String(o.orderId||o.id||'')).filter(Boolean).sort();}catch(e){return [];}
         }
         function sfSetNavDot(id,on){const el=document.getElementById(id);if(el)el.classList.toggle('hidden',!on);}
         function sfRefreshAttentionDots(){
@@ -1743,13 +1752,25 @@ select,input,textarea,button{max-width:100%}
 @media(max-width:767px){.sf-pickup-datetime-grid{grid-template-columns:1fr 1fr}.sf-pickup-control{font-size:16px;min-height:48px;padding-left:8px;padding-right:8px}.sf-support-handle{right:8px!important;bottom:calc(92px + env(safe-area-inset-bottom))!important;width:40px!important;height:40px!important}.sf-main-scroll{padding-bottom:calc(118px + env(safe-area-inset-bottom))!important}#page-merchant{padding-bottom:36px!important}#finance-modal>div{width:100%!important;border-radius:24px 24px 0 0!important}.sf-order-ledger-row{grid-template-columns:1fr!important;gap:7px!important}.sf-order-ledger-row .sf-order-money{text-align:left!important}}
 
 </style>
+
+<div id="pickup-picker-modal" class="hidden fixed inset-0 z-[120] bg-slate-950/45 backdrop-blur-[2px] items-end md:items-center justify-center p-0 md:p-5" onclick="if(event.target===this)sfClosePickupPicker26()">
+  <div class="sf-pickup-sheet26">
+    <div class="flex items-center justify-between"><div><p class="text-[11px] font-black text-slate-400 tracking-wider">取餐設定</p><h3 class="text-xl font-black text-slate-900">選擇截止時間</h3></div><button onclick="sfClosePickupPicker26()" class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 text-xl">×</button></div>
+    <div class="mt-5 space-y-4"><label class="block"><span class="sf-pickup-label26">日期</span><input type="date" id="pickup-modal-date" class="sf-pickup-modal-control"></label><label class="block"><span class="sf-pickup-label26">時間</span><select id="pickup-modal-time" class="sf-pickup-modal-control"></select></label></div>
+    <button onclick="sfConfirmPickupPicker26()" class="w-full mt-5 bg-[#0B1F33] text-white font-black py-4 rounded-2xl">套用截止時間</button>
+  </div>
+</div>
+
 <script id="sf-rc24-script">
 (function(){
   function pad(n){return String(n).padStart(2,'0')}
   window.sfLocalInputValue=function(v){let d=v?new Date(v):new Date(Date.now()+2*3600000);if(isNaN(d))d=new Date(Date.now()+2*3600000);return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(Math.floor(d.getMinutes()/15)*15)}`}
-  window.sfBuildTimeOptions25=function(){const sel=document.getElementById('dash-pickup-time');if(!sel||sel.options.length)return;for(let h=0;h<24;h++)for(let m=0;m<60;m+=15){const v=`${pad(h)}:${pad(m)}`;sel.add(new Option(v,v));}};
-  window.sfSyncPickupDateTime25=function(){const d=document.getElementById('dash-pickup-date'),t=document.getElementById('dash-pickup-time'),hidden=document.getElementById('dash-time'),preview=document.getElementById('dash-pickup-preview');if(!d||!t||!hidden)return;hidden.value=(d.value&&t.value)?`${d.value}T${t.value}`:'';if(preview)preview.textContent=hidden.value?`顧客票券將顯示：${d.value.replace(/-/g,'/')} ${t.value} 前`:'請選擇日期與時間；時間每 15 分鐘一格。';};
-  window.sfSetPickupControls25=function(v){sfBuildTimeOptions25();let d=v?new Date(v):new Date(Date.now()+2*3600000);if(isNaN(d))d=new Date(Date.now()+2*3600000);d.setMinutes(Math.ceil(d.getMinutes()/15)*15,0,0);const date=document.getElementById('dash-pickup-date'),time=document.getElementById('dash-pickup-time');if(date){date.min=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;date.value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}if(time)time.value=`${pad(d.getHours())}:${pad(d.getMinutes())}`;sfSyncPickupDateTime25();};
+  window.sfBuildTimeOptions25=function(){const sel=document.getElementById('pickup-modal-time');if(!sel||sel.options.length)return;for(let h=0;h<24;h++)for(let m=0;m<60;m+=15){const v=`${pad(h)}:${pad(m)}`;sel.add(new Option(v,v));}};
+  window.sfSyncPickupDateTime25=function(){const hidden=document.getElementById('dash-time'),preview=document.getElementById('dash-pickup-preview'),display=document.getElementById('pickup-picker-display');if(!hidden)return;const d=hidden.value?new Date(hidden.value):null;if(d&&!isNaN(d)){const txt=`${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;if(display)display.textContent=txt;if(preview)preview.textContent=`顧客票券將顯示：${txt} 前`;}else{if(display)display.textContent='尚未設定';if(preview)preview.textContent='點一下即可設定日期與時間。';}};
+  window.sfOpenPickupPicker26=function(){sfBuildTimeOptions25();const hidden=document.getElementById('dash-time'),md=document.getElementById('pickup-modal-date'),mt=document.getElementById('pickup-modal-time'),modal=document.getElementById('pickup-picker-modal');let d=hidden?.value?new Date(hidden.value):new Date(Date.now()+2*3600000);if(isNaN(d))d=new Date(Date.now()+2*3600000);d.setMinutes(Math.ceil(d.getMinutes()/15)*15,0,0);md.min=`${new Date().getFullYear()}-${pad(new Date().getMonth()+1)}-${pad(new Date().getDate())}`;md.value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;mt.value=`${pad(d.getHours())}:${pad(d.getMinutes())}`;modal.classList.remove('hidden');modal.classList.add('flex');};
+  window.sfClosePickupPicker26=function(){const m=document.getElementById('pickup-picker-modal');m?.classList.add('hidden');m?.classList.remove('flex');};
+  window.sfConfirmPickupPicker26=function(){const md=document.getElementById('pickup-modal-date'),mt=document.getElementById('pickup-modal-time'),hidden=document.getElementById('dash-time');if(!md.value||!mt.value)return;const v=`${md.value}T${mt.value}`,d=new Date(v);if(isNaN(d)||d<=new Date()){alert('截止時間必須晚於現在');return;}hidden.value=v;sfSyncPickupDateTime25();sfClosePickupPicker26();};
+  window.sfSetPickupControls25=function(v){let d=v?new Date(v):new Date(Date.now()+2*3600000);if(isNaN(d))d=new Date(Date.now()+2*3600000);d.setMinutes(Math.ceil(d.getMinutes()/15)*15,0,0);const hidden=document.getElementById('dash-time');if(hidden)hidden.value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;sfSyncPickupDateTime25();};
   window.sfPickupState=function(v){const d=new Date(v);if(isNaN(d))return 'ACTIVE';const ms=d-Date.now();if(ms<=0)return 'EXPIRED';if(ms<=60*60*1000)return 'EXPIRING';return 'ACTIVE'};
   const oldRender=window.renderShopDashboardV25;
   if(oldRender) window.renderShopDashboardV25=function(shop){oldRender(shop);sfSetPickupControls25(shop?.storeTime);const panel=document.getElementById('m30-order-ledger-panel');if(panel&&!panel.dataset.ready){panel.dataset.ready='1';panel.addEventListener('toggle',()=>{if(panel.open)loadMerchantOrderLedger30(false);});}};
@@ -1765,6 +1786,20 @@ select,input,textarea,button{max-width:100%}
   const oldTickets=window.renderSavedTicketsWall;
   if(oldTickets) window.renderSavedTicketsWall=function(){let arr=[];try{arr=JSON.parse(localStorage.getItem('seefood_orders_list')||'[]')}catch(e){};let changed=false;arr.forEach(o=>{if(!o.used&&sfPickupState(o.time)==='EXPIRED'){o.expired=true;changed=true}});if(changed)localStorage.setItem('seefood_orders_list',JSON.stringify(arr));oldTickets();document.querySelectorAll('[id^="ticket-card-"]').forEach(card=>{const id=card.querySelector('.font-mono')?.textContent?.replace('單號:','').trim();const o=arr.find(x=>String(x.orderId)===id);if(!o)return;const st=sfPickupState(o.time);if(st==='EXPIRING')card.classList.add('sf-expiring');if(st==='EXPIRED'){card.classList.add('sf-expired');const swipe=card.querySelector('.swipe-track');if(swipe)swipe.outerHTML='<div class="bg-slate-100 border rounded-xl p-3 text-center text-xs font-bold text-slate-500">已超過取餐期限，正常核銷已鎖定。若有特殊狀況可使用「訂單遇到問題」。</div>'}const body=card.querySelector('.p-4');if(body&&!body.querySelector('.sf-issue-btn'))body.insertAdjacentHTML('beforeend',`<button class="sf-issue-btn w-full mt-2 text-xs font-black text-slate-500 underline" onclick="sfReportOrderIssue24('${String(o.orderId||'').replace(/'/g,'')}')">訂單遇到問題</button>`)})};
   setInterval(()=>{try{renderSavedTicketsWall();sfRefreshAttentionDots()}catch(e){}},60000);
+})();
+</script>
+
+
+<script id="sf-rc261-runtime">
+(function(){
+  const labelMap={ACCUMULATING:'本期累積中',CLOSED:'已關帳',AUDITING:'總部對帳中',READY_TO_PAY:'等待撥款',PAID:'已完成撥款',FAILED:'撥款異常',DISPUTED:'帳務爭議處理中'};
+  const clsMap={ACCUMULATING:'accumulating',CLOSED:'auditing',AUDITING:'auditing',READY_TO_PAY:'ready',PAID:'paid',FAILED:'failed',DISPUTED:'failed'};
+  window.sf261ApplyFinanceStatus=function(fin){
+    const p=document.getElementById('history-status-pill'); if(!p||!fin)return;
+    const s=fin.historyStatus||'AUDITING'; p.textContent=labelMap[s]||s; p.className='sf-status-pill '+(clsMap[s]||'auditing');
+  };
+  const oldOpen=window.openFinanceModal;
+  window.openFinanceModal=function(){ if(oldOpen) oldOpen.apply(this,arguments); try{sf261ApplyFinanceStatus(window.userStats&&userStats.myShop&&userStats.myShop.finance)}catch(e){} };
 })();
 </script>
 
