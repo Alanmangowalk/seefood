@@ -228,6 +228,15 @@ select,input,textarea,button{max-width:100%}
   #bottom-nav .sf-nav-dot{right:14px!important;top:10px!important}
 }
 
+
+/* RC2.3 — scroll-away hero + persistent task semantics */
+#image-banner-container,#text-banner-container{position:relative!important;top:auto!important;inset:auto!important}
+.sf-partner-focus{outline:3px solid rgba(244,180,26,.7)!important;outline-offset:4px;transition:outline .25s ease}
+.sf-partner-onboarding{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:12px}
+.sf-partner-step{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:9px 5px;display:flex;flex-direction:column;gap:4px;align-items:center}
+.sf-partner-step b{width:22px;height:22px;border-radius:999px;background:#F4B41A;color:#0B2239;display:grid;place-items:center;font-size:11px}.sf-partner-step span{font-size:9px;color:#D8E0E8;font-weight:800;line-height:1.25}
+@media(max-width:767px){#page-home>.sf-hero{margin-top:0!important}.sf-partner-onboarding .grid{grid-template-columns:1fr!important}.sf-partner-step{flex-direction:row!important;justify-content:flex-start!important;text-align:left!important}}
+
 </style>
 
 </head>
@@ -296,7 +305,7 @@ select,input,textarea,button{max-width:100%}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.2</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.3</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -309,25 +318,27 @@ select,input,textarea,button{max-width:100%}
                     <option value="全部行政區">全部行政區</option>
                 </select>
             </div>
-            <section id="image-banner-container" class="sf-hero hidden" onclick="handleBannerClick()" role="button" tabindex="0" aria-label="SEEFOOD 精選入口">
-                <div class="sf-hero-copy">
-                    <div id="image-banner-kicker" class="sf-hero-kicker">SEEFOOD 美食獵人</div>
-                    <h2 id="image-banner-title" class="sf-hero-title">美食獵場・全台點亮中</h2>
-                    <p id="image-banner-subtitle" class="sf-hero-subtitle">探索附近惜食獵場，讓今天的美味不被浪費。</p>
-                    <span id="image-banner-cta" class="sf-hero-cta">探索獵場</span>
-                </div>
-                <div class="sf-hero-art"><img id="image-banner-img" src="" alt="" decoding="async"></div>
-                <div id="hero-dots" class="sf-hero-dots" aria-hidden="true"></div>
-            </section>
-            <div id="text-banner-container" class="sf-hero sf-hero-fallback cursor-pointer" onclick="handleBannerClick()">
-                <div class="sf-hero-copy"><div class="sf-hero-kicker">SEEFOOD 美食獵人</div><h2 id="text-banner-text" class="sf-hero-title">美食獵場・全台點亮中</h2><p class="sf-hero-subtitle">探索獵場情報、快速上手，或點亮新獵場賺取分潤。</p><span class="sf-hero-cta">開始探索</span></div>
-                <div class="sf-hero-placeholder"><i data-lucide="map-pinned"></i></div>
-            </div>
         </div>
 
         <div class="sf-main-scroll flex-1 overflow-y-auto p-4 pb-6 no-scrollbar" style="-webkit-overflow-scrolling: touch;">
             
             <div id="page-home" class="space-y-3">
+                <!-- RC2.3: Hero belongs to the scrollable home feed, never permanently pinned. -->
+                <section id="image-banner-container" class="sf-hero hidden" onclick="handleBannerClick()" role="button" tabindex="0" aria-label="SEEFOOD 精選入口">
+                    <div class="sf-hero-copy">
+                        <div id="image-banner-kicker" class="sf-hero-kicker">SEEFOOD 美食獵人</div>
+                        <h2 id="image-banner-title" class="sf-hero-title">獵場情報地圖</h2>
+                        <p id="image-banner-subtitle" class="sf-hero-subtitle">探索全台惜食獵場與即時商家情報。</p>
+                        <span id="image-banner-cta" class="sf-hero-cta">開始探索</span>
+                    </div>
+                    <div class="sf-hero-art"><img id="image-banner-img" src="" alt="" decoding="async"></div>
+                    <div id="hero-dots" class="sf-hero-dots" aria-hidden="true"></div>
+                </section>
+                <div id="text-banner-container" class="sf-hero sf-hero-fallback cursor-pointer" onclick="handleBannerClick()">
+                    <div class="sf-hero-copy"><div id="text-banner-kicker" class="sf-hero-kicker">SEEFOOD 情報</div><h2 id="text-banner-text" class="sf-hero-title">獵場情報地圖</h2><p id="text-banner-subtitle" class="sf-hero-subtitle">探索全台惜食獵場與即時商家情報。</p><span id="text-banner-cta" class="sf-hero-cta">開始探索</span></div>
+                    <div class="sf-hero-placeholder"><i data-lucide="map-pinned"></i></div>
+                    <div id="hero-dots-fallback" class="sf-hero-dots" aria-hidden="true"></div>
+                </div>
                 <div class="sf-sortbar grid grid-cols-4 gap-1.5 text-center text-[10px] font-black pb-1">
                     <button id="btn-sort-recommend" onclick="setSort('recommend')" class="sf-sort-btn sf-sort-active"><i data-lucide="sparkles"></i><span>推薦</span></button>
                     <button id="btn-sort-distance" onclick="setSort('distance')" class="sf-sort-btn"><i data-lucide="navigation"></i><span>最近</span></button>
@@ -348,7 +359,7 @@ select,input,textarea,button{max-width:100%}
 
             <div id="page-orders" class="space-y-3 hidden">
                 <div class="flex bg-gray-200 p-1 rounded-xl text-xs font-black mb-2 shadow-inner">
-                    <button id="order-tab-active" onclick="switchOrderSubTab('active')" class="w-1/2 text-center py-2.5 rounded-lg bg-white text-seefoodDarkBlue shadow-sm transition-all">未取餐票券</button>
+                    <button id="order-tab-active" onclick="switchOrderSubTab('active')" class="w-1/2 text-center py-2.5 rounded-lg bg-white text-seefoodDarkBlue shadow-sm transition-all relative">未取餐票券 <span id="ticket-task-count" class="hidden ml-1 inline-flex min-w-[18px] h-[18px] px-1 items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-black align-middle">0</span></button>
                     <button id="order-tab-history" onclick="switchOrderSubTab('history')" class="w-1/2 text-center py-2.5 rounded-lg text-gray-500 transition-all">歷史消費紀錄</button>
                 </div>
                 <div id="empty-ticket" class="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center shadow-sm">
@@ -405,6 +416,16 @@ select,input,textarea,button{max-width:100%}
                             <p class="text-[10px] text-slate-400 font-bold">目前預估分潤</p>
                             <p id="partner-commission" class="text-2xl font-black text-seefoodYellow mt-1">$0</p>
                         </div>
+                    </div>
+                    <div class="sf-partner-onboarding mt-3 relative z-10">
+                        <p class="text-[10px] font-black text-white mb-2">如何開始賺分潤</p>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="sf-partner-step"><b>1</b><span>複製邀請連結</span></div>
+                            <div class="sf-partner-step"><b>2</b><span>店家完成綁定</span></div>
+                            <div class="sf-partner-step"><b>3</b><span>累積永久分潤</span></div>
+                        </div>
+                        <p class="text-[10px] text-slate-300 mt-2 leading-relaxed">點燈成功後，該商家關聯店鋪的服務費與符合規則的方案收益會依 Partner 規則累積。正式撥款前需完成分潤收款帳戶設定。</p>
+                        <button type="button" onclick="showPartnerPayoutInfo30()" class="w-full mt-2 border border-white/15 bg-white/10 text-white font-black py-2.5 rounded-xl text-xs">設定分潤收款帳戶</button>
                     </div>
                     <details class="mt-3 bg-black/20 border border-white/10 rounded-xl relative z-10">
                         <summary class="list-none cursor-pointer px-3 py-2.5 flex justify-between items-center text-[11px] font-black"><span>查看旗下店家業績與分潤</span><span>⌄</span></summary>
@@ -942,23 +963,48 @@ select,input,textarea,button{max-width:100%}
         function acceptTos(){localStorage.setItem('seefood_tos_agreed','true');localStorage.setItem('seefood_tos_version','3.0');document.getElementById('tos-modal').classList.add('hidden');fetchLiveStores();if(userStats.lineUid&&userStats.lineUid!=='LINE_GUEST')postActionV25('recordConsent',{uid:userStats.lineUid,documentType:'TOS',version:'3.0',source:'WEB'}).catch(()=>{});}
 
         const defaultHeroBanners30 = [
-            {title:'獵場情報地圖', subtitle:'探索全台惜食獵場與即時商家情報。', cta:'打開戰情室', type:'頁面', link:'radar.html'},
-            {title:'萌新獵人指南', subtitle:'第一次狩獵也不怕，快速了解購買、取餐與核銷。', cta:'快速上手', type:'頁面', link:'guide.html'},
-            {title:'點亮獵場・賺取分潤', subtitle:'邀請更多好店加入 SEEFOOD，建立你的點燈版圖。', cta:'查看分潤成就', type:'內部', link:'#achievement'}
+            {title:'獵場情報地圖', subtitle:'探索全台惜食獵場與即時商家情報。', cta:'開始探索', kicker:'SEEFOOD 情報', type:'頁面', link:'radar.html'},
+            {title:'萌新獵人指南', subtitle:'第一次狩獵也不怕，購買、取餐、核銷一次看懂。', cta:'快速上手', kicker:'NEW HUNTER', type:'頁面', link:'guide.html'},
+            {title:'點亮獵場・賺取永久分潤', subtitle:'邀請好店加入 SEEFOOD；成功綁定後，從服務費與方案收益累積你的夥伴分潤。', cta:'開始點亮獵場', kicker:'PARTNER NETWORK', type:'內部', link:'#partner-hub'}
         ];
+        function getHeroBannerList30(){
+            // Always keep three product-entry slots. Existing sheet banners may replace artwork/copy by order,
+            // but a missing slot falls back to the built-in background so the carousel never collapses to one card.
+            return defaultHeroBanners30.map((base,i)=>{
+                const cloud=(Array.isArray(cloudBanners)&&cloudBanners[i])?cloudBanners[i]:{};
+                return {...base,...cloud,link:cloud.link||base.link,type:cloud.type||base.type,cta:cloud.cta||base.cta,subtitle:cloud.subtitle||base.subtitle,kicker:cloud.kicker||base.kicker,title:cloud.title||base.title};
+            });
+        }
         function renderHeroBanner30(i=0){
-            const list=cloudBanners.length?cloudBanners:defaultHeroBanners30; if(!list.length)return; bannerIndex=((i%list.length)+list.length)%list.length; const b=list[bannerIndex];
+            const list=getHeroBannerList30(); if(!list.length)return; bannerIndex=((i%list.length)+list.length)%list.length; const b=list[bannerIndex];
             const wrap=document.getElementById('image-banner-container'), fallback=document.getElementById('text-banner-container');
-            const img=document.getElementById('image-banner-img'); document.getElementById('image-banner-title').textContent=b.title||'SEEFOOD 美食獵人'; document.getElementById('image-banner-subtitle').textContent=b.subtitle||'探索惜食獵場，讓美味不被浪費。'; document.getElementById('image-banner-cta').textContent=b.cta||'開始探索'; document.getElementById('image-banner-kicker').textContent=b.kicker||'SEEFOOD 美食獵人';
-            if(b.imgUrl){img.src=b.imgUrl;img.alt=b.title||'SEEFOOD Banner';wrap.classList.remove('sf-hero-noart');}else{img.removeAttribute('src');img.alt='';wrap.classList.add('sf-hero-noart');}
-            wrap.classList.remove('hidden'); fallback.classList.add('hidden');
-            const dots=document.getElementById('hero-dots'); if(dots)dots.innerHTML=list.map((_,n)=>`<span class="${n===bannerIndex?'active':''}"></span>`).join(''); const activeTab=(window.location.hash||'#home').replace('#','')||'home'; if(activeTab!=='home'){wrap.classList.add('hidden');fallback.classList.add('hidden');}
+            const img=document.getElementById('image-banner-img');
+            document.getElementById('image-banner-title').textContent=b.title||'SEEFOOD 美食獵人';
+            document.getElementById('image-banner-subtitle').textContent=b.subtitle||'探索惜食獵場，讓美味不被浪費。';
+            document.getElementById('image-banner-cta').textContent=b.cta||'開始探索';
+            document.getElementById('image-banner-kicker').textContent=b.kicker||'SEEFOOD 美食獵人';
+            const ft=document.getElementById('text-banner-text'), fs=document.getElementById('text-banner-subtitle'), fc=document.getElementById('text-banner-cta'), fk=document.getElementById('text-banner-kicker');
+            if(ft)ft.textContent=b.title||'SEEFOOD 美食獵人'; if(fs)fs.textContent=b.subtitle||''; if(fc)fc.textContent=b.cta||'開始探索'; if(fk)fk.textContent=b.kicker||'SEEFOOD 美食獵人';
+            if(b.imgUrl){img.src=b.imgUrl;img.alt=b.title||'SEEFOOD Banner';wrap.classList.remove('sf-hero-noart');wrap.classList.remove('hidden');fallback.classList.add('hidden');}
+            else{img.removeAttribute('src');img.alt='';wrap.classList.add('sf-hero-noart');wrap.classList.add('hidden');fallback.classList.remove('hidden');}
+            const dotHtml=list.map((_,n)=>`<span class="${n===bannerIndex?'active':''}"></span>`).join('');
+            const dots=document.getElementById('hero-dots'), fdots=document.getElementById('hero-dots-fallback'); if(dots)dots.innerHTML=dotHtml;if(fdots)fdots.innerHTML=dotHtml;
+            const activeTab=(window.location.hash||'#home').replace('#','')||'home'; if(activeTab!=='home'){wrap.classList.add('hidden');fallback.classList.add('hidden');}
         }
         function startBannerCarousel() {
-            if(window.sfHeroTimer)clearInterval(window.sfHeroTimer); renderHeroBanner30(0); const list=cloudBanners.length?cloudBanners:defaultHeroBanners30; if(list.length>1)window.sfHeroTimer=setInterval(()=>renderHeroBanner30(bannerIndex+1),6500);
+            if(window.sfHeroTimer)clearInterval(window.sfHeroTimer); renderHeroBanner30(0); const list=getHeroBannerList30(); if(list.length>1)window.sfHeroTimer=setInterval(()=>renderHeroBanner30(bannerIndex+1),6500);
         }
+        function focusPartnerHub30(){
+            switchTab('achievement');
+            setTimeout(()=>{const hub=document.getElementById('partner-hub-zone');if(hub){hub.scrollIntoView({behavior:'smooth',block:'start'});hub.classList.add('sf-partner-focus');setTimeout(()=>hub.classList.remove('sf-partner-focus'),1600);}},120);
+        }
+        function showPartnerPayoutInfo30(){
+            window.seefoodAlert ? seefoodAlert('分潤收款帳戶將獨立於商家收款帳戶管理。RC2.3 先完成入口與流程提示；真正保存銀行資料與撥款狀態需要下一步新增 Partner Payout Ledger / GAS 欄位，避免把一般獵人的銀行資料錯綁到商家合約。') : alert('分潤收款帳戶功能將在 Partner Payout Ledger 建立後正式開放。');
+        }
+
         function handleBannerClick() {
-            const list=cloudBanners.length?cloudBanners:defaultHeroBanners30, b=list[bannerIndex]||list[0]; if(!b)return; const link=b.link||'';
+            const list=getHeroBannerList30(), b=list[bannerIndex]||list[0]; if(!b)return; const link=b.link||'';
+            if(link==='#partner-hub'){focusPartnerHub30();return;}
             if(link==='#achievement'||link==='achievement'){switchTab('achievement');return;}
             if(link.startsWith('#')){window.location.hash=link;checkHashAndSwitch();return;}
             if(/^(radar|guide)\.html(?:$|\?)/.test(link)){window.location.href=link;return;}
@@ -1532,21 +1578,21 @@ select,input,textarea,button{max-width:100%}
         }
         function sfSetNavDot(id,on){const el=document.getElementById(id);if(el)el.classList.toggle('hidden',!on);}
         function sfRefreshAttentionDots(){
-            const active=sfActiveTicketIds(); const sig=active.join('|'); const seen=localStorage.getItem('sf_seen_ticket_sig')||'';
-            sfSetNavDot('badge',active.length>0 && sig!==seen);
+            // Red dot = unresolved action, not unread content. Merely opening a tab never clears it.
+            const active=sfActiveTicketIds();
+            sfSetNavDot('badge',active.length>0); // stays until every active ticket is redeemed/closed
+            const ticketCount=document.getElementById('ticket-task-count'); if(ticketCount){ticketCount.textContent=String(active.length);ticketCount.classList.toggle('hidden',active.length===0);}
             const contract=(localStorage.getItem('seefood_merchant_contract_status')||'');
             const contractPending=!!localStorage.getItem('seefood_merchant_shop_id') && contract!=='已完成';
-            const moSig=localStorage.getItem('sf_merchant_active_sig')||''; const moSeen=localStorage.getItem('sf_seen_merchant_sig')||'';
-            sfSetNavDot('badge-merchant',contractPending || (!!moSig && moSig!==moSeen));
-            const commission=Number(localStorage.getItem('sf_partner_commission')||0); const seenCommission=Number(localStorage.getItem('sf_seen_partner_commission')||0);
-            sfSetNavDot('badge-achievement',commission>0 && commission!==seenCommission);
+            const merchantActive=(localStorage.getItem('sf_merchant_active_sig')||'').split('|').filter(Boolean);
+            sfSetNavDot('badge-merchant',contractPending || merchantActive.length>0); // contract or pending pickup/order task
+            // Achievement/partner dot is reserved for an actionable partner task. For now, show it when partner income exists
+            // and the payout onboarding has not been completed. A future Partner Ledger will replace this local flag.
+            const commission=Number(localStorage.getItem('sf_partner_commission')||0);
+            const payoutReady=localStorage.getItem('sf_partner_payout_ready')==='1';
+            sfSetNavDot('badge-achievement',commission>0 && !payoutReady);
         }
-        function sfMarkTabSeen(tabId){
-            if(tabId==='orders'){localStorage.setItem('sf_seen_ticket_sig',sfActiveTicketIds().join('|'));}
-            if(tabId==='merchant'){localStorage.setItem('sf_seen_merchant_sig',localStorage.getItem('sf_merchant_active_sig')||'');}
-            if(tabId==='achievement'){localStorage.setItem('sf_seen_partner_commission',localStorage.getItem('sf_partner_commission')||'0');}
-            sfRefreshAttentionDots();
-        }
+        function sfMarkTabSeen(tabId){ sfRefreshAttentionDots(); }
         function setupHeroSwipe30(){
             const targets=[document.getElementById('image-banner-container'),document.getElementById('text-banner-container')].filter(Boolean);
             targets.forEach(el=>{if(el.dataset.swipeReady==='1')return;el.dataset.swipeReady='1';let sx=0,sy=0;el.addEventListener('touchstart',e=>{if(!e.touches||!e.touches[0])return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});el.addEventListener('touchend',e=>{const t=e.changedTouches&&e.changedTouches[0];if(!t)return;const dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2){renderHeroBanner30(bannerIndex+(dx<0?1:-1));if(window.sfHeroTimer){clearInterval(window.sfHeroTimer);window.sfHeroTimer=setInterval(()=>renderHeroBanner30(bannerIndex+1),6500);}}},{passive:true});});
@@ -1560,8 +1606,7 @@ select,input,textarea,button{max-width:100%}
             const headerZone=document.getElementById('home-header-zone'), discovery=document.getElementById('home-discovery-filter'), imageHero=document.getElementById('image-banner-container'), textHero=document.getElementById('text-banner-container');
             if(headerZone)headerZone.classList.toggle('hidden',tabId==='merchant');
             const showDiscovery=tabId==='home'; if(discovery)discovery.classList.toggle('hidden',!showDiscovery);
-            if(imageHero){const hasImage=!!(cloudBanners.length?cloudBanners[bannerIndex]?.imgUrl:false); imageHero.classList.toggle('hidden',!showDiscovery || !hasImage);}
-            if(textHero)textHero.classList.toggle('hidden',!showDiscovery || (showDiscovery && !!(cloudBanners.length?cloudBanners[bannerIndex]?.imgUrl:false)));
+            if(imageHero||textHero){if(!showDiscovery){imageHero?.classList.add('hidden');textHero?.classList.add('hidden');}else{renderHeroBanner30(bannerIndex);}}
             if(tabId==='achievement')loadPartnerHubV25(); sfMarkTabSeen(tabId); refreshIcons26(); if(window.location.hash!==`#${tabId}`)history.pushState(null,null,`#${tabId}`);
         }
         function checkHashAndSwitch() { const hash = window.location.hash.replace('#', ''); switchTab(['home', 'orders', 'achievement', 'merchant'].includes(hash) ? hash : 'home'); }
