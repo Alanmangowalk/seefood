@@ -331,7 +331,7 @@ select,input,textarea,button{max-width:100%}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.1</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.2.2</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -543,7 +543,7 @@ select,input,textarea,button{max-width:100%}
                             <select id="merchant-shop-select" onchange="switchMerchantShop(this.value)" class="flex-1 bg-slate-900 border border-slate-600 text-white rounded-xl px-3 py-2.5 text-xs font-black focus:outline-none focus:border-seefoodYellow"></select>
                             <button type="button" onclick="startAddMerchantShop()" class="bg-seefoodYellow text-slate-900 font-black px-3 py-2.5 rounded-xl text-xs active:scale-95 transition whitespace-nowrap">＋ 新增店鋪</button>
                         </div>
-                        <p class="text-[9px] text-slate-400 mt-2">同一個 LINE 帳號可管理多間店鋪；每間店的商品、VIP、合約與帳務獨立。</p>
+                        <p class="text-[9px] text-slate-400 mt-2">同一個 LINE 帳號可管理多間店鋪；每間店的商品、Plus、合約與帳務獨立。</p>
                     </div>
 
                     <!-- 🚀 MCN 自媒體合夥人招商艙 -->
@@ -1069,7 +1069,24 @@ select,input,textarea,button{max-width:100%}
             (shop.liveSlots||[]).forEach(slot=>{localStorage.setItem(slotDataKey(slot.index,shop.shopId),JSON.stringify({type:slot.type,name:slot.name,desc:slot.desc,orig:slot.orig,rate:slot.rate,rem:slot.rem}));if(slot.type==='固定菜單'&&slot.name&&slot.name!=='【未啟用】')localStorage.setItem(slotLockKey(slot.index,shop.shopId),slot.name);});
             document.getElementById('dash-time').value=safeFormatTime(shop.storeTime)||'今日打烊前'; const b=document.getElementById('dashboard-status-badge');
             if(shop.storeStatus==='ON'){b.innerText='營業中';b.className='text-xs bg-emerald-600 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px] animate-pulse';}else{b.innerText='休息中';b.className='text-xs bg-slate-500 text-white px-3.5 py-1.5 rounded-full font-black tracking-wider shadow-sm text-center w-[72px]';}
-            const merchantActiveSig=(shop.activeOrders||[]).map(o=>String(o.orderId||'')).filter(Boolean).sort().join('|');localStorage.setItem('sf_merchant_active_sig',merchantActiveSig);sfRefreshAttentionDots();
+            const merchantActiveSig=(shop.activeOrders||[]).map(o=>String(o.orderId||'')).filter(Boolean).sort().join('|');
+            localStorage.setItem('sf_merchant_active_sig',merchantActiveSig);
+            localStorage.setItem('sf_merchant_knock_today',String(Number(shop.knockToday)||0));
+            localStorage.setItem('sf_merchant_unread',String(Number(shop.merchantUnread)||0));
+            const kc0=document.getElementById('merchant-knock-count'),wc0=document.getElementById('merchant-watch-count'),sync0=document.getElementById('merchant-live-sync');
+            if(kc0)kc0.textContent=Number(shop.knockToday)||0;
+            if(wc0)wc0.textContent=Number(shop.watchers)||0;
+            if(sync0)sync0.textContent='剛剛更新';
+            const nz0=document.getElementById('merchant-knock-notice'),nt0=document.getElementById('merchant-knock-notice-text');
+            if(nz0){
+                const hasDemand0=Number(shop.knockToday)>0;
+                nz0.classList.toggle('hidden',!hasDemand0);
+                if(nt0){
+                    const latest0=(shop.merchantNotices||[])[0];
+                    nt0.textContent=latest0?.body||`今天已有 ${Number(shop.knockToday)||0} 位獵人在敲碗${Number(shop.watchers)>0?`，其中 ${Number(shop.watchers)} 位等你上架通知`:''}`;
+                }
+            }
+            sfRefreshAttentionDots();
             const oz=document.getElementById('merchant-active-orders-zone'),ol=document.getElementById('merchant-active-orders-list'); if(oz&&ol){oz.classList.remove('hidden');ol.innerHTML=(shop.activeOrders||[]).length?(shop.activeOrders||[]).map(o=>`<div class="bg-slate-900 border border-emerald-500/50 rounded-xl p-3 flex justify-between items-center"><div><p class="text-emerald-400 font-mono font-black text-sm">${escapeHTML(o.orderId)}</p><p class="text-white text-sm mt-1 font-black">${escapeHTML(o.item)}</p></div><div class="text-right"><p class="text-gray-400 text-[10px]">自取截止：${escapeHTML(formatPickupTime30(o.time))}</p><p class="text-seefoodYellow font-black text-sm">$${o.price}</p></div></div>`).join(''):'<div class="sf-mini-empty"><i data-lucide="circle-check-big"></i><div><b>目前沒有待取餐任務</b><span>新的已付款訂單會立即出現在這裡。</span></div></div>';}
             renderDashboardSlots(); checkMerchantUrlParameters();
         }
@@ -1122,7 +1139,7 @@ select,input,textarea,button{max-width:100%}
                 const json=await postActionV25('syncCore',{uid:userStats.lineUid,forceRefresh:force?'1':'0'}); if(json.status!=='success')return; sessionStorage.setItem('sf27_core_'+userStats.lineUid,JSON.stringify(json));
                 merchantAccountCache=json.merchantAccount||null; renderCore26(json);
                 const shops=Array.isArray(json.myShops)?json.myShops:[]; const bar=document.getElementById('merchant-account-bar'),sel=document.getElementById('merchant-shop-select-top');
-                if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · VIP':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);const dc=sessionStorage.getItem('sf27_dash_'+active)||sessionStorage.getItem('sf26_dash_'+active);if(dc){try{renderShopDashboardV25(JSON.parse(dc));}catch(e){}}loadShopDashboardV25(active,false);}
+                if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · Plus':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);const dc=sessionStorage.getItem('sf27_dash_'+active)||sessionStorage.getItem('sf26_dash_'+active);if(dc){try{renderShopDashboardV25(JSON.parse(dc));}catch(e){}}loadShopDashboardV25(active,false);}
                 if(json.orders&&json.orders.length){localStorage.setItem('seefood_orders_list',JSON.stringify(json.orders));recalculateUserStats(json.orders);}else{localStorage.setItem('seefood_orders_list','[]');loadUserStats();renderBadgesWall();}
                 renderSavedTicketsWall();
                 refreshMyHunts210();
@@ -1137,7 +1154,7 @@ select,input,textarea,button{max-width:100%}
             if(json.hunterSignalCount!==undefined||json.hunterNoticeCount!==undefined)localStorage.setItem('sf_hunter_notification_count',String(Number(json.hunterSignalCount??json.hunterNoticeCount)||0));
             if(json.activeTicketCount!==undefined){localStorage.setItem('sf_active_ticket_count',String(Number(json.activeTicketCount)||0));localStorage.setItem('sf_active_ticket_count_ts',String(Date.now()));}
             const shops=Array.isArray(json.myShops)?json.myShops:[]; const bar=document.getElementById('merchant-account-bar'),sel=document.getElementById('merchant-shop-select-top');
-            if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · VIP':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);}
+            if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · Plus':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);}
             refreshIcons26();
         }
 
@@ -1227,7 +1244,7 @@ select,input,textarea,button{max-width:100%}
 
         async function fetchLiveStores(force=false) {
             if (!localStorage.getItem('seefood_tos_agreed')) return;
-            if(sfLiveStoresBusy&&!force)return;
+            if(sfLiveStoresBusy)return;
             sfLiveStoresBusy=true;
             try {
                 const resJson = await sfFetchJsonWithTimeout(gasUrl + "?t=" + new Date().getTime(), 12000); const rawData = resJson.stores || []; const baseSavedKg = resJson.totalSavedKg || 1285.5;
@@ -1516,7 +1533,7 @@ select,input,textarea,button{max-width:100%}
             const top=document.getElementById('merchant-shop-select-top');if(top)top.value=shopId;
             const cached=sessionStorage.getItem('sf27_dash_'+shopId)||sessionStorage.getItem('sf26_dash_'+shopId); if(cached){try{renderShopDashboardV25(JSON.parse(cached));}catch(e){}}
             const title=document.getElementById('dashboard-shop-title');if(title&&!cached)title.innerText='載入店鋪資料…';
-            loadShopDashboardV25(shopId,!cached); // 2.7：切店不阻塞 UI，背景刷新
+            loadShopDashboardV25(shopId,!cached).finally(()=>setTimeout(()=>refreshMerchantLive210(),80)); // 切店後再補一次即時需求狀態
         }
 
         function toggleResponsibleMode(){const mode=document.querySelector('input[name="responsible-mode"]:checked')?.value||'SAME';const z=document.getElementById('owner-fields-zone');if(z)z.classList.toggle('hidden',mode==='SAME'&&merchantAccountCache?.kycStatus==='VERIFIED_BASIC');}
@@ -1747,7 +1764,29 @@ select,input,textarea,button{max-width:100%}
         }
         function checkHashAndSwitch() { const hash = window.location.hash.replace('#', ''); switchTab(['home', 'orders', 'achievement', 'merchant'].includes(hash) ? hash : 'home'); }
         
-        window.addEventListener('DOMContentLoaded', async () => { const authState=await initLiffAuth(); checkHashAndSwitch(); checkMerchantUrlParameters(); checkTos(); if(authState!=='redirect' && localStorage.getItem('seefood_tos_agreed')) fetchLiveStores(); setupMobileFormFocus30(); setupHeroSwipe30(); sfRefreshAttentionDots(); });
+        window.addEventListener('DOMContentLoaded', async () => {
+            checkHashAndSwitch();
+            checkMerchantUrlParameters();
+            checkTos();
+
+            // 首頁商品是公開資料，不應被 LIFF / LINE 授權速度卡住。
+            // 已同意條款時，先立即抓商品；登入與個人資料同步並行。
+            const feedPromise = localStorage.getItem('seefood_tos_agreed')
+                ? fetchLiveStores()
+                : Promise.resolve();
+
+            const authState = await initLiffAuth();
+
+            // 若第一次公共商品請求尚未完成，busy guard 會避免重複打 API。
+            if(authState!=='redirect' && localStorage.getItem('seefood_tos_agreed')) {
+                fetchLiveStores();
+            }
+
+            setupMobileFormFocus30();
+            setupHeroSwipe30();
+            sfRefreshAttentionDots();
+            try { await feedPromise; } catch(_e) {}
+        });
         window.addEventListener('hashchange', checkHashAndSwitch);
 
         function openContractModal(isReadOnly = false) {
