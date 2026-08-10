@@ -75,18 +75,16 @@ body{align-items:flex-start!important}
 .sf-merchant-os{background:var(--sf-navy)!important;border:0!important;box-shadow:none!important}.sf-support-handle{background:var(--sf-navy)!important;box-shadow:0 8px 22px rgba(16,39,63,.16)!important}
 
 #bottom-nav{background:var(--sf-navy)!important}
-.sf-nav-v2{min-height:68px}
+.sf-nav-v2{min-height:62px}
 .sf-nav-v2 button{min-width:0;gap:0}
-.sf-nav-v2 .sf-nav-main{font-size:11px;line-height:1;font-weight:950;letter-spacing:.02em;margin-top:2px}
-.sf-nav-v2 .sf-nav-sub{font-size:7px;line-height:1.05;font-weight:700;opacity:.58;margin-top:4px;white-space:nowrap}
-.sf-nav-v2 button.text-seefoodYellow .sf-nav-sub{opacity:.78}
+.sf-nav-v2 .sf-nav-main{font-size:11px;line-height:1;font-weight:950;letter-spacing:.02em;margin-top:4px}
 .sf-nav-v2 svg{margin-bottom:2px!important}
 .sf-nav-dot{width:8px;height:8px;border-radius:999px;background:#FF5A5F;position:absolute;top:2px;right:calc(50% - 18px);box-shadow:0 0 0 2px #0B2239}
 .sf-home-signal{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#FFF8E5;border:1px solid #F2D27B;border-radius:16px;padding:12px 14px;margin:2px 0 10px}
 .sf-home-signal.hidden{display:none}
 .sf-home-signal>div{min-width:0}.sf-home-signal b{display:block;color:#0B2239;font-size:12px}.sf-home-signal span{display:block;color:#7B6A45;font-size:10px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sf-home-signal button{border:0;background:#0B2239;color:#fff;border-radius:999px;padding:8px 10px;font-size:9px;font-weight:900;white-space:nowrap}
-@media(min-width:900px){.sf-nav-v2 .sf-nav-main{font-size:12px}.sf-nav-v2 .sf-nav-sub{font-size:8px}}
+@media(min-width:900px){.sf-nav-v2 .sf-nav-main{font-size:12px}}
 
 @media(min-width:900px){
  body{padding:24px!important;justify-content:center!important;background:#E9EDF1!important}.sf-app-shell{max-width:1180px!important;width:min(1180px,calc(100vw - 48px))!important;height:calc(100vh - 48px)!important;border-radius:24px!important;box-shadow:0 18px 60px rgba(18,35,52,.14)!important;overflow:hidden!important}.sf-main-scroll{padding:24px 28px 30px!important}#page-home,#page-achievement,#page-orders{max-width:1100px;margin:0 auto}#store-list-container{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px!important}.sf-sortbar{max-width:560px}.sf-merchant-bar,#merchant-dashboard-zone{max-width:1040px!important}#merchant-dashboard-zone{padding:28px!important}#merchant-registration-zone{max-width:860px!important;margin:0 auto}#contract-modal>div{max-width:920px!important;width:min(920px,calc(100vw - 64px))!important;max-height:88vh!important}.sf-support-handle{display:none!important}#page-achievement #badges-container{grid-template-columns:repeat(3,minmax(0,1fr))!important}
@@ -333,7 +331,7 @@ select,input,textarea,button{max-width:100%}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.7</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.1</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -698,10 +696,10 @@ select,input,textarea,button{max-width:100%}
 
         <div id="bottom-nav" class="flex-none bg-seefoodDarkBlue text-white border-t border-blue-950 z-40 relative">
             <div class="sf-nav-v2 grid grid-cols-4 text-center py-2 text-[10px] font-bold">
-                <button onclick="switchTab('home')" id="tab-home" class="flex flex-col items-center justify-center text-seefoodYellow cursor-pointer transition relative"><i data-lucide="radar" class="w-5 h-5"></i><span class="sf-nav-main">尋飽</span><span class="sf-nav-sub">獵場・情報</span><div id="badge-home" class="sf-nav-dot hidden"></div></button>
-                <button onclick="switchTab('orders')" id="tab-orders" class="flex flex-col items-center justify-center text-blue-200 relative cursor-pointer transition"><i data-lucide="ticket-check" class="w-5 h-5"></i><span class="sf-nav-main">票券</span><span class="sf-nav-sub">取餐・追蹤</span><div id="badge" class="sf-nav-dot hidden"></div></button>
-                <button onclick="switchTab('achievement')" id="tab-achievement" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition relative"><i data-lucide="award" class="w-5 h-5"></i><span class="sf-nav-main">成就</span><span class="sf-nav-sub">點燈・分潤</span><div id="badge-achievement" class="sf-nav-dot hidden"></div></button>
-                <button onclick="switchTab('merchant')" id="tab-merchant" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition relative"><i data-lucide="store" class="w-5 h-5"></i><span id="tab-merchant-text" class="sf-nav-main">商家</span><span class="sf-nav-sub">上架・營運</span><div id="badge-merchant" class="sf-nav-dot hidden"></div></button>
+                <button onclick="switchTab('home')" id="tab-home" class="flex flex-col items-center justify-center text-seefoodYellow cursor-pointer transition relative"><i data-lucide="radar" class="w-5 h-5"></i><span class="sf-nav-main">尋飽</span><div id="badge-home" class="sf-nav-dot hidden"></div></button>
+                <button onclick="switchTab('orders')" id="tab-orders" class="flex flex-col items-center justify-center text-blue-200 relative cursor-pointer transition"><i data-lucide="ticket-check" class="w-5 h-5"></i><span class="sf-nav-main">票券</span><div id="badge" class="sf-nav-dot hidden"></div></button>
+                <button onclick="switchTab('achievement')" id="tab-achievement" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition relative"><i data-lucide="award" class="w-5 h-5"></i><span class="sf-nav-main">成就</span><div id="badge-achievement" class="sf-nav-dot hidden"></div></button>
+                <button onclick="switchTab('merchant')" id="tab-merchant" class="flex flex-col items-center justify-center text-blue-200 cursor-pointer transition relative"><i data-lucide="store" class="w-5 h-5"></i><span id="tab-merchant-text" class="sf-nav-main">商家</span><div id="badge-merchant" class="sf-nav-dot hidden"></div></button>
             </div>
         </div>
 
@@ -1217,10 +1215,22 @@ select,input,textarea,button{max-width:100%}
             return out;
         }
 
-        async function fetchLiveStores() {
+        let sfLiveStoresBusy=false;
+        async function sfFetchJsonWithTimeout(url, timeoutMs=12000){
+            const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),timeoutMs);
+            try{
+                const r=await fetch(url,{signal:ctl.signal,cache:'no-store'});
+                if(!r.ok)throw new Error('HTTP '+r.status);
+                return await r.json();
+            } finally { clearTimeout(timer); }
+        }
+
+        async function fetchLiveStores(force=false) {
             if (!localStorage.getItem('seefood_tos_agreed')) return;
+            if(sfLiveStoresBusy&&!force)return;
+            sfLiveStoresBusy=true;
             try {
-                const response = await fetch(gasUrl + "?t=" + new Date().getTime()); const resJson = await response.json(); const rawData = resJson.stores || []; const baseSavedKg = resJson.totalSavedKg || 1285.5;
+                const resJson = await sfFetchJsonWithTimeout(gasUrl + "?t=" + new Date().getTime(), 12000); const rawData = resJson.stores || []; const baseSavedKg = resJson.totalSavedKg || 1285.5;
                 let totalReg = resJson.registeredStores || 0; textBannerTemplates[0].text = `獵人雷達點燈：全台已進駐 ${totalReg}/100 店，滿百即刻開車解鎖！`; const bText = document.getElementById('text-banner-text');
                 if(bText && bannerIndex === 0) bText.innerText = textBannerTemplates[0].text;
                 cloudBanners = resJson.banners || []; startBannerCarousel(); storesData = [];
@@ -1245,7 +1255,11 @@ select,input,textarea,button{max-width:100%}
                         }
                     }, 300);
                 }
-            } catch (error) { const container = document.getElementById('store-list-container'); if(container) container.innerHTML = `<div class="text-center py-16 px-4 bg-red-50 rounded-2xl border border-red-200 shadow-sm"><span class="text-4xl block mb-3">⚠️</span><h4 class="font-black text-red-600 text-sm">資料庫連線被拒絕</h4><p class="text-xs text-red-500 mt-2 font-bold leading-relaxed">請檢查網路或稍後重試</p></div>`; }
+            } catch (error) {
+                const container = document.getElementById('store-list-container');
+                if(container) container.innerHTML = `<div class="sf-empty-state sf-empty-feed"><span class="sf-empty-icon"><i data-lucide="wifi-off"></i></span><p class="sf-empty-kicker">RADAR RETRY</p><h3>獵場情報還在路上</h3><p>這次連線比平常久，沒有載入任何舊庫存。再掃描一次即可。</p><div class="sf-empty-actions"><button type="button" onclick="fetchLiveStores(true)" class="sf-empty-primary">重新連線</button><button type="button" onclick="location.href='radar.html'" class="sf-empty-secondary">先看戰情室</button></div></div>`;
+                refreshIcons26();
+            } finally { sfLiveStoresBusy=false; }
         }
 
         function updateGlobalCo2Display(baseSavedKg) {
