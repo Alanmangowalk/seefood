@@ -264,8 +264,45 @@ select,input,textarea,button{max-width:100%}
 @media(max-width:480px){#tos-modal .sf-legal-head{padding-top:max(18px,env(safe-area-inset-top))}.sf-finance-sheet{padding-bottom:calc(28px + env(safe-area-inset-bottom))}}
 </style>
 
+
+<style id="sf-diag2-style">
+#sf-diag2{
+ position:fixed;left:8px;right:8px;bottom:82px;z-index:999999;
+ background:rgba(7,25,43,.96);color:#fff;border:1px solid rgba(255,255,255,.14);
+ border-radius:14px;padding:10px 12px;box-shadow:0 14px 35px rgba(0,0,0,.25);
+ font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;line-height:1.45;
+ max-height:38vh;overflow:auto;word-break:break-word;white-space:normal
+}
+#sf-diag2 b{color:#FFC52E}
+#sf-diag2 .err{color:#FF9A9E;font-weight:800}
+#sf-diag2 .ok{color:#65E0B2}
+#sf-diag2 .time{opacity:.5;margin-right:5px}
+</style>
+
+<script id="sf-diag2-script">
+window.__sfDiag2Lines=[];
+window.sfDiag2=function(label,detail,cls){
+  try{
+    const t=new Date().toLocaleTimeString('zh-TW',{hour12:false});
+    const d=detail==null?'':String(detail);
+    __sfDiag2Lines.push({t,label,d,cls:cls||''});
+    if(__sfDiag2Lines.length>14)__sfDiag2Lines.shift();
+    const box=document.getElementById('sf-diag2-lines');
+    if(box)box.innerHTML=__sfDiag2Lines.map(x=>'<div class="'+x.cls+'"><span class="time">'+x.t+'</span>'+x.label+(x.d?' · '+x.d:'')+'</div>').join('');
+    console.log('[SF-DIAG2]',label,d);
+  }catch(_e){}
+};
+window.addEventListener('error',e=>{
+  sfDiag2('JS_ERROR',(e.message||'')+' | '+(e.filename||'')+':'+(e.lineno||'?')+':'+(e.colno||'?'),'err');
+});
+window.addEventListener('unhandledrejection',e=>{
+  let r=e.reason; sfDiag2('PROMISE_ERROR',String(r&&r.stack||r&&r.message||r||''),'err');
+});
+</script>
 </head>
 <body class="bg-gray-900 min-h-screen flex justify-center items-top">
+<div id="sf-diag2"><b>SEEFOOD BOOT DIAG 2</b><div id="sf-diag2-lines">WAITING…</div></div>
+
 
     <div class="sf-app-shell w-full max-w-[430px] bg-gray-50 h-[100dvh] shadow-2xl flex flex-col overflow-hidden relative">
         
@@ -331,7 +368,7 @@ select,input,textarea,button{max-width:100%}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.5</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.DIAG2</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -1320,11 +1357,14 @@ select,input,textarea,button{max-width:100%}
         }
 
         async function fetchLiveStores(force=false) {
+            sfDiag2('FETCH_ENTER','force='+force);
             if (!localStorage.getItem('seefood_tos_agreed')) return;
             if(sfLiveStoresBusy)return;
             sfLiveStoresBusy=true;
+            sfDiag2('FETCH_START');
             try {
-                const resJson = await sfFetchJsonWithTimeout(gasUrl + "?t=" + new Date().getTime(), 12000); const rawData = resJson.stores || []; const baseSavedKg = resJson.totalSavedKg || 1285.5;
+                const resJson = await sfFetchJsonWithTimeout(gasUrl + "?t=" + new Date().getTime(), 12000);
+                sfDiag2('FETCH_JSON','stores='+(Array.isArray(resJson.stores)?resJson.stores.length:'?'),'ok'); const rawData = resJson.stores || []; const baseSavedKg = resJson.totalSavedKg || 1285.5;
                 let totalReg = resJson.registeredStores || 0; textBannerTemplates[0].text = `獵人雷達點燈：全台已進駐 ${totalReg}/100 店，滿百即刻開車解鎖！`; const bText = document.getElementById('text-banner-text');
                 if(bText && bannerIndex === 0) bText.innerText = textBannerTemplates[0].text;
                 cloudBanners = resJson.banners || [];
@@ -1337,6 +1377,7 @@ select,input,textarea,button{max-width:100%}
                 });
 
                 // 商品資料已經完成：先確保主內容可畫，再處理 Banner / CO2 / 票券等旁支。
+                sfDiag2('STORES_READY','count='+storesData.length,'ok');
                 sfHomeFeedReady=true;
                 try{initFilterMenus();}catch(e){console.warn('filter menu init skipped',e)}
                 sfScheduleHomeFeedCommit30();
@@ -1390,6 +1431,7 @@ select,input,textarea,button{max-width:100%}
         function handleRegionChange() { const districtSelect = document.getElementById('select-district'); const selectedCity = document.getElementById('select-region').value; districtSelect.innerHTML = ''; if (selectedCity === "全部地區") { districtSelect.innerHTML = `<option value="全部行政區">全部行政區</option>`; } else { districtSelect.innerHTML = `<option value="全部行政區">全部行政區</option>`; (locationHierarchy[selectedCity] || ["全部行政區"]).forEach(d => { if(d !== "全部行政區") districtSelect.innerHTML += `<option value="${d}">${d}</option>`; }); } filterStores(); }
 
         function filterStores() {
+            sfDiag2('FILTER_ENTER','stores='+(Array.isArray(storesData)?storesData.length:'?'));
             const container = document.getElementById('store-list-container'); const selectedCity = document.getElementById('select-region').value; const selectedDistrict = document.getElementById('select-district').value;
             if(!container) return; container.innerHTML = '';
             let filtered = storesData.filter(s => { return (selectedCity === "全部地區" || s.city === selectedCity) && (selectedDistrict === "全部行政區" || s.district === selectedDistrict) && s.remain > 0; });
@@ -1863,19 +1905,41 @@ select,input,textarea,button{max-width:100%}
         function checkHashAndSwitch() { const hash = window.location.hash.replace('#', ''); switchTab(['home', 'orders', 'achievement', 'merchant'].includes(hash) ? hash : 'home'); }
         
         window.addEventListener('DOMContentLoaded', () => {
-            checkHashAndSwitch();
-            checkMerchantUrlParameters();
-            setupMobileFormFocus30();
-            setupHeroSwipe30();
-            sfRefreshAttentionDots();
-            armHomeFeedFailsafe30();
+            sfDiag2('DOM_READY','hash='+(location.hash||'#home')+' tos='+(localStorage.getItem('seefood_tos_agreed')||'none'),'ok');
 
-            const accepted=checkTos();
+            try{sfDiag2('1 checkHash START');checkHashAndSwitch();sfDiag2('1 checkHash DONE','','ok');}
+            catch(e){sfDiag2('1 checkHash FAIL',String(e&&e.stack||e),'err');return;}
+
+            try{sfDiag2('2 merchantParams START');checkMerchantUrlParameters();sfDiag2('2 merchantParams DONE','','ok');}
+            catch(e){sfDiag2('2 merchantParams FAIL',String(e&&e.stack||e),'err');return;}
+
+            try{sfDiag2('3 mobileFocus START');setupMobileFormFocus30();sfDiag2('3 mobileFocus DONE','','ok');}
+            catch(e){sfDiag2('3 mobileFocus FAIL',String(e&&e.stack||e),'err');return;}
+
+            try{sfDiag2('4 heroSwipe START');setupHeroSwipe30();sfDiag2('4 heroSwipe DONE','','ok');}
+            catch(e){sfDiag2('4 heroSwipe FAIL',String(e&&e.stack||e),'err');return;}
+
+            try{sfDiag2('5 attention START');sfRefreshAttentionDots();sfDiag2('5 attention DONE','','ok');}
+            catch(e){sfDiag2('5 attention FAIL',String(e&&e.stack||e),'err');return;}
+
+            try{sfDiag2('6 failsafe START');armHomeFeedFailsafe30();sfDiag2('6 failsafe DONE','','ok');}
+            catch(e){sfDiag2('6 failsafe FAIL',String(e&&e.stack||e),'err');return;}
+
+            let accepted=false;
+            try{sfDiag2('7 TOS START');accepted=checkTos();sfDiag2('7 TOS DONE','accepted='+accepted,'ok');}
+            catch(e){sfDiag2('7 TOS FAIL',String(e&&e.stack||e),'err');return;}
             if(!accepted)return;
 
-            // Public feed and identity are independent.
-            fetchLiveStores();
-            bootstrapIdentity30();
+            try{
+              sfDiag2('8 FETCH CALL');
+              const p=fetchLiveStores();
+              Promise.resolve(p).then(()=>sfDiag2('8 FETCH RESOLVED','','ok')).catch(e=>sfDiag2('8 FETCH REJECT',String(e&&e.stack||e),'err'));
+            }catch(e){sfDiag2('8 FETCH THROW',String(e&&e.stack||e),'err');}
+
+            try{
+              sfDiag2('9 IDENTITY CALL');
+              Promise.resolve(bootstrapIdentity30()).then(x=>sfDiag2('9 IDENTITY DONE',x,'ok')).catch(e=>sfDiag2('9 IDENTITY FAIL',String(e&&e.stack||e),'err'));
+            }catch(e){sfDiag2('9 IDENTITY THROW',String(e&&e.stack||e),'err');}
         });
 
         document.addEventListener('visibilitychange',()=>{
