@@ -319,7 +319,7 @@ select,input,textarea,button{max-width:100%}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.2</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -386,7 +386,7 @@ select,input,textarea,button{max-width:100%}
                 <section id="my-hunts-zone" class="sf-my-hunts-zone mt-5">
                     <div class="sf-my-hunts-head"><div><p class="sf-empty-kicker">MY HUNTS</p><h3>我的獵場</h3></div><span id="my-hunts-count">0 家關注</span></div>
                     <p class="sf-my-hunts-desc">你主動訂閱的獵場開賣時，SEEFOOD 會通知你。</p>
-                    <div id="my-hunts-list" class="space-y-2 mt-3"><div class="sf-mini-empty"><i data-lucide="bell"></i><div><b>還沒有訂閱獵場</b><span>到戰情室對暫無獵物的店家敲碗，並開啟「上架叫我」。</span></div></div></div>
+                    <div id="hunter-notification-list" class="space-y-2 mt-3"></div><div id="my-hunts-list" class="space-y-2 mt-3"><div class="sf-mini-empty"><i data-lucide="bell"></i><div><b>還沒有訂閱獵場</b><span>到戰情室對暫無獵物的店家敲碗，並開啟「上架叫我」。</span></div></div></div>
                     <button type="button" onclick="location.href='radar.html'" class="sf-my-hunts-radar">前往戰情室</button>
                 </section>
             </div>
@@ -590,6 +590,7 @@ select,input,textarea,button{max-width:100%}
                         </div>
                         <div id="merchant-active-orders-list" class="space-y-2"></div>
                     </div>
+                    <div id="merchant-knock-notice" class="sf-merchant-knock-notice hidden"><i data-lucide="bell-ring"></i><div><b>有人在等你開賣</b><span id="merchant-knock-notice-text">今天有獵人在敲碗</span></div></div>
                     <div id="merchant-demand-signal" class="sf-demand-signal">
                         <div><p>今日敲碗</p><b id="merchant-knock-count">0</b><span>位獵人</span></div>
                         <div><p>上架叫我</p><b id="merchant-watch-count">0</b><span>位訂閱</span></div>
@@ -723,7 +724,7 @@ select,input,textarea,button{max-width:100%}
             <div class="flex-1 overflow-y-auto p-5 space-y-5 pb-28 no-scrollbar relative z-10" style="-webkit-overflow-scrolling: touch;">
                 <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-2xl p-4 text-xs text-emerald-100 leading-relaxed">
                     <p class="font-black text-emerald-300 mb-1">🛡️ KYC 基礎風控 2.5</p>
-                    <p>系統會先檢查照片清晰度、明暗與資訊格式，以及簽署筆跡的完整性。品質不足會直接要求補件，減少人工逐筆檢查。此階段不宣稱可驗證政府證件真偽；正式營運前將預留第三方 KYC 串接。</p>
+                    <p>系統會先檢查照片清晰度、明暗與資訊格式，以及簽署筆跡的完整性。品質不足會直接要求補件，減少人工逐筆檢查。若資料需要進一步確認，會轉由人工審核或要求補件。</p>
                 </div>
                 <div class="bg-slate-800 rounded-xl p-4 h-56 overflow-y-auto text-[11px] text-gray-300 space-y-3 border border-slate-600 shadow-inner">
                     <p class="font-black text-white text-sm border-b border-slate-600 pb-3 mb-3 bg-slate-800">【SEEFOOD 平台特約商店服務條款暨代收付合約】</p>
@@ -954,7 +955,7 @@ select,input,textarea,button{max-width:100%}
         function renderPartnerOnboarding28(o){o=o||{};const pill=document.getElementById('partner-onboarding-pill'),label=document.getElementById('partner-onboarding-label'),btn=document.getElementById('partner-onboarding-btn');const map={PAYOUT_READY:['可撥款','身分、約定與收款帳戶皆已完成'],KYC_PENDING:['待實名','先完成身分認證'],KYC_REVIEWING:['審核中','身分資料已送出，分潤仍持續累積'],CONTRACT_PENDING:['待簽約','身分已完成，請簽署分潤合作約定'],PAYOUT_PENDING:['待綁帳戶','最後一步：設定分潤收款帳戶']};const m=map[o.state]||['待設定','完成設定後即可進入撥款流程'];if(pill){pill.textContent=m[0];pill.dataset.state=o.state||''}if(label)label.textContent=m[1];['kyc','contract','bank'].forEach(k=>document.getElementById('partner-step-'+k)?.classList.remove('done'));if(o.kycStatus==='VERIFIED_BASIC')document.getElementById('partner-step-kyc')?.classList.add('done');if(o.contractStatus==='SIGNED')document.getElementById('partner-step-contract')?.classList.add('done');if(o.payoutStatus==='VERIFIED_BASIC')document.getElementById('partner-step-bank')?.classList.add('done');if(btn){btn.textContent=o.payoutReady?(o.bankMasked?`收款帳戶 ${o.bankMasked}`:'收款資格已完成'):'完成分潤收款設定';btn.classList.toggle('!bg-emerald-400',!!o.payoutReady)}localStorage.setItem('sf_partner_payout_ready',o.payoutReady?'1':'0');sfRefreshAttentionDots();}
         async function openPartnerOnboarding28(){if(userStats.lineUid==='LINE_GUEST'){const ok=await seefoodConfirm('登入後才能建立你的點燈推薦與分潤收款資格。',{title:'先登入 LINE',confirmText:'前往登入'});if(ok)loginWithLine30();return}const o=await refreshPartnerOnboarding28()||partnerOnboarding28||{};const body=document.getElementById('partner-onboarding-body');if(!body)return;body.innerHTML=partnerFormHtml28(o);document.getElementById('partner-onboarding-modal').classList.remove('hidden');document.body.classList.add('sf-modal-open');}
         function closePartnerOnboarding28(){document.getElementById('partner-onboarding-modal')?.classList.add('hidden');document.body.classList.remove('sf-modal-open')}
-        function partnerFormHtml28(o){if(o.payoutReady)return `<div class="sf-payout-ready"><i data-lucide="badge-check"></i><b>分潤收款資格已完成</b><span>收款帳戶 ${escapeHTML(o.bankMasked||'已設定')} · ${escapeHTML(o.bankOwner||'')}</span><p>商家營業款與點燈分潤帳戶為兩套獨立資料，即使使用同一銀行帳號也不會混帳。</p></div>`;if(o.kycStatus==='REVIEWING')return `<div class="sf-payout-wait"><b>身分資料審核中</b><p>審核期間你仍可推薦店家並累積分潤；通過後再回來完成分潤約定與銀行帳戶。</p></div>`;if(o.kycStatus!=='VERIFIED_BASIC')return `<div class="sf-form-step"><span>STEP 1 / 3</span><h4>身分認證</h4><p>沒有店家也可以成為點燈夥伴。若你已完成商家實名，系統會自動沿用，不重複上傳。</p><label>真實姓名<input id="p28-name" autocomplete="name"></label><label>身分證字號<input id="p28-id" maxlength="10" autocapitalize="characters"></label><label>身分證件照片<input id="p28-idimg" type="file" accept="image/*" capture="environment"></label><button onclick="submitPartnerIdentity28()" class="sf-btn-primary w-full mt-3">送出身分認證</button><small>新提交的分潤身分不會因為隨便照片自動通過，會先進入審核。</small></div>`;if(o.contractStatus!=='SIGNED')return `<div class="sf-form-step"><span>STEP 2 / 3</span><h4>點燈推薦分潤合作約定</h4><div class="sf-contract-mini">推薦關係有效期間內，符合資格之已完成交易依平台當期 Partner Rulebook 計算分潤。退款、爭議、作弊、自我推薦及同一實際控制人之店家不計分潤。分潤屬收入性質，平台得依法要求必要稅務文件。</div><label class="sf-check"><input id="p28-agree" type="checkbox">我已閱讀並同意點燈推薦分潤合作約定 v1.0</label><label>簽署姓名<input id="p28-sign" value="${escapeHTML(o.legalName||'')}"></label><button onclick="signPartnerContract28()" class="sf-btn-primary w-full mt-3">簽署分潤合作約定</button></div>`;return `<div class="sf-form-step"><span>STEP 3 / 3</span><h4>設定分潤收款帳戶</h4><p>這是點燈夥伴專用收款資料，不會覆蓋商家營業款帳戶。</p><label>銀行代碼<input id="p28-bank" inputmode="numeric" maxlength="3" placeholder="例如 004"></label><label>分行<input id="p28-branch" placeholder="分行名稱或代碼"></label><label>銀行帳號<input id="p28-account" inputmode="numeric" placeholder="請輸入完整帳號"></label><label>戶名<input id="p28-owner" value="${escapeHTML(o.legalName||'')}"></label><button onclick="savePartnerPayout28()" class="sf-btn-primary w-full mt-3">儲存收款帳戶</button><small>完成後前端只顯示末四碼；完整資料僅供授權結算流程使用。</small></div>`}
+        function partnerFormHtml28(o){if(o.payoutReady)return `<div class="sf-payout-ready"><i data-lucide="badge-check"></i><b>分潤收款資格已完成</b><span>收款帳戶 ${escapeHTML(o.bankMasked||'已設定')} · ${escapeHTML(o.bankOwner||'')}</span><p>商家營業款與點燈分潤帳戶為兩套獨立資料，即使使用同一銀行帳號也不會混帳。</p></div>`;if(o.kycStatus==='REVIEWING')return `<div class="sf-payout-wait"><b>身分資料審核中</b><p>審核期間你仍可推薦店家並累積分潤；通過後再回來完成分潤約定與銀行帳戶。</p></div>`;if(o.kycStatus!=='VERIFIED_BASIC')return `<div class="sf-form-step"><span>STEP 1 / 3</span><h4>身分認證</h4><p>沒有店家也可以成為點燈夥伴。若你已完成商家實名，系統會自動沿用，不重複上傳。</p><label>真實姓名<input id="p28-name" autocomplete="name"></label><label>身分證字號<input id="p28-id" maxlength="10" autocapitalize="characters"></label><label>身分證件照片<input id="p28-idimg" type="file" accept="image/*" capture="environment"></label><button onclick="submitPartnerIdentity28()" class="sf-btn-primary w-full mt-3">送出身分認證</button><small>請上傳清晰完整的證件照片；資料送出後會進入身份審核。</small></div>`;if(o.contractStatus!=='SIGNED')return `<div class="sf-form-step"><span>STEP 2 / 3</span><h4>點燈推薦分潤合作約定</h4><div class="sf-contract-mini">推薦關係有效期間內，符合資格之已完成交易依平台當期 Partner Rulebook 計算分潤。退款、爭議、作弊、自我推薦及同一實際控制人之店家不計分潤。分潤屬收入性質，平台得依法要求必要稅務文件。</div><label class="sf-check"><input id="p28-agree" type="checkbox">我已閱讀並同意點燈推薦分潤合作約定 v1.0</label><label>簽署姓名<input id="p28-sign" value="${escapeHTML(o.legalName||'')}"></label><button onclick="signPartnerContract28()" class="sf-btn-primary w-full mt-3">簽署分潤合作約定</button></div>`;return `<div class="sf-form-step"><span>STEP 3 / 3</span><h4>設定分潤收款帳戶</h4><p>這是點燈夥伴專用收款資料，不會覆蓋商家營業款帳戶。</p><label>銀行代碼<input id="p28-bank" inputmode="numeric" maxlength="3" placeholder="例如 004"></label><label>分行<input id="p28-branch" placeholder="分行名稱或代碼"></label><label>銀行帳號<input id="p28-account" inputmode="numeric" placeholder="請輸入完整帳號"></label><label>戶名<input id="p28-owner" value="${escapeHTML(o.legalName||'')}"></label><button onclick="savePartnerPayout28()" class="sf-btn-primary w-full mt-3">儲存收款帳戶</button><small>完成後前端只顯示末四碼；完整資料僅供授權結算流程使用。</small></div>`}
         function fileDataUrl28(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||'').split(',')[1]||'');r.onerror=reject;r.readAsDataURL(file)})}
         async function submitPartnerIdentity28(){const name=document.getElementById('p28-name')?.value.trim(),id=document.getElementById('p28-id')?.value.trim().toUpperCase(),file=document.getElementById('p28-idimg')?.files?.[0];if(!name||!id||!file){seefoodAlert('請完成姓名、身分證字號與證件照片。',{title:'資料尚未完成'});return}showGlobalLoading('送出身分認證','正在安全傳送資料…');try{const img=await fileDataUrl28(file),j=await postActionV25('submitPartnerIdentity',{uid:userStats.lineUid,legalName:name,legalId:id,idCardImage:img});hideGlobalLoading();if(j.status!=='success'){seefoodAlert(j.msg||'送出失敗',{title:'無法送出'});return}partnerOnboarding28=j.onboarding;renderPartnerOnboarding28(j.onboarding);document.getElementById('partner-onboarding-body').innerHTML=partnerFormHtml28(j.onboarding);seefoodAlert(j.msg||'資料已送出。',{title:'已收到資料',tone:'success'})}catch(e){hideGlobalLoading();seefoodAlert('資料傳送失敗，請稍後重試。',{title:'連線異常'})}}
         async function signPartnerContract28(){if(!document.getElementById('p28-agree')?.checked){seefoodAlert('請先閱讀並勾選同意分潤合作約定。',{title:'還差一步'});return}const signed=document.getElementById('p28-sign')?.value.trim();const j=await postActionV25('signReferralContract',{uid:userStats.lineUid,signedName:signed});if(j.status!=='success'){seefoodAlert(j.msg||'簽署失敗',{title:'無法完成'});return}partnerOnboarding28=j.onboarding;renderPartnerOnboarding28(j.onboarding);document.getElementById('partner-onboarding-body').innerHTML=partnerFormHtml28(j.onboarding);}
@@ -1075,11 +1076,16 @@ select,input,textarea,button{max-width:100%}
             refreshIcons26();
         }
         function renderHunterNotifications210(items){
-            const unread=(items||[]).filter(x=>String(x.status)==='UNREAD');localStorage.setItem('sf_hunter_notification_count',String(unread.length));sfRefreshAttentionDots();
+            items=Array.isArray(items)?items:[];
+            const unread=items.filter(x=>String(x.status)==='UNREAD');
+            localStorage.setItem('sf_hunter_notification_count',String(unread.length));
+            const box=document.getElementById('hunter-notification-list');
+            if(box)box.innerHTML=items.slice(0,5).map(n=>`<button type="button" class="sf-hunter-notice ${String(n.status)==='UNREAD'?'new':''}" onclick="if('${escapeHTML(n.deepLink||'')}')location.href='${escapeHTML(n.deepLink||'')}'"><span><i data-lucide="bell-ring"></i></span><div><b>${escapeHTML(n.title||'獵場通知')}</b><small>${escapeHTML(n.body||'')}</small></div></button>`).join('');
+            sfRefreshAttentionDots();refreshIcons26();
         }
         async function refreshMyHunts210(){
             if(userStats.lineUid==='LINE_GUEST')return;
-            try{const j=await postActionV25('getMyHunts',{uid:userStats.lineUid});if(j.status==='success'){renderMyHunts210(j.hunts||[]);renderHunterNotifications210(j.notifications||[]);if(j.growthStats)localStorage.setItem('sf_growth_stats',JSON.stringify(j.growthStats));renderBadgesWall();}}catch(e){}
+            try{const j=await postActionV25('getMyHunts',{uid:userStats.lineUid});if(j.status==='success'){renderMyHunts210(j.hunts||[]);renderHunterNotifications210(j.notifications||[]);if(j.growthStats)localStorage.setItem('sf_growth_stats',JSON.stringify(j.growthStats));renderBadgesWall();setTimeout(async()=>{try{await postActionV25('markHunterNotificationsRead',{uid:userStats.lineUid});localStorage.setItem('sf_hunter_notification_count','0');sfRefreshAttentionDots();}catch(_e){}},900);}}catch(e){}
         }
 
         async function syncUserDataFromCloud(force=false) {
@@ -1087,7 +1093,7 @@ select,input,textarea,button{max-width:100%}
             try{
                 const coreCached=sessionStorage.getItem('sf27_core_'+userStats.lineUid)||sessionStorage.getItem('sf26_core_'+userStats.lineUid); if(coreCached){try{const c=JSON.parse(coreCached);renderCore26(c);}catch(e){}}
                 const json=await postActionV25('syncCore',{uid:userStats.lineUid,forceRefresh:force?'1':'0'}); if(json.status!=='success')return; sessionStorage.setItem('sf27_core_'+userStats.lineUid,JSON.stringify(json));
-                merchantAccountCache=json.merchantAccount||null; renderCore26(json); if(Array.isArray(json.myHunts))renderMyHunts210(json.myHunts); if(Array.isArray(json.notifications))renderHunterNotifications210(json.notifications);
+                merchantAccountCache=json.merchantAccount||null; renderCore26(json);
                 const shops=Array.isArray(json.myShops)?json.myShops:[]; const bar=document.getElementById('merchant-account-bar'),sel=document.getElementById('merchant-shop-select-top');
                 if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · VIP':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);const dc=sessionStorage.getItem('sf27_dash_'+active)||sessionStorage.getItem('sf26_dash_'+active);if(dc){try{renderShopDashboardV25(JSON.parse(dc));}catch(e){}}loadShopDashboardV25(active,false);}
                 if(json.orders&&json.orders.length){localStorage.setItem('seefood_orders_list',JSON.stringify(json.orders));recalculateUserStats(json.orders);}else{localStorage.setItem('seefood_orders_list','[]');loadUserStats();renderBadgesWall();}
@@ -1099,8 +1105,7 @@ select,input,textarea,button{max-width:100%}
         function renderCore26(json){
             merchantAccountCache=json.merchantAccount||merchantAccountCache;
             if(json.growthStats)localStorage.setItem('sf_growth_stats',JSON.stringify(json.growthStats));
-            if(Array.isArray(json.myHunts))renderMyHunts210(json.myHunts);
-            if(Array.isArray(json.notifications))renderHunterNotifications210(json.notifications);
+            if(json.hunterNoticeCount!==undefined)localStorage.setItem('sf_hunter_notification_count',String(Number(json.hunterNoticeCount)||0));
             const shops=Array.isArray(json.myShops)?json.myShops:[]; const bar=document.getElementById('merchant-account-bar'),sel=document.getElementById('merchant-shop-select-top');
             if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · VIP':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);}
             refreshIcons26();
@@ -1506,7 +1511,7 @@ select,input,textarea,button{max-width:100%}
                 if (resJson.status === "success") { 
                     alert(resJson.kycInherited?'✅ 新店建立完成！\n已沿用商家主帳號的實名與收款資料，不需重新簽署。':'🎉 店鋪建立完成！\n此店需完成負責人實名後才會解除撥款鎖定。'); localStorage.setItem('seefood_merchant_shop_id', resJson.shopId); localStorage.setItem('seefood_merchant_shop_name', resJson.shopName); document.getElementById('merchant-registration-zone').style.display = 'none'; const c=document.getElementById('cancel-add-shop-btn'); if(c)c.classList.add('hidden'); checkMerchantUrlParameters(); syncUserDataFromCloud();
                 } else if (resJson.status === "error" && resJson.shopId) { alert(resJson.msg); localStorage.setItem('seefood_merchant_shop_id', resJson.shopId); localStorage.setItem('seefood_merchant_shop_name', resJson.shopName); checkMerchantUrlParameters(); syncUserDataFromCloud(); } else { alert(resJson.msg || "申請失敗"); }
-            }).catch(() => { alert("⏳ 雲端處理超時，但您的卡位請求已成功送達大腦！\n請直接重新整理網頁，即可進入您的專屬商家後台。"); }).finally(() => { isSubmittingGlobal = false; hideGlobalLoading(); });
+            }).catch(() => { alert("⏳ 資料已送出，但目前同步較慢。請稍後回到商家後台查看最新狀態。"); }).finally(() => { isSubmittingGlobal = false; hideGlobalLoading(); });
         }
 
         function checkMerchantUrlParameters() {
@@ -1646,7 +1651,7 @@ select,input,textarea,button{max-width:100%}
         function sfRefreshAttentionDots(){
             // Red dot = unresolved action, not unread content. Merely opening a tab never clears it.
             const active=sfActiveTicketIds();
-            sfSetNavDot('badge',active.length>0); // stays until every active ticket is redeemed/closed
+            const hunterNoticeCount=Number(localStorage.getItem('sf_hunter_notification_count')||0);sfSetNavDot('badge',active.length>0 || hunterNoticeCount>0);
             const ticketCount=document.getElementById('ticket-task-count'); if(ticketCount){ticketCount.textContent=String(active.length);ticketCount.classList.toggle('hidden',active.length===0);}
             const contract=(localStorage.getItem('seefood_merchant_contract_status')||'');
             const contractPending=!!localStorage.getItem('seefood_merchant_shop_id') && contract!=='已完成';
@@ -1772,7 +1777,7 @@ select,input,textarea,button{max-width:100%}
     <button id="sf-support-handle" class="sf-support-handle" type="button" onclick="openSupportCenter()" aria-label="支援中心"><span class="sf-dot"></span><i data-lucide="headphones" class="w-5 h-5"></i></button>
     <div id="sf-support-modal" class="fixed inset-0 z-[1000] hidden sf-sheet-backdrop items-end md:items-center justify-center" onclick="if(event.target===this)closeSupportCenter()">
       <div class="sf-sheet bg-white w-full md:max-w-md p-5 md:rounded-3xl md:m-5">
-        <div class="flex justify-between items-start mb-4"><div><p class="text-[10px] text-slate-400 font-bold tracking-[.18em] uppercase">SEEFOOD SUPPORT</p><h3 class="text-xl font-black text-seefoodDarkBlue mt-1">總部支援中心</h3><p class="text-xs text-slate-500 mt-1">只在你需要時出現，不再遮住主要操作。</p></div><button onclick="closeSupportCenter()" class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div class="flex justify-between items-start mb-4"><div><p class="text-[10px] text-slate-400 font-bold tracking-[.18em] uppercase">SEEFOOD SUPPORT</p><h3 class="text-xl font-black text-seefoodDarkBlue mt-1">總部支援中心</h3><p class="text-xs text-slate-500 mt-1">需要協助時，可從這裡聯絡 SEEFOOD。</p></div><button onclick="closeSupportCenter()" class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center"><i data-lucide="x" class="w-4 h-4"></i></button></div>
         <div id="sf-support-items" class="space-y-2">
           <a href="https://line.me/R/ti/p/@398ndwec" target="_blank" class="sf-support-item"><span class="sf-iconbox"><i data-lucide="message-circle" class="w-4 h-4"></i></span><span><b class="text-sm text-slate-900">LINE 客服</b><small class="block text-[10px] text-slate-500">直接聯絡 SEEFOOD 總部</small></span></a>
           <button onclick="window.open('guide.html','_blank')" class="sf-support-item"><span class="sf-iconbox"><i data-lucide="book-open" class="w-4 h-4"></i></span><span><b class="text-sm text-slate-900">操作指南</b><small class="block text-[10px] text-slate-500">商家上架、核銷與帳務說明</small></span></button>
@@ -1811,6 +1816,10 @@ select,input,textarea,button{max-width:100%}
 .sf-demand-signal{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:stretch;background:#fff;border:1px solid #E2E7EC;border-radius:16px;padding:10px;margin-top:10px}.sf-demand-signal>div{background:#F7F9FB;border-radius:12px;padding:9px 10px}.sf-demand-signal p{font-size:9px;color:#7A8590}.sf-demand-signal b{font-size:20px;color:#0B2239}.sf-demand-signal span{font-size:8px;color:#8A96A3;margin-left:2px}.sf-demand-signal button{border:0;border-radius:12px;background:#F4B41A;color:#0B2239;padding:0 12px;font-size:10px;font-weight:950}
 .sf-live-order{background:#fff;border:1px solid #E1E6EA;border-radius:13px;padding:11px;display:flex;justify-content:space-between;gap:10px}.sf-live-order b,.sf-live-order span,.sf-live-order small,.sf-live-order strong{display:block}.sf-live-order b{font:900 11px ui-monospace,SFMono-Regular,monospace;color:#0B2239}.sf-live-order span{font-size:11px;font-weight:900;color:#263849;margin-top:3px}.sf-live-order small{font-size:9px;color:#7A8590}.sf-live-order strong{font-size:13px;color:#A36C00;margin-top:3px}
 @media(max-width:420px){.sf-demand-signal{grid-template-columns:1fr 1fr}.sf-demand-signal button{grid-column:1/-1;padding:10px}}
+
+/* RC2.10.1 — live notification polish */
+.sf-hunter-notice{width:100%;border:1px solid #E2E7EC;background:#fff;border-radius:14px;padding:11px;display:flex;align-items:flex-start;gap:10px;text-align:left}.sf-hunter-notice.new{border-color:#E8CF7A;background:#FFF9E8}.sf-hunter-notice>span{width:31px;height:31px;border-radius:10px;background:#EEF2F5;color:#0B2239;display:grid;place-items:center;flex:none}.sf-hunter-notice.new>span{background:#FFF0B7;color:#805800}.sf-hunter-notice svg{width:16px}.sf-hunter-notice b,.sf-hunter-notice small{display:block}.sf-hunter-notice b{font-size:11px;color:#0B2239}.sf-hunter-notice small{font-size:9px;color:#6F7C88;line-height:1.45;margin-top:3px}
+.sf-merchant-knock-notice{display:flex;align-items:center;gap:10px;background:#FFF7D8;border:1px solid #EBD487;border-radius:15px;padding:12px;margin:10px 0}.sf-merchant-knock-notice.hidden{display:none}.sf-merchant-knock-notice>svg{width:20px;color:#9A6900}.sf-merchant-knock-notice b,.sf-merchant-knock-notice span{display:block}.sf-merchant-knock-notice b{font-size:12px;color:#0B2239}.sf-merchant-knock-notice span{font-size:9px;color:#776438;margin-top:2px}
 </style>
 
 <div id="partner-onboarding-modal" class="sf-sheet-backdrop hidden" onclick="if(event.target===this)closePartnerOnboarding28()"><div class="sf-sheet" role="dialog" aria-modal="true"><div class="sf-sheet-handle"></div><div class="sf-sheet-head"><div><span class="sf-field-kicker">PARTNER PAYOUT</span><h3>完成分潤收款資格</h3><p>推薦與累積不受影響；完成三步後才會進入可撥款狀態。</p></div><button type="button" onclick="closePartnerOnboarding28()" class="sf-sheet-close">×</button></div><div id="partner-onboarding-body" class="sf-partner-form"></div></div></div>
@@ -1868,12 +1877,14 @@ select,input,textarea,button{max-width:100%}
                     if(ol){ol.innerHTML=(j.activeOrders||[]).length?(j.activeOrders||[]).map(o=>`<div class="sf-live-order"><div><b>${escapeHTML(o.orderId)}</b><span>${escapeHTML(o.item)}</span></div><div><small>自取 ${escapeHTML(formatPickupTime30(o.time))}</small><strong>$${Math.round(Number(o.price)||0)}</strong></div></div>`).join(''):'<div class="sf-mini-empty"><i data-lucide="circle-check-big"></i><div><b>目前沒有待取餐任務</b><span>新的已付款訂單會自動出現在這裡。</span></div></div>';}
                     const kc=document.getElementById('merchant-knock-count'),wc=document.getElementById('merchant-watch-count'),sync=document.getElementById('merchant-live-sync');
                     if(kc)kc.textContent=Number(j.knockToday)||0;if(wc)wc.textContent=Number(j.watchers)||0;if(sync)sync.textContent='剛剛更新';
+                    const nz=document.getElementById('merchant-knock-notice'),nt=document.getElementById('merchant-knock-notice-text');
+                    if(nz){nz.classList.toggle('hidden',!(Number(j.knockToday)>0));if(nt)nt.textContent=`今天已有 ${Number(j.knockToday)||0} 位獵人在敲碗${Number(j.watchers)>0?`，其中 ${Number(j.watchers)} 位等你上架通知`:''}`;}
                     refreshIcons26();
                 }
             }catch(e){const sync=document.getElementById('merchant-live-sync');if(sync)sync.textContent='同步暫停';}
             finally{sfMerchantLiveBusy210=false;}
         }
-        function startMerchantLivePoll210(){stopMerchantLivePoll210();refreshMerchantLive210();sfMerchantLiveTimer210=setInterval(()=>{if((window.location.hash||'#home').includes('merchant')&&!document.hidden)refreshMerchantLive210();},12000);}
+        function startMerchantLivePoll210(){stopMerchantLivePoll210();refreshMerchantLive210();sfMerchantLiveTimer210=setInterval(()=>{if((window.location.hash||'#home').includes('merchant')&&!document.hidden)refreshMerchantLive210();},18000);}
         document.addEventListener('visibilitychange',()=>{if(!document.hidden&&(window.location.hash||'').includes('merchant'))refreshMerchantLive210();});
 
   window.loadMerchantOrderLedger30=async function(force){const uid=userStats.lineUid,shopId=localStorage.getItem('seefood_merchant_shop_id')||'',box=document.getElementById('m30-order-ledger');if(!uid||!shopId||!box)return;try{const p=new URLSearchParams({action:'getMerchantOrders',uid,shopId,limit:'30'});const r=await fetch(gasUrl,{method:'POST',body:p});const j=await r.json();if(j.status!=='success')return;box.innerHTML=(j.orders||[]).map(o=>`<div class="sf-order-ledger-row grid grid-cols-[1.2fr_1fr_auto] gap-3 items-center py-3 border-t border-slate-100 text-xs"><div><b class="font-mono text-slate-800">${escapeHTML(o.orderId)}</b><div class="text-slate-500 mt-1">${escapeHTML(o.item)}</div></div><div><span class="sf-order-status ${o.status==='Redeemed'?'ok':o.status==='Paid'?'warn':''}">${escapeHTML(o.statusLabel)}</span><div class="text-slate-400 mt-1">${escapeHTML(o.settlementLabel||'')}</div></div><div class="sf-order-money text-right"><b class="text-slate-900">$${Math.round(o.itemPrice||0)}</b><div class="text-slate-500 mt-1">應收 $${Math.round(o.netIncome||0)}</div></div></div>`).join('')||'<div class="text-xs text-slate-400 py-4">尚無訂單</div>'}catch(e){box.innerHTML='<div class="text-xs text-red-400 py-3">訂單載入失敗，請稍後重試</div>'}};
@@ -1901,10 +1912,3 @@ select,input,textarea,button{max-width:100%}
 </body>
 </html>
 
-<script>
-document.addEventListener('click',function(e){
-  const b=e.target.closest && e.target.closest('[onclick*="switchTab(\'merchant\')"],[onclick*="switchTab(&quot;merchant&quot;)"]');
-  if(b)setTimeout(()=>{if(window.startMerchantLivePoll210)startMerchantLivePoll210()},250);
-});
-window.addEventListener('hashchange',()=>{if((location.hash||'').includes('merchant'))startMerchantLivePoll210();else stopMerchantLivePoll210();});
-</script>
