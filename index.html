@@ -331,7 +331,7 @@ select,input,textarea,button{max-width:100%}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.6</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.7</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -1139,6 +1139,9 @@ select,input,textarea,button{max-width:100%}
             sfRefreshAttentionDots();
             const oz=document.getElementById('merchant-active-orders-zone'),ol=document.getElementById('merchant-active-orders-list'); if(oz&&ol){oz.classList.remove('hidden');ol.innerHTML=(shop.activeOrders||[]).length?(shop.activeOrders||[]).map(o=>`<div class="bg-slate-900 border border-emerald-500/50 rounded-xl p-3 flex justify-between items-center"><div><p class="text-emerald-400 font-mono font-black text-sm">${escapeHTML(o.orderId)}</p><p class="text-white text-sm mt-1 font-black">${escapeHTML(o.item)}</p></div><div class="text-right"><p class="text-gray-400 text-[10px]">自取截止：${escapeHTML(formatPickupTime30(o.time))}</p><p class="text-seefoodYellow font-black text-sm">$${o.price}</p></div></div>`).join(''):'<div class="sf-mini-empty"><i data-lucide="circle-check-big"></i><div><b>目前沒有待取餐任務</b><span>新的已付款訂單會立即出現在這裡。</span></div></div>';}
             renderDashboardSlots(); checkMerchantUrlParameters();
+            // Dashboard cache is allowed for layout/account data, but knock/watch demand must be real-time.
+            // Always refresh using the shop that was just rendered, never a possibly stale localStorage shop id.
+            setTimeout(()=>{if(typeof refreshMerchantLive210==='function')refreshMerchantLive210(shop.shopId);},60);
         }
 
         async function loadShopDashboardV25(shopId, showLoader=false) {
@@ -1189,7 +1192,7 @@ select,input,textarea,button{max-width:100%}
                 const json=await postActionV25('syncCore',{uid:userStats.lineUid,forceRefresh:force?'1':'0'}); if(json.status!=='success')return; sessionStorage.setItem('sf27_core_'+userStats.lineUid,JSON.stringify(json));
                 merchantAccountCache=json.merchantAccount||null; renderCore26(json);
                 const shops=Array.isArray(json.myShops)?json.myShops:[]; const bar=document.getElementById('merchant-account-bar'),sel=document.getElementById('merchant-shop-select-top');
-                if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · Plus':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);const dc=sessionStorage.getItem('sf27_dash_'+active)||sessionStorage.getItem('sf26_dash_'+active);if(dc){try{renderShopDashboardV25(JSON.parse(dc));}catch(e){}}loadShopDashboardV25(active,false);}
+                if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · Plus':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);const dc=sessionStorage.getItem('sf27_dash_'+active)||sessionStorage.getItem('sf26_dash_'+active);if(dc){try{renderShopDashboardV25(JSON.parse(dc));}catch(e){}}loadShopDashboardV25(active,false).finally(()=>setTimeout(()=>{if(typeof refreshMerchantLive210==='function')refreshMerchantLive210(active);},100));}
                 if(json.orders&&json.orders.length){localStorage.setItem('seefood_orders_list',JSON.stringify(json.orders));recalculateUserStats(json.orders);}else{localStorage.setItem('seefood_orders_list','[]');loadUserStats();renderBadgesWall();}
                 renderSavedTicketsWall();
                 refreshMyHunts210();
@@ -2080,16 +2083,16 @@ select,input,textarea,button{max-width:100%}
         // 改用 var 讓狀態在腳本初始化時先安全 hoist；商業邏輯不變。
         var sfMerchantLiveTimer210=null,sfMerchantLiveBusy210=false;
         function stopMerchantLivePoll210(){if(sfMerchantLiveTimer210){clearInterval(sfMerchantLiveTimer210);sfMerchantLiveTimer210=null;}}
-        async function refreshMerchantLive210(){
+        async function refreshMerchantLive210(explicitShopId=''){
             if(sfMerchantLiveBusy210||userStats.lineUid==='LINE_GUEST')return;
-            const shopId=localStorage.getItem('seefood_merchant_shop_id')||'';if(!shopId)return;sfMerchantLiveBusy210=true;
+            const shopId=String(explicitShopId||localStorage.getItem('seefood_merchant_shop_id')||'');if(!shopId)return;sfMerchantLiveBusy210=true;
             try{
                 const j=await postActionV25('getMerchantLiveState',{uid:userStats.lineUid,shopId});
                 if(j.status==='success'){
                     const ol=document.getElementById('merchant-active-orders-list');
                     if(ol){ol.innerHTML=(j.activeOrders||[]).length?(j.activeOrders||[]).map(o=>`<div class="sf-live-order"><div><b>${escapeHTML(o.orderId)}</b><span>${escapeHTML(o.item)}</span></div><div><small>自取 ${escapeHTML(formatPickupTime30(o.time))}</small><strong>$${Math.round(Number(o.price)||0)}</strong></div></div>`).join(''):'<div class="sf-mini-empty"><i data-lucide="circle-check-big"></i><div><b>目前沒有待取餐任務</b><span>新的已付款訂單會自動出現在這裡。</span></div></div>';}
                     const kc=document.getElementById('merchant-knock-count'),wc=document.getElementById('merchant-watch-count'),sync=document.getElementById('merchant-live-sync');
-                    if(kc)kc.textContent=Number(j.knockToday)||0;if(wc)wc.textContent=Number(j.watchers)||0;if(sync)sync.textContent='剛剛更新';localStorage.setItem('sf_merchant_knock_today',String(Number(j.knockToday)||0));localStorage.setItem('sf_merchant_unread',String(Number(j.merchantUnread)||0));sfRefreshAttentionDots();
+                    if(kc)kc.textContent=Number(j.knockToday)||0;if(wc)wc.textContent=Number(j.watchers)||0;if(sync)sync.textContent='剛剛更新';localStorage.setItem('sf_merchant_live_shop_id',shopId);localStorage.setItem('sf_merchant_knock_today',String(Number(j.knockToday)||0));localStorage.setItem('sf_merchant_unread',String(Number(j.merchantUnread)||0));sfRefreshAttentionDots();
                     const nz=document.getElementById('merchant-knock-notice'),nt=document.getElementById('merchant-knock-notice-text');
                     if(nz){
                         const hasDemand=Number(j.knockToday)>0;
@@ -2105,6 +2108,7 @@ select,input,textarea,button{max-width:100%}
             finally{sfMerchantLiveBusy210=false;}
         }
         function startMerchantLivePoll210(){stopMerchantLivePoll210();refreshMerchantLive210();sfMerchantLiveTimer210=setInterval(()=>{if((window.location.hash||'#home').includes('merchant')&&!document.hidden)refreshMerchantLive210();},18000);}
+        setTimeout(()=>{if((window.location.hash||'').includes('merchant'))startMerchantLivePoll210();},120);
         document.addEventListener('visibilitychange',()=>{if(!document.hidden&&(window.location.hash||'').includes('merchant'))refreshMerchantLive210();});
         document.addEventListener('visibilitychange',()=>{if(!document.hidden&&userStats.lineUid!=='LINE_GUEST'){const dirty=Number(localStorage.getItem('sf_my_hunts_dirty')||0);if(dirty){refreshMyHunts210();localStorage.removeItem('sf_my_hunts_dirty');}sfRefreshAttentionDots();}});
 
