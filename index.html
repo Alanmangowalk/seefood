@@ -319,7 +319,7 @@ select,input,textarea,button{max-width:100%}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.9</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -383,6 +383,12 @@ select,input,textarea,button{max-width:100%}
                     <button type="button" onclick="switchTab('home')" class="sf-empty-primary">現在去狩獵</button>
                 </div>
                 <div id="tickets-container" class="space-y-4"></div>
+                <section id="my-hunts-zone" class="sf-my-hunts-zone mt-5">
+                    <div class="sf-my-hunts-head"><div><p class="sf-empty-kicker">MY HUNTS</p><h3>我的獵場</h3></div><span id="my-hunts-count">0 家關注</span></div>
+                    <p class="sf-my-hunts-desc">你主動訂閱的獵場開賣時，SEEFOOD 會通知你。</p>
+                    <div id="my-hunts-list" class="space-y-2 mt-3"><div class="sf-mini-empty"><i data-lucide="bell"></i><div><b>還沒有訂閱獵場</b><span>到戰情室對暫無獵物的店家敲碗，並開啟「上架叫我」。</span></div></div></div>
+                    <button type="button" onclick="location.href='radar.html'" class="sf-my-hunts-radar">前往戰情室</button>
+                </section>
             </div>
 
             <div id="page-achievement" class="space-y-4 hidden">
@@ -580,9 +586,14 @@ select,input,textarea,button{max-width:100%}
                     <div id="merchant-active-orders-zone" class="bg-slate-800 rounded-2xl p-4 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)] relative z-10 hidden">
                         <div class="flex justify-between items-center mb-3 border-b border-slate-700 pb-2">
                             <h4 class="font-black text-white text-sm flex items-center"><span class="animate-pulse mr-1">🟢</span> 待取餐訂單 (未核銷)</h4>
-                            <button type="button" onclick="syncUserDataFromCloud()" class="text-[10px] bg-slate-700 text-blue-300 font-bold px-2 py-1 rounded shadow-sm active:scale-95 transition">🔄 刷新</button>
+                            <span id="merchant-live-sync" class="text-[10px] text-slate-400 font-bold">即時同步中</span>
                         </div>
                         <div id="merchant-active-orders-list" class="space-y-2"></div>
+                    </div>
+                    <div id="merchant-demand-signal" class="sf-demand-signal">
+                        <div><p>今日敲碗</p><b id="merchant-knock-count">0</b><span>位獵人</span></div>
+                        <div><p>上架叫我</p><b id="merchant-watch-count">0</b><span>位訂閱</span></div>
+                        <button type="button" onclick="document.getElementById('dashboard-slots-container').scrollIntoView({behavior:'smooth'})">快速開賣</button>
                     </div>
 
                     <div class="sf-m30-hidden bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-3 flex justify-between items-center shadow-md relative z-10 text-white">
@@ -1016,7 +1027,7 @@ select,input,textarea,button{max-width:100%}
             if (window.location.protocol === 'file:') { loadUserStats(); return 'guest'; }
             try {
                 await liff.init({ liffId: "2010392646-KEEBg8gS" });
-                if (liff.isLoggedIn()) { const p=await liff.getProfile(); userStats.lineUid=p.userId; hideAuthChoice30(); syncUserDataFromCloud(); return 'login'; }
+                if (liff.isLoggedIn()) { const p=await liff.getProfile(); userStats.lineUid=p.userId; localStorage.setItem('seefood_line_uid',p.userId); hideAuthChoice30(); syncUserDataFromCloud(); return 'login'; }
                 userStats.lineUid='LINE_GUEST'; loadUserStats();
                 if(liff.isInClient && liff.isInClient()){ liff.login({redirectUri:window.location.href}); return 'redirect'; }
                 if(sessionStorage.getItem('sf_guest_choice')!=='1')showAuthChoice30(); return 'guest';
@@ -1056,12 +1067,27 @@ select,input,textarea,button{max-width:100%}
             try{const json=await postActionV25('getPartnerHub',{uid:userStats.lineUid});const a=json.affiliate||{};const pc=document.getElementById('partner-shop-count'),pm=document.getElementById('partner-commission'),pb=document.getElementById('partner-breakdown');if(pc)pc.innerHTML=`${a.shopCount||0} <span class="text-xs text-slate-500">家</span>`;if(document.getElementById('hunter-license-lights'))document.getElementById('hunter-license-lights').textContent=a.shopCount||0;if(pm)pm.innerText=`$${Math.round(Number(a.commission)||0)}`;localStorage.setItem('sf_partner_commission',String(Math.round(Number(a.commission)||0)));if(a.onboarding){partnerOnboarding28=a.onboarding;renderPartnerOnboarding28(a.onboarding);}sfRefreshAttentionDots();if(pb){const shops=Array.isArray(a.shops)?a.shops:[];pb.innerHTML=shops.length?shops.map(s=>`<div class="bg-white/5 border border-white/10 rounded-lg p-2.5"><div class="flex justify-between gap-2"><div class="min-w-0"><p class="text-[11px] font-black text-white truncate">${escapeHTML(s.shopName||s.shopId)}</p><p class="text-[9px] text-slate-500 mt-0.5">${Number(s.transactions)||0} 筆有效交易</p></div><p class="text-sm font-black text-seefoodYellow">$${Math.round(Number(s.totalCommission)||0)}</p></div></div>`).join(''):'<p class="text-[10px] text-slate-500 text-center py-2">尚無夥伴店家資料</p>';}}catch(e){partnerLoadedV25=false;console.error(e);}
         }
 
+
+        function renderMyHunts210(hunts){
+            const list=document.getElementById('my-hunts-list'),count=document.getElementById('my-hunts-count');if(!list)return;
+            hunts=Array.isArray(hunts)?hunts:[];if(count)count.textContent=`${hunts.length} 家關注`;
+            list.innerHTML=hunts.length?hunts.map(h=>`<div class="sf-my-hunt-row"><div class="min-w-0"><b>${escapeHTML(h.name||'獵場')}</b><span>今天 ${Number(h.knockToday)||0} 位獵人敲碗</span></div><button type="button" onclick="location.href='radar.html?shopId=${encodeURIComponent(h.shopId)}'">查看</button></div>`).join(''):'<div class="sf-mini-empty"><i data-lucide="bell"></i><div><b>還沒有訂閱獵場</b><span>到戰情室對暫無獵物的店家敲碗，並開啟「上架叫我」。</span></div></div>';
+            refreshIcons26();
+        }
+        function renderHunterNotifications210(items){
+            const unread=(items||[]).filter(x=>String(x.status)==='UNREAD');localStorage.setItem('sf_hunter_notification_count',String(unread.length));sfRefreshAttentionDots();
+        }
+        async function refreshMyHunts210(){
+            if(userStats.lineUid==='LINE_GUEST')return;
+            try{const j=await postActionV25('getMyHunts',{uid:userStats.lineUid});if(j.status==='success'){renderMyHunts210(j.hunts||[]);renderHunterNotifications210(j.notifications||[]);if(j.growthStats)localStorage.setItem('sf_growth_stats',JSON.stringify(j.growthStats));renderBadgesWall();}}catch(e){}
+        }
+
         async function syncUserDataFromCloud(force=false) {
             if(userStats.lineUid==='LINE_GUEST')return;
             try{
                 const coreCached=sessionStorage.getItem('sf27_core_'+userStats.lineUid)||sessionStorage.getItem('sf26_core_'+userStats.lineUid); if(coreCached){try{const c=JSON.parse(coreCached);renderCore26(c);}catch(e){}}
                 const json=await postActionV25('syncCore',{uid:userStats.lineUid,forceRefresh:force?'1':'0'}); if(json.status!=='success')return; sessionStorage.setItem('sf27_core_'+userStats.lineUid,JSON.stringify(json));
-                merchantAccountCache=json.merchantAccount||null; renderCore26(json);
+                merchantAccountCache=json.merchantAccount||null; renderCore26(json); if(Array.isArray(json.myHunts))renderMyHunts210(json.myHunts); if(Array.isArray(json.notifications))renderHunterNotifications210(json.notifications);
                 const shops=Array.isArray(json.myShops)?json.myShops:[]; const bar=document.getElementById('merchant-account-bar'),sel=document.getElementById('merchant-shop-select-top');
                 if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · VIP':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);const dc=sessionStorage.getItem('sf27_dash_'+active)||sessionStorage.getItem('sf26_dash_'+active);if(dc){try{renderShopDashboardV25(JSON.parse(dc));}catch(e){}}loadShopDashboardV25(active,false);}
                 if(json.orders&&json.orders.length){localStorage.setItem('seefood_orders_list',JSON.stringify(json.orders));recalculateUserStats(json.orders);}else{localStorage.setItem('seefood_orders_list','[]');loadUserStats();renderBadgesWall();}
@@ -1071,7 +1097,11 @@ select,input,textarea,button{max-width:100%}
 
 
         function renderCore26(json){
-            merchantAccountCache=json.merchantAccount||merchantAccountCache; const shops=Array.isArray(json.myShops)?json.myShops:[]; const bar=document.getElementById('merchant-account-bar'),sel=document.getElementById('merchant-shop-select-top');
+            merchantAccountCache=json.merchantAccount||merchantAccountCache;
+            if(json.growthStats)localStorage.setItem('sf_growth_stats',JSON.stringify(json.growthStats));
+            if(Array.isArray(json.myHunts))renderMyHunts210(json.myHunts);
+            if(Array.isArray(json.notifications))renderHunterNotifications210(json.notifications);
+            const shops=Array.isArray(json.myShops)?json.myShops:[]; const bar=document.getElementById('merchant-account-bar'),sel=document.getElementById('merchant-shop-select-top');
             if(shops.length&&bar&&sel){bar.classList.remove('hidden');sel.innerHTML=shops.map(s=>`<option value="${escapeHTML(s.shopId)}">${escapeHTML(s.shopName)}${s.isVip?' · VIP':''}</option>`).join('');let active=localStorage.getItem('seefood_merchant_shop_id');if(!shops.some(s=>s.shopId===active))active=shops[0].shopId;sel.value=active;localStorage.setItem('seefood_merchant_shop_id',active);}
             refreshIcons26();
         }
@@ -1208,8 +1238,20 @@ select,input,textarea,button{max-width:100%}
                 if (!s.lat || !s.lng) { distanceHtml = `<p class="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-0.5 rounded">📍 新商店地圖建置中</p>`; } else if (!userLocation) { distanceHtml = `<p class="text-xs text-blue-500 font-bold cursor-pointer animate-pulse bg-blue-50 px-2 py-0.5 rounded border border-blue-200 shadow-sm" onclick="requestLocation()">📍 點我解鎖真實距離</p>`; } else { let distDisplay = s.distance > 1000 ? (s.distance/1000).toFixed(1) + "km" : s.distance + "m"; distanceHtml = `<p class="text-xs text-gray-400 font-bold">📍 距離 ${distDisplay}</p>`; }
                 let safeJsName = escapeHTML(s.name).replace(/'/g, "\\'"); let safeJsItem = escapeHTML(s.item).replace(/'/g, "\\'"); let safeJsAddress = escapeHTML(s.address).replace(/'/g, "\\'"); let safeJsPhone = escapeHTML(s.phone).replace(/'/g, "\\'"); let safeJsTime = escapeHTML(s.time).replace(/'/g, "\\'");
                 let taxWarningHtml = ''; if (s.merchantType && s.merchantType.includes('個體戶')) { taxWarningHtml = `<p class="text-[9px] text-gray-400 mt-2 border-t border-dashed border-gray-200 pt-2 font-bold leading-tight">⚠️ 本店鋪為個人惜福個體，依法由賣方自負申報，不提供統一發票。</p>`; }
-                container.innerHTML += `<article class="sf-hunt-card ${isGoldenVip ? 'sf-hunt-priority' : ''}"><div class="sf-hunt-head"><div><p class="sf-hunt-location">${escapeHTML(s.district)} · ${escapeHTML(s.name)}${isGoldenVip ? ' <span title="Plus / Pro 獵場" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#D7A928;vertical-align:middle;margin-left:3px"></span>' : ''}</p>${distanceHtml}</div><span class="sf-stock">剩 ${s.remain}</span></div><div class="sf-hunt-body"><h3>${escapeHTML(s.item)}</h3><p>${escapeHTML(s.note||'')}</p><div class="sf-hunt-meta"><span><i data-lucide="clock-3"></i>${escapeHTML(formatPickupTime30(s.time))}</span><span><i data-lucide="store"></i>外帶自取</span></div></div>${taxWarningHtml}<div class="sf-hunt-foot"><div>${s.discountPrice === 0 ? `<span class="sf-free">免費惜福</span>` : `<span class="sf-old-price">$${s.originalPrice}</span><strong>${Math.round(s.discountRate*10)}折 · $${s.discountPrice}</strong>`}</div><button onclick="openCheckout('${safeJsName}', '${safeJsItem}', ${s.discountPrice}, '${safeJsTime}', ${s.itemIndex}, ${s.originalPrice}, '${s.shopId}', '${safeJsAddress}', '${safeJsPhone}')" class="sf-primary-action">獵取</button></div></article>`;
+                container.innerHTML += `<article class="sf-hunt-card ${isGoldenVip ? 'sf-hunt-priority' : ''}"><div class="sf-hunt-head"><div><p class="sf-hunt-location">${escapeHTML(s.district)} · ${escapeHTML(s.name)}${isGoldenVip ? ' <span title="Plus / Pro 獵場" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#D7A928;vertical-align:middle;margin-left:3px"></span>' : ''}</p>${distanceHtml}</div><span class="sf-stock">剩 ${s.remain}</span></div><div class="sf-hunt-body"><h3>${escapeHTML(s.item)}</h3><p>${escapeHTML(s.note||'')}</p><div class="sf-hunt-meta"><span><i data-lucide="clock-3"></i>${escapeHTML(formatPickupTime30(s.time))}</span><span><i data-lucide="store"></i>外帶自取</span></div></div>${taxWarningHtml}<div class="sf-hunt-foot"><div>${s.discountPrice === 0 ? `<span class="sf-free">免費惜福</span>` : `<span class="sf-old-price">$${s.originalPrice}</span><strong>${Math.round(s.discountRate*10)}折 · $${s.discountPrice}</strong>`}</div><div class="sf-hunt-actions"><button type="button" onclick="shareHunt210(event,'${safeJsName}','${safeJsItem}',${s.originalPrice},${s.discountPrice},${s.remain},'${s.shopId}')" class="sf-share-hunt" aria-label="分享這份獵物"><i data-lucide="share-2"></i></button><button onclick="openCheckout('${safeJsName}', '${safeJsItem}', ${s.discountPrice}, '${safeJsTime}', ${s.itemIndex}, ${s.originalPrice}, '${s.shopId}', '${safeJsAddress}', '${safeJsPhone}')" class="sf-primary-action">獵取</button></div></div></article>`;
             });
+        }
+
+
+        async function shareHunt210(e,store,item,orig,price,remain,shopId){
+            if(e){e.preventDefault();e.stopPropagation();}
+            const url=`${location.origin}${location.pathname}?targetShopId=${encodeURIComponent(shopId)}#home`;
+            const deal=Number(price)===0?'免費惜福':`原價 $${Math.round(Number(orig)||0)} → $${Math.round(Number(price)||0)}`;
+            const text=`${store}｜${item}\n${deal}｜剩 ${remain} 份\n${url}`;
+            try{
+                if(navigator.share){await navigator.share({title:`${store}｜${item}`,text,url});}
+                else{await navigator.clipboard.writeText(text);seefoodAlert('獵物連結已複製，可以直接丟給朋友。',{title:'分享獵物',tone:'success'});}
+            }catch(err){if(err&&err.name!=='AbortError')try{await navigator.clipboard.writeText(text);seefoodAlert('獵物連結已複製。',{title:'分享獵物',tone:'success'});}catch(_e){}}
         }
 
         function openCheckout(store, item, price, time, itemIndex, origPrice, shopId, address, phone) {
@@ -1500,7 +1542,7 @@ select,input,textarea,button{max-width:100%}
 
         function renderBadgesWall(){
             const container=document.getElementById('badges-container');if(!container)return;
-            const times=userStats.unlockedTimes||{},saved=Number(userStats.savedAmount)||0;
+            const times=userStats.unlockedTimes||{},saved=Number(userStats.savedAmount)||0,growthStats=(()=>{try{return JSON.parse(localStorage.getItem('sf_growth_stats')||'{}')}catch(e){return {}}})();
             const orders=JSON.parse(localStorage.getItem('seefood_orders_list')||'[]').length;
             const partnerCount=Number(document.getElementById('partner-shop-count')?.textContent?.match(/\d+/)?.[0]||0);
             const uid=String(userStats.lineUid||'GUEST'),licenseId='H-'+(uid==='LINE_GUEST'?'GUEST':uid.slice(-6).toUpperCase());
@@ -1515,7 +1557,10 @@ select,input,textarea,button{max-width:100%}
               ['sun','午間獵人','午間完成一次惜福',!!times.lunch],
               ['moon','夜行獵人','打烊前完成一次惜福',!!times.midnight],
               ['map-pinned','點燈夥伴','成功點亮第一間獵場',partnerCount>=1],
-              ['network','獵場拓荒者','成功點亮 3 間獵場',partnerCount>=3]
+              ['network','獵場拓荒者','成功點亮 3 間獵場',partnerCount>=3],
+              ['search','獵場偵察員','推薦第一間尚未加入的獵場',Number(growthStats.recommendations||0)>=1],
+              ['map-plus','街區情報員',`有效推薦 ${Number(growthStats.recommendations||0)} / 5 間`,Number(growthStats.recommendations||0)>=5],
+              ['badge-check','獵場伯樂','你推薦的第一間店成功加入 SEEFOOD',Number(growthStats.joinedRecommendations||0)>=1]
             ];
             container.innerHTML=defs.map(d=>createBadgeHtml(d[0],d[1],d[2],d[3])).join('');
             refreshIcons26();
@@ -1759,6 +1804,13 @@ select,input,textarea,button{max-width:100%}
 #partner-hub-zone.sf-partner-card{background:#fff!important;color:#0B2239!important;border:1px solid #E2E7EC!important;box-shadow:0 8px 24px rgba(11,34,57,.04)!important}#partner-hub-zone .text-white,#partner-hub-zone .text-slate-950{color:#0B2239!important}#partner-hub-zone .text-slate-300,#partner-hub-zone .text-slate-400,#partner-hub-zone .text-slate-500{color:#6F7B88!important}#partner-hub-zone .bg-white\/5,#partner-hub-zone .bg-black\/20{background:#F6F8FA!important;border-color:#E1E6EA!important}#partner-hub-zone .bg-white\/10{background:#EEF2F5!important;color:#0B2239!important}#partner-hub-zone .sf-partner-onboarding{background:#F8FAFB;border:1px solid #E1E6EA;border-radius:16px;padding:14px}#partner-hub-zone .sf-partner-step{background:#fff!important;border:1px solid #DDE3E9!important;color:#44505D!important}#partner-hub-zone .sf-partner-step.done{background:#ECF8F3!important;border-color:#BFE7D7!important}#partner-hub-zone details{background:#F7F9FB!important;border-color:#E1E6EA!important}#partner-hub-zone .bg-amber-400\/10{background:#FFF8E6!important;border-color:#F0D78D!important}#partner-hub-zone .text-amber-200{color:#8B6200!important}#partner-hub-zone button.bg-white{background:#0B2239!important;color:#fff!important}
 #merchant-dashboard-zone details.group{background:#fff!important;border-color:#DDE3E9!important;color:#0B2239!important;box-shadow:0 5px 16px rgba(11,34,57,.04)!important}#merchant-dashboard-zone details.group summary{background:#fff!important}#merchant-dashboard-zone details.group summary .text-seefoodYellow{color:#A36C00!important}#merchant-dashboard-zone details.group .text-slate-400{color:#77828E!important}#merchant-dashboard-zone details.group>div{border-color:#E5E9ED!important}#merchant-dashboard-zone details.group label{color:#536171!important}#merchant-dashboard-zone details.group input,#merchant-dashboard-zone details.group select{background:#F7F9FB!important;border-color:#D9E0E6!important;color:#0B2239!important;box-shadow:none!important}#merchant-dashboard-zone details.group input[readonly]{background:#EEF1F4!important;color:#7A8590!important}#merchant-dashboard-zone details.group .bg-red-900\/80{background:#FFF1C7!important;border-color:#E7C96D!important;color:#7A5600!important}#merchant-dashboard-zone details.group .text-red-400{color:#B54E4E!important}#merchant-dashboard-zone details.group .text-yellow-400{color:#A36C00!important}.sf-no-time{grid-column:1/-1;text-align:center;font-size:11px;color:#8A96A3;padding:18px}
 @media(max-width:767px){.sf-hero-copy{padding:22px 20px 24px!important}.sf-hero-title{font-size:30px!important}.sf-hero-subtitle{font-size:14px!important}#page-achievement #badges-container{grid-template-columns:1fr!important}.sf-license-card{padding:18px}}
+
+/* RC2.10 — share / my hunts / demand live */
+.sf-hunt-actions{display:flex;align-items:center;gap:8px}.sf-share-hunt{width:39px;height:39px;border-radius:12px;border:1px solid #DDE3E9;background:#fff;color:#0B2239;display:grid;place-items:center}.sf-share-hunt svg{width:17px;height:17px}
+.sf-my-hunts-zone{background:#fff;border:1px solid #E2E7EC;border-radius:20px;padding:16px}.sf-my-hunts-head{display:flex;align-items:end;justify-content:space-between}.sf-my-hunts-head h3{font-size:18px;font-weight:950;color:#0B2239}.sf-my-hunts-head>span{font-size:10px;color:#7A8590;font-weight:850}.sf-my-hunts-desc{font-size:10px;color:#77828E;margin-top:5px}.sf-my-hunt-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #E5E9ED;background:#F8FAFB;border-radius:14px;padding:12px}.sf-my-hunt-row b,.sf-my-hunt-row span{display:block}.sf-my-hunt-row b{font-size:12px;color:#0B2239}.sf-my-hunt-row span{font-size:9px;color:#7A8590;margin-top:2px}.sf-my-hunt-row button,.sf-my-hunts-radar{border:0;border-radius:10px;font-size:10px;font-weight:950}.sf-my-hunt-row button{background:#FFF1BD;color:#765200;padding:8px 10px}.sf-my-hunts-radar{width:100%;margin-top:10px;padding:10px;background:#0B2239;color:#fff}
+.sf-demand-signal{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:stretch;background:#fff;border:1px solid #E2E7EC;border-radius:16px;padding:10px;margin-top:10px}.sf-demand-signal>div{background:#F7F9FB;border-radius:12px;padding:9px 10px}.sf-demand-signal p{font-size:9px;color:#7A8590}.sf-demand-signal b{font-size:20px;color:#0B2239}.sf-demand-signal span{font-size:8px;color:#8A96A3;margin-left:2px}.sf-demand-signal button{border:0;border-radius:12px;background:#F4B41A;color:#0B2239;padding:0 12px;font-size:10px;font-weight:950}
+.sf-live-order{background:#fff;border:1px solid #E1E6EA;border-radius:13px;padding:11px;display:flex;justify-content:space-between;gap:10px}.sf-live-order b,.sf-live-order span,.sf-live-order small,.sf-live-order strong{display:block}.sf-live-order b{font:900 11px ui-monospace,SFMono-Regular,monospace;color:#0B2239}.sf-live-order span{font-size:11px;font-weight:900;color:#263849;margin-top:3px}.sf-live-order small{font-size:9px;color:#7A8590}.sf-live-order strong{font-size:13px;color:#A36C00;margin-top:3px}
+@media(max-width:420px){.sf-demand-signal{grid-template-columns:1fr 1fr}.sf-demand-signal button{grid-column:1/-1;padding:10px}}
 </style>
 
 <div id="partner-onboarding-modal" class="sf-sheet-backdrop hidden" onclick="if(event.target===this)closePartnerOnboarding28()"><div class="sf-sheet" role="dialog" aria-modal="true"><div class="sf-sheet-handle"></div><div class="sf-sheet-head"><div><span class="sf-field-kicker">PARTNER PAYOUT</span><h3>完成分潤收款資格</h3><p>推薦與累積不受影響；完成三步後才會進入可撥款狀態。</p></div><button type="button" onclick="closePartnerOnboarding28()" class="sf-sheet-close">×</button></div><div id="partner-onboarding-body" class="sf-partner-form"></div></div></div>
@@ -1803,6 +1855,27 @@ select,input,textarea,button{max-width:100%}
   window.sfShowDayDetail24=function(i,e){const a=sfLastAnalytics24,d=a?.daily?.[i],p=a?.previousDaily?.[i];if(!d)return;document.querySelectorAll('.sf-chart-tip').forEach(x=>x.remove());const el=document.createElement('div');el.className='sf-chart-tip';el.innerHTML=`<b>${d.date}</b><br>本期：$${Math.round(d.revenue).toLocaleString()} · ${d.orders} 份${p?`<br>上期對應：$${Math.round(p.revenue).toLocaleString()} · ${p.orders} 份`:''}`;document.body.appendChild(el);const r=e.target.getBoundingClientRect();el.style.left=Math.min(innerWidth-el.offsetWidth-8,r.left+10)+'px';el.style.top=(r.top+scrollY-el.offsetHeight-8)+'px';setTimeout(()=>el.remove(),3500)};
   const oldRAM=window.renderMerchantAnalytics30;
   if(oldRAM) window.renderMerchantAnalytics30=function(a){oldRAM(a);sfLastAnalytics24=a;const chart=document.getElementById('m30-line-chart');if(chart)chart.innerHTML=sfRenderChart24(a);const rr=document.getElementById('m30-rescue-rate'),note=document.getElementById('m30-sellthrough-note');if(rr)rr.textContent=a.sellThrough&&a.sellThrough.available>0?Math.round(a.sellThrough.rate*100)+'%':'—';if(note)note.textContent=a.sellThrough&&a.sellThrough.available>0?`有效供給 ${a.sellThrough.available} 份 · SEEFOOD 售出 ${a.sellThrough.sold} 份 · 主動調減 ${a.sellThrough.withdrawn} 份`:'新版開始記錄庫存生命週期後，這裡會自動累積。';loadMerchantOrderLedger30(false)};
+
+        let sfMerchantLiveTimer210=null,sfMerchantLiveBusy210=false;
+        function stopMerchantLivePoll210(){if(sfMerchantLiveTimer210){clearInterval(sfMerchantLiveTimer210);sfMerchantLiveTimer210=null;}}
+        async function refreshMerchantLive210(){
+            if(sfMerchantLiveBusy210||userStats.lineUid==='LINE_GUEST')return;
+            const shopId=localStorage.getItem('seefood_merchant_shop_id')||'';if(!shopId)return;sfMerchantLiveBusy210=true;
+            try{
+                const j=await postActionV25('getMerchantLiveState',{uid:userStats.lineUid,shopId});
+                if(j.status==='success'){
+                    const ol=document.getElementById('merchant-active-orders-list');
+                    if(ol){ol.innerHTML=(j.activeOrders||[]).length?(j.activeOrders||[]).map(o=>`<div class="sf-live-order"><div><b>${escapeHTML(o.orderId)}</b><span>${escapeHTML(o.item)}</span></div><div><small>自取 ${escapeHTML(formatPickupTime30(o.time))}</small><strong>$${Math.round(Number(o.price)||0)}</strong></div></div>`).join(''):'<div class="sf-mini-empty"><i data-lucide="circle-check-big"></i><div><b>目前沒有待取餐任務</b><span>新的已付款訂單會自動出現在這裡。</span></div></div>';}
+                    const kc=document.getElementById('merchant-knock-count'),wc=document.getElementById('merchant-watch-count'),sync=document.getElementById('merchant-live-sync');
+                    if(kc)kc.textContent=Number(j.knockToday)||0;if(wc)wc.textContent=Number(j.watchers)||0;if(sync)sync.textContent='剛剛更新';
+                    refreshIcons26();
+                }
+            }catch(e){const sync=document.getElementById('merchant-live-sync');if(sync)sync.textContent='同步暫停';}
+            finally{sfMerchantLiveBusy210=false;}
+        }
+        function startMerchantLivePoll210(){stopMerchantLivePoll210();refreshMerchantLive210();sfMerchantLiveTimer210=setInterval(()=>{if((window.location.hash||'#home').includes('merchant')&&!document.hidden)refreshMerchantLive210();},12000);}
+        document.addEventListener('visibilitychange',()=>{if(!document.hidden&&(window.location.hash||'').includes('merchant'))refreshMerchantLive210();});
+
   window.loadMerchantOrderLedger30=async function(force){const uid=userStats.lineUid,shopId=localStorage.getItem('seefood_merchant_shop_id')||'',box=document.getElementById('m30-order-ledger');if(!uid||!shopId||!box)return;try{const p=new URLSearchParams({action:'getMerchantOrders',uid,shopId,limit:'30'});const r=await fetch(gasUrl,{method:'POST',body:p});const j=await r.json();if(j.status!=='success')return;box.innerHTML=(j.orders||[]).map(o=>`<div class="sf-order-ledger-row grid grid-cols-[1.2fr_1fr_auto] gap-3 items-center py-3 border-t border-slate-100 text-xs"><div><b class="font-mono text-slate-800">${escapeHTML(o.orderId)}</b><div class="text-slate-500 mt-1">${escapeHTML(o.item)}</div></div><div><span class="sf-order-status ${o.status==='Redeemed'?'ok':o.status==='Paid'?'warn':''}">${escapeHTML(o.statusLabel)}</span><div class="text-slate-400 mt-1">${escapeHTML(o.settlementLabel||'')}</div></div><div class="sf-order-money text-right"><b class="text-slate-900">$${Math.round(o.itemPrice||0)}</b><div class="text-slate-500 mt-1">應收 $${Math.round(o.netIncome||0)}</div></div></div>`).join('')||'<div class="text-xs text-slate-400 py-4">尚無訂單</div>'}catch(e){box.innerHTML='<div class="text-xs text-red-400 py-3">訂單載入失敗，請稍後重試</div>'}};
   window.sfReportOrderIssue24=async function(orderId){const reason=prompt('訂單遇到什麼問題？\n1 店家無法提供商品\n2 商品與訂單明顯不符\n3 店家表示無此訂單\n4 已付款但無法取餐\n5 其他\n\n請輸入 1–5');if(!reason)return;const map={'1':'店家無法提供商品','2':'商品與訂單明顯不符','3':'店家表示無此訂單','4':'已付款但無法取餐','5':'其他'};if(!map[reason]){alert('請輸入 1–5');return}const detail=prompt('請簡短說明發生什麼事（平台會先審核，不代表自動退款）')||'';const p=new URLSearchParams({action:'createDispute',uid:userStats.lineUid,orderId,reason:map[reason],detail});const r=await fetch(gasUrl,{method:'POST',body:p});const j=await r.json();alert(j.status==='success'?'已送交 SEEFOOD 審核。我們不會因提出問題就自動退款，會依訂單紀錄與雙方資料判斷。':(j.msg||'送出失敗'))};
   const oldTickets=window.renderSavedTicketsWall;
@@ -1827,3 +1900,11 @@ select,input,textarea,button{max-width:100%}
 
 </body>
 </html>
+
+<script>
+document.addEventListener('click',function(e){
+  const b=e.target.closest && e.target.closest('[onclick*="switchTab(\'merchant\')"],[onclick*="switchTab(&quot;merchant&quot;)"]');
+  if(b)setTimeout(()=>{if(window.startMerchantLivePoll210)startMerchantLivePoll210()},250);
+});
+window.addEventListener('hashchange',()=>{if((location.hash||'').includes('merchant'))startMerchantLivePoll210();else stopMerchantLivePoll210();});
+</script>
