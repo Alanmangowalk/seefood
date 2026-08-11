@@ -317,10 +317,38 @@ select,input,textarea,button{max-width:100%}
 </style>
 
 
+
 <style id="seefood-perf-audit-style">
-#sf-perf-audit{display:none;position:fixed;left:8px;right:8px;bottom:84px;z-index:999999;background:rgba(7,25,43,.96);color:white;border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:10px 12px;max-height:34vh;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;line-height:1.45}
-#sf-perf-audit.on{display:block}#sf-perf-audit b{color:#FFD36A}#sf-perf-audit .bad{color:#FF9A9E}#sf-perf-audit .good{color:#75E2B4}
+#sf-perf-audit{
+  display:block;position:fixed;right:10px;bottom:calc(92px + env(safe-area-inset-bottom));
+  z-index:999999;width:auto;max-width:calc(100vw - 20px);
+  background:rgba(7,25,43,.96);color:white;border:1px solid rgba(255,255,255,.15);
+  border-radius:999px;padding:7px 10px;box-shadow:0 8px 26px rgba(0,0,0,.24);
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;line-height:1.45;
+  user-select:none;-webkit-user-select:none;touch-action:none
+}
+#sf-perf-audit .sf-perf-head{display:flex;align-items:center;gap:8px;white-space:nowrap}
+#sf-perf-audit .sf-perf-dot{width:8px;height:8px;border-radius:50%;background:#75E2B4;flex:none}
+#sf-perf-audit .sf-perf-title{font-weight:900;color:#FFD36A}
+#sf-perf-audit .sf-perf-mini{opacity:.82}
+#sf-perf-audit .sf-perf-actions{display:flex;gap:4px;margin-left:4px}
+#sf-perf-audit button{
+  appearance:none;border:0;background:rgba(255,255,255,.12);color:white;
+  width:26px;height:26px;border-radius:50%;padding:0;font-weight:900;cursor:pointer
+}
+#sf-perf-lines{display:none}
+#sf-perf-audit.expanded{
+  left:8px;right:8px;bottom:calc(86px + env(safe-area-inset-bottom));width:auto;
+  border-radius:14px;padding:10px 12px;max-height:34vh;overflow:auto;touch-action:pan-y
+}
+#sf-perf-audit.expanded .sf-perf-head{position:sticky;top:-10px;background:rgba(7,25,43,.98);padding:4px 0 8px;z-index:2}
+#sf-perf-audit.expanded #sf-perf-lines{display:block;margin-top:3px}
+#sf-perf-audit b{color:#FFD36A}
+#sf-perf-audit .bad{color:#FF9A9E}
+#sf-perf-audit .good{color:#75E2B4}
+#sf-perf-audit.hidden-by-user{display:none!important}
 </style>
+
 
 <script id="seefood-perf-audit-script">
 window.__SF_PERF_ON=true;
@@ -330,7 +358,11 @@ window.sfPerfLog=function(name,total,detail){
   if(!window.__SF_PERF_ON)return;
   const row={t:new Date().toLocaleTimeString('zh-TW',{hour12:false}),name,total:Math.round(Number(total)||0),detail:detail||{}};
   __SF_PERF_LOG.push(row);if(__SF_PERF_LOG.length>20)__SF_PERF_LOG.shift();
-  const box=document.getElementById('sf-perf-audit'),lines=document.getElementById('sf-perf-lines');if(box)box.classList.add('on');
+  const box=document.getElementById('sf-perf-audit'),lines=document.getElementById('sf-perf-lines'),mini=document.getElementById('sf-perf-mini');
+  if(mini){
+    const last=row;
+    mini.textContent=last.name+(last.total?(' '+last.total+'ms'):'');
+  }
   if(lines)lines.innerHTML=__SF_PERF_LOG.slice().reverse().map(x=>{
     const cls=x.total===0?'':(x.total<=2000?'good':x.total>=5000?'bad':'');
     let d='';try{d=Object.entries(x.detail||{}).map(([k,v])=>k+'='+((typeof v==='object')?JSON.stringify(v):v)).join(' · ')}catch(_e){}
@@ -341,12 +373,39 @@ window.sfPerfLog=function(name,total,detail){
 window.addEventListener('DOMContentLoaded',()=>{
   try{
     const box=document.getElementById('sf-perf-audit');
-    if(box){box.classList.add('on');}
+    const toggle=document.getElementById('sf-perf-toggle');
+    const hide=document.getElementById('sf-perf-hide');
     const lines=document.getElementById('sf-perf-lines');
     if(lines && !lines.dataset.booted){
       lines.dataset.booted='1';
       lines.innerHTML='<div class="good">PERF MODE ACTIVE · 等待操作…</div>';
     }
+    if(toggle)toggle.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      box.classList.toggle('expanded');
+      toggle.textContent=box.classList.contains('expanded')?'−':'+';
+    });
+    if(hide)hide.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      box.classList.add('hidden-by-user');
+    });
+    // Long-press / drag compact pill vertically when it blocks a modal.
+    let dragging=false,startY=0,startBottom=0;
+    box.addEventListener('pointerdown',(e)=>{
+      if(box.classList.contains('expanded'))return;
+      if(e.target.closest('button'))return;
+      dragging=true;startY=e.clientY;
+      startBottom=parseFloat(getComputedStyle(box).bottom)||92;
+      try{box.setPointerCapture(e.pointerId);}catch(_e){}
+    });
+    box.addEventListener('pointermove',(e)=>{
+      if(!dragging)return;
+      const dy=startY-e.clientY;
+      const max=Math.max(90,window.innerHeight-90);
+      box.style.bottom=Math.min(max,Math.max(90,startBottom+dy))+'px';
+    });
+    box.addEventListener('pointerup',()=>{dragging=false;});
+    box.addEventListener('pointercancel',()=>{dragging=false;});
   }catch(_e){}
 });
 
@@ -440,7 +499,18 @@ window.addEventListener('DOMContentLoaded',()=>{
 </script>
 
 </head>
-<body class="bg-gray-900 min-h-screen flex justify-center items-top"><div id="sf-perf-audit"><b>SEEFOOD PERF AUDIT</b><div id="sf-perf-lines">等待操作…</div></div>
+<body class="bg-gray-900 min-h-screen flex justify-center items-top"><div id="sf-perf-audit">
+  <div class="sf-perf-head">
+    <span class="sf-perf-dot"></span>
+    <span class="sf-perf-title">PERF</span>
+    <span id="sf-perf-mini" class="sf-perf-mini">等待操作</span>
+    <span class="sf-perf-actions">
+      <button id="sf-perf-toggle" type="button" aria-label="展開效能面板">+</button>
+      <button id="sf-perf-hide" type="button" aria-label="隱藏效能面板">×</button>
+    </span>
+  </div>
+  <div id="sf-perf-lines">等待操作…</div>
+</div>
 
     <div class="sf-app-shell w-full max-w-[430px] bg-gray-50 h-[100dvh] shadow-2xl flex flex-col overflow-hidden relative">
         
@@ -506,7 +576,7 @@ window.addEventListener('DOMContentLoaded',()=>{
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.7.5-PERF</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.7.6-PERF</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
