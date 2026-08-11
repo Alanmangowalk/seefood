@@ -316,8 +316,29 @@ select,input,textarea,button{max-width:100%}
 }
 </style>
 
+
+<style id="seefood-perf-audit-style">
+#sf-perf-audit{display:none;position:fixed;left:8px;right:8px;bottom:84px;z-index:999999;background:rgba(7,25,43,.96);color:white;border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:10px 12px;max-height:34vh;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;line-height:1.45}
+#sf-perf-audit.on{display:block}#sf-perf-audit b{color:#FFD36A}#sf-perf-audit .bad{color:#FF9A9E}#sf-perf-audit .good{color:#75E2B4}
+</style>
+
+<script id="seefood-perf-audit-script">
+window.__SF_PERF_ON=new URLSearchParams(location.search).get('perf')==='1';
+window.__SF_PERF_LOG=[];
+window.sfPerfLog=function(name,total,detail){
+  if(!window.__SF_PERF_ON)return;
+  const row={t:new Date().toLocaleTimeString('zh-TW',{hour12:false}),name,total:Math.round(Number(total)||0),detail:detail||{}};
+  __SF_PERF_LOG.push(row);if(__SF_PERF_LOG.length>20)__SF_PERF_LOG.shift();
+  const box=document.getElementById('sf-perf-audit'),lines=document.getElementById('sf-perf-lines');if(box)box.classList.add('on');
+  if(lines)lines.innerHTML=__SF_PERF_LOG.slice().reverse().map(x=>{
+    const cls=x.total<=2000?'good':x.total>=5000?'bad':'';
+    let d='';try{d=Object.entries(x.detail||{}).map(([k,v])=>k+'='+((typeof v==='object')?JSON.stringify(v):v)).join(' · ')}catch(_e){}
+    return `<div class="${cls}">${x.t}｜${x.name}｜${x.total}ms${d?'｜'+d:''}</div>`;
+  }).join('');
+};
+</script>
 </head>
-<body class="bg-gray-900 min-h-screen flex justify-center items-top">
+<body class="bg-gray-900 min-h-screen flex justify-center items-top"><div id="sf-perf-audit"><b>SEEFOOD PERF AUDIT</b><div id="sf-perf-lines">等待操作…</div></div>
 
     <div class="sf-app-shell w-full max-w-[430px] bg-gray-50 h-[100dvh] shadow-2xl flex flex-col overflow-hidden relative">
         
@@ -383,7 +404,7 @@ select,input,textarea,button{max-width:100%}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.7.1</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.7.2-PERF</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -1154,6 +1175,7 @@ select,input,textarea,button{max-width:100%}
         async function bootstrapIdentity30(){if(!hasAcceptedTos30())return 'tos';return await initLiffAuth();}
 
         async function postActionV25(action, params={}) {
+            const __p0=performance.now();
             const p=new URLSearchParams(); p.append('action',action); Object.entries(params).forEach(([k,v])=>{if(v!==undefined&&v!==null)p.append(k,v)});
             const res=await fetch(gasUrl,{method:'POST',body:p}); return await res.json();
         }
@@ -1197,8 +1219,9 @@ select,input,textarea,button{max-width:100%}
         }
 
         async function loadShopDashboardV25(shopId, showLoader=false) {
+            const __dash0=performance.now();
             if(!shopId||userStats.lineUid==='LINE_GUEST')return; if(showLoader)showGlobalLoading('切換店鋪','只載入這間店的即時資料…');
-            try{const j=await postActionV25('getShopDashboard',{uid:userStats.lineUid,shopId});if(j.status==='success'&&j.myShop){sessionStorage.setItem('sf27_dash_'+shopId,JSON.stringify(j.myShop));renderShopDashboardV25(j.myShop);}else alert(j.msg||'店鋪載入失敗');}catch(e){console.error(e);alert('店鋪資料載入失敗，請稍後重試');}finally{if(showLoader)hideGlobalLoading();}
+            try{const j=await postActionV25('getShopDashboard',{uid:userStats.lineUid,shopId});if(j.status==='success'&&j.myShop){sessionStorage.setItem('sf27_dash_'+shopId,JSON.stringify(j.myShop));renderShopDashboardV25(j.myShop);}else alert(j.msg||'店鋪載入失敗');}catch(e){console.error(e);alert('店鋪資料載入失敗，請稍後重試');}finally{sfPerfLog('SHOP SWITCH',performance.now()-__dash0,{shopId});if(showLoader)hideGlobalLoading();}
         }
 
         async function loadPartnerHubV25() {
@@ -1375,11 +1398,13 @@ select,input,textarea,button{max-width:100%}
         }
 
         async function fetchLiveStores(force=false) {
+            const __home0=performance.now();
             if (!localStorage.getItem('seefood_tos_agreed')) return;
             if(sfLiveStoresBusy)return;
             sfLiveStoresBusy=true;
             try {
-                const resJson = await sfFetchJsonWithTimeout(gasUrl + "?t=" + new Date().getTime(), 12000); const rawData = resJson.stores || []; const baseSavedKg = resJson.totalSavedKg || 1285.5;
+                const __net0=performance.now();
+                const resJson = await sfFetchJsonWithTimeout(gasUrl + "?t=" + new Date().getTime(), 12000); const __netMs=performance.now()-__net0; const rawData = resJson.stores || []; const baseSavedKg = resJson.totalSavedKg || 1285.5;
                 let totalReg = resJson.registeredStores || 0; textBannerTemplates[0].text = `獵人雷達點燈：全台已進駐 ${totalReg}/100 店，滿百即刻開車解鎖！`; const bText = document.getElementById('text-banner-text');
                 if(bText && bannerIndex === 0) bText.innerText = textBannerTemplates[0].text;
                 cloudBanners = resJson.banners || [];
@@ -1669,7 +1694,9 @@ select,input,textarea,button{max-width:100%}
                 localStorage.setItem(slotDataKey(i), JSON.stringify({type: type, name: name, desc: desc, orig: orig, rate: rateStr, rem: rem})); formData.append(`itemType${i}`, type); formData.append(`itemName${i}`, name); formData.append(`itemDesc${i}`, desc); formData.append(`orig${i}`, orig); formData.append(`disc${i}`, Math.round(orig * rate)); formData.append(`rem${i}`, rem);
             }
             const btn = document.getElementById('btn-online-submit'); if(btn) { btn.innerText = "⏳ 同步中..."; btn.disabled = true; }
+            const __up0=performance.now();
             fetch(gasUrl, { method: "POST", body: formData }).then(res => res.json()).then(resJson => {
+                sfPerfLog('UPDATE STATUS',performance.now()-__up0,{server:resJson?._perf?.serverMs??'',marks:resJson?._perf?.marks??''});
                 if(btn) { btn.innerText = "立即開賣"; btn.disabled = false; }
                 if (resJson.status === "error") { alert(resJson.msg); return; }
                 const b = document.getElementById('dashboard-status-badge');
