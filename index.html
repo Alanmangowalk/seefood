@@ -332,7 +332,7 @@ window.sfPerfLog=function(name,total,detail){
   __SF_PERF_LOG.push(row);if(__SF_PERF_LOG.length>20)__SF_PERF_LOG.shift();
   const box=document.getElementById('sf-perf-audit'),lines=document.getElementById('sf-perf-lines');if(box)box.classList.add('on');
   if(lines)lines.innerHTML=__SF_PERF_LOG.slice().reverse().map(x=>{
-    const cls=x.total<=2000?'good':x.total>=5000?'bad':'';
+    const cls=x.total===0?'':(x.total<=2000?'good':x.total>=5000?'bad':'');
     let d='';try{d=Object.entries(x.detail||{}).map(([k,v])=>k+'='+((typeof v==='object')?JSON.stringify(v):v)).join(' · ')}catch(_e){}
     return `<div class="${cls}">${x.t}｜${x.name}｜${x.total}ms${d?'｜'+d:''}</div>`;
   }).join('');
@@ -351,6 +351,94 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 
 </script>
+
+<script id="seefood-perf-universal-trace">
+(function(){
+  if(window.__SF_UNIVERSAL_TRACE_INSTALLED)return;
+  window.__SF_UNIVERSAL_TRACE_INSTALLED=true;
+
+  function actionFromUrlAndInit(input,init){
+    try{
+      const url=typeof input==='string'?input:(input&&input.url)||'';
+      let action='';
+      try{ action=new URL(url,location.href).searchParams.get('action')||''; }catch(_e){}
+      if(!action && init && init.body){
+        const b=init.body;
+        if(typeof FormData!=='undefined' && b instanceof FormData) action=String(b.get('action')||'');
+        else if(typeof URLSearchParams!=='undefined' && b instanceof URLSearchParams) action=String(b.get('action')||'');
+        else if(typeof b==='string'){
+          try{ action=new URLSearchParams(b).get('action')||''; }catch(_e){}
+        }
+      }
+      if(action)return action;
+      if(/radar/i.test(url))return 'RADAR';
+      if(/script\.google|googleusercontent|exec/.test(url))return 'GAS';
+      return (url.split('?')[0].split('/').pop()||'FETCH').slice(0,28);
+    }catch(_e){return 'FETCH';}
+  }
+
+  const nativeFetch=window.fetch.bind(window);
+  window.fetch=async function(input,init){
+    const started=performance.now();
+    const action=actionFromUrlAndInit(input,init);
+    sfPerfLog('START '+action,0,{});
+    try{
+      const response=await nativeFetch(input,init);
+      const networkMs=performance.now()-started;
+      let detail={status:response.status};
+      try{
+        const clone=response.clone();
+        clone.json().then(j=>{
+          const d={
+            status:response.status,
+            server:j&&j._perf?(j._perf.serverMs??j._perf.totalMs??''):'',
+            route:j&&j._perf?j._perf.route||'':'',
+            cache:j&&j._perf?j._perf.cacheHit??'':'',
+            marks:j&&j._perf?j._perf.marks||'':''
+          };
+          sfPerfLog('FETCH '+action,networkMs,d);
+        }).catch(()=>sfPerfLog('FETCH '+action,networkMs,detail));
+      }catch(_e){
+        sfPerfLog('FETCH '+action,networkMs,detail);
+      }
+      return response;
+    }catch(err){
+      sfPerfLog('FETCH FAIL '+action,performance.now()-started,{error:String(err&&err.message||err)});
+      throw err;
+    }
+  };
+
+  // User-action marker. This does not change handlers; it only records what the user touched.
+  document.addEventListener('click',function(e){
+    try{
+      const el=e.target&&e.target.closest?e.target.closest('button,a,[role="button"],select'):null;
+      if(!el)return;
+      const txt=(el.innerText||el.getAttribute('aria-label')||el.id||el.name||el.tagName||'').replace(/\s+/g,' ').trim().slice(0,32);
+      if(txt)sfPerfLog('TAP '+txt,0,{});
+    }catch(_e){}
+  },true);
+
+  // Mark loader visibility so we can distinguish "network finished" from "UI still spinning".
+  try{
+    const obs=new MutationObserver(function(list){
+      for(const m of list){
+        const el=m.target;
+        if(!(el instanceof HTMLElement))continue;
+        const id=(el.id||'').toLowerCase(), cls=String(el.className||'').toLowerCase();
+        if(id.includes('loading')||id.includes('loader')||cls.includes('loading')||cls.includes('loader')){
+          const visible=getComputedStyle(el).display!=='none' && getComputedStyle(el).visibility!=='hidden' && el.getBoundingClientRect().height>0;
+          sfPerfLog('LOADER '+(visible?'ON':'OFF'),0,{id:el.id||'',cls:String(el.className||'').slice(0,30)});
+        }
+      }
+    });
+    window.addEventListener('DOMContentLoaded',()=>{
+      obs.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class','style','hidden']});
+      sfPerfLog('TRACE READY',0,{url:location.pathname+location.search+location.hash});
+    });
+  }catch(_e){}
+})();
+</script>
+
 </head>
 <body class="bg-gray-900 min-h-screen flex justify-center items-top"><div id="sf-perf-audit"><b>SEEFOOD PERF AUDIT</b><div id="sf-perf-lines">等待操作…</div></div>
 
@@ -418,7 +506,7 @@ window.addEventListener('DOMContentLoaded',()=>{
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.7.4-PERF</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.7.5-PERF</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
