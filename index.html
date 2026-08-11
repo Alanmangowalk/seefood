@@ -323,7 +323,20 @@ select,input,textarea,button{max-width:100%}
 </style>
 
 <script id="seefood-perf-audit-script">
-window.__SF_PERF_ON=new URLSearchParams(location.search).get('perf')==='1';
+window.__SF_PERF_ON=(function(){
+  const search=new URLSearchParams(location.search);
+  if(search.get('perf')==='1')return true;
+  // Also accept #home?perf=1 / #merchant?perf=1 because mobile users often append
+  // the parameter after the visible hash.
+  const h=String(location.hash||'');
+  const qi=h.indexOf('?');
+  if(qi>=0){
+    const hp=new URLSearchParams(h.slice(qi+1));
+    if(hp.get('perf')==='1')return true;
+  }
+  return sessionStorage.getItem('sf_perf_mode')==='1';
+})();
+if(window.__SF_PERF_ON)sessionStorage.setItem('sf_perf_mode','1');
 window.__SF_PERF_LOG=[];
 window.sfPerfLog=function(name,total,detail){
   if(!window.__SF_PERF_ON)return;
@@ -404,7 +417,7 @@ window.sfPerfLog=function(name,total,detail){
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.7.2-PERF</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.7.3-PERF</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -476,7 +489,7 @@ window.sfPerfLog=function(name,total,detail){
                     <div class="sf-my-hunts-head"><div><p class="sf-empty-kicker">MY HUNTS</p><h3>我的獵場</h3></div><span id="my-hunts-count">0 家關注</span></div>
                     <p class="sf-my-hunts-desc">你主動訂閱的獵場開賣時，SEEFOOD 會通知你。</p>
                     <div id="hunter-notification-list" class="space-y-2 mt-3"></div><div id="my-hunts-list" class="space-y-2 mt-3"><div class="sf-mini-empty"><i data-lucide="bell"></i><div><b>還沒有訂閱獵場</b><span>到戰情室對暫無獵物的店家敲碗，並開啟「上架叫我」。</span></div></div></div>
-                    <button type="button" onclick="location.href='radar.html'" class="sf-my-hunts-radar">前往戰情室</button>
+                    <button type="button" onclick="location.href='radar.html'+(window.__SF_PERF_ON?'?perf=1':'')" class="sf-my-hunts-radar">前往戰情室</button>
                 </section>
             </div>
 
@@ -1233,7 +1246,7 @@ window.sfPerfLog=function(name,total,detail){
         function renderMyHunts210(hunts){
             const list=document.getElementById('my-hunts-list'),count=document.getElementById('my-hunts-count');if(!list)return;
             hunts=Array.isArray(hunts)?hunts:[];if(count)count.textContent=`${hunts.length} 家關注`;
-            list.innerHTML=hunts.length?hunts.map(h=>`<div class="sf-my-hunt-row"><div class="min-w-0"><b>${escapeHTML(h.name||'獵場')}</b><span>今天 ${Number(h.knockToday)||0} 位獵人敲碗</span></div><button type="button" onclick="location.href='radar.html?shopId=${encodeURIComponent(h.shopId)}'">查看</button></div>`).join(''):'<div class="sf-mini-empty"><i data-lucide="bell"></i><div><b>還沒有訂閱獵場</b><span>到戰情室對暫無獵物的店家敲碗，並開啟「上架叫我」。</span></div></div>';
+            list.innerHTML=hunts.length?hunts.map(h=>`<div class="sf-my-hunt-row"><div class="min-w-0"><b>${escapeHTML(h.name||'獵場')}</b><span>今天 ${Number(h.knockToday)||0} 位獵人敲碗</span></div><button type="button" onclick="location.href='radar.html?shopId=${encodeURIComponent(h.shopId)}${window.__SF_PERF_ON?'&perf=1':''}'">查看</button></div>`).join(''):'<div class="sf-mini-empty"><i data-lucide="bell"></i><div><b>還沒有訂閱獵場</b><span>到戰情室對暫無獵物的店家敲碗，並開啟「上架叫我」。</span></div></div>';
             refreshIcons26();
         }
         function renderHunterNotifications210(items){
@@ -1428,7 +1441,11 @@ window.sfPerfLog=function(name,total,detail){
                 const urlParams = new URLSearchParams(window.location.search);
                 const targetShopId = urlParams.get('targetShopId');
                 if (targetShopId) {
-                    window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+                    {
+                        const keepPerf=window.__SF_PERF_ON?'?perf=1':'';
+                        const cleanHash=(window.location.hash||'').split('?')[0];
+                        window.history.replaceState({}, document.title, window.location.pathname + keepPerf + cleanHash);
+                    }
                     setTimeout(() => {
                         const targetStore = storesData.find(s => s.shopId === targetShopId);
                         if (targetStore) {
@@ -1441,7 +1458,7 @@ window.sfPerfLog=function(name,total,detail){
                 }
             } catch (error) {
                 const container = document.getElementById('store-list-container');
-                if(container) container.innerHTML = `<div class="sf-empty-state sf-empty-feed"><span class="sf-empty-icon"><i data-lucide="wifi-off"></i></span><p class="sf-empty-kicker">RADAR RETRY</p><h3>獵場情報還在路上</h3><p>這次連線比平常久，沒有載入任何舊庫存。再掃描一次即可。</p><div class="sf-empty-actions"><button type="button" onclick="fetchLiveStores(true)" class="sf-empty-primary">重新連線</button><button type="button" onclick="location.href='radar.html'" class="sf-empty-secondary">先看戰情室</button></div></div>`;
+                if(container) container.innerHTML = `<div class="sf-empty-state sf-empty-feed"><span class="sf-empty-icon"><i data-lucide="wifi-off"></i></span><p class="sf-empty-kicker">RADAR RETRY</p><h3>獵場情報還在路上</h3><p>這次連線比平常久，沒有載入任何舊庫存。再掃描一次即可。</p><div class="sf-empty-actions"><button type="button" onclick="fetchLiveStores(true)" class="sf-empty-primary">重新連線</button><button type="button" onclick="location.href='radar.html'+(window.__SF_PERF_ON?'?perf=1':'')" class="sf-empty-secondary">先看戰情室</button></div></div>`;
                 refreshIcons26();
             } finally { sfLiveStoresBusy=false; }
         }
@@ -1451,7 +1468,7 @@ window.sfPerfLog=function(name,total,detail){
                 const c=document.getElementById('store-list-container');if(!c)return;
                 if(/正在連線全台雷達/.test(c.textContent||'')){
                     if(sfHomeFeedReady && sfCommitHomeFeed30('failsafe-ready'))return;
-                    c.innerHTML=`<div class="sf-empty-state sf-empty-feed"><span class="sf-empty-icon"><i data-lucide="wifi-off"></i></span><p class="sf-empty-kicker">RADAR RETRY</p><h3>獵場情報還沒回來</h3><p>這次連線超過預期，請重新掃描。</p><div class="sf-empty-actions"><button type="button" onclick="fetchLiveStores(true)" class="sf-empty-primary">重新連線</button><button type="button" onclick="location.href='radar.html'" class="sf-empty-secondary">先看戰情室</button></div></div>`;
+                    c.innerHTML=`<div class="sf-empty-state sf-empty-feed"><span class="sf-empty-icon"><i data-lucide="wifi-off"></i></span><p class="sf-empty-kicker">RADAR RETRY</p><h3>獵場情報還沒回來</h3><p>這次連線超過預期，請重新掃描。</p><div class="sf-empty-actions"><button type="button" onclick="fetchLiveStores(true)" class="sf-empty-primary">重新連線</button><button type="button" onclick="location.href='radar.html'+(window.__SF_PERF_ON?'?perf=1':'')" class="sf-empty-secondary">先看戰情室</button></div></div>`;
                     refreshIcons26();
                 }
             },13500);
@@ -1946,7 +1963,7 @@ window.sfPerfLog=function(name,total,detail){
             }
             sfMarkTabSeen(tabId); refreshIcons26(); if(window.location.hash!==`#${tabId}`)history.pushState(null,null,`#${tabId}`);
         }
-        function checkHashAndSwitch() { const hash = window.location.hash.replace('#', ''); switchTab(['home', 'orders', 'achievement', 'merchant'].includes(hash) ? hash : 'home'); }
+        function checkHashAndSwitch() { const hash = window.location.hash.replace('#', '').split('?')[0]; switchTab(['home', 'orders', 'achievement', 'merchant'].includes(hash) ? hash : 'home'); }
         
         window.addEventListener('DOMContentLoaded', () => {
             checkHashAndSwitch();
