@@ -43,8 +43,29 @@
 @keyframes radarSpin{to{transform:rotate(360deg)}}
 .sf-google-search-cta{width:100%;border:0;border-top:1px solid #E7ECF1;background:#F8FAFC;color:#0B2239;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;font-weight:900;font-size:10px;text-align:left}
 .sf-google-search-cta small{display:block;font-size:8px;color:#7D8995;font-weight:650;margin-top:2px}.sf-google-search-cta .go{flex:none;border-radius:999px;background:#0B2239;color:#fff;padding:6px 9px;font-size:8px}.sf-google-search-cta:disabled{opacity:.55}
-</style></head>
-<body><div class="shell">
+</style>
+<style id="seefood-perf-audit-style">
+#sf-perf-audit{display:none;position:fixed;left:8px;right:8px;bottom:84px;z-index:999999;background:rgba(7,25,43,.96);color:white;border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:10px 12px;max-height:34vh;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;line-height:1.45}
+#sf-perf-audit.on{display:block}#sf-perf-audit b{color:#FFD36A}#sf-perf-audit .bad{color:#FF9A9E}#sf-perf-audit .good{color:#75E2B4}
+</style>
+
+<script id="seefood-perf-audit-script">
+window.__SF_PERF_ON=new URLSearchParams(location.search).get('perf')==='1';
+window.__SF_PERF_LOG=[];
+window.sfPerfLog=function(name,total,detail){
+  if(!window.__SF_PERF_ON)return;
+  const row={t:new Date().toLocaleTimeString('zh-TW',{hour12:false}),name,total:Math.round(Number(total)||0),detail:detail||{}};
+  __SF_PERF_LOG.push(row);if(__SF_PERF_LOG.length>20)__SF_PERF_LOG.shift();
+  const box=document.getElementById('sf-perf-audit'),lines=document.getElementById('sf-perf-lines');if(box)box.classList.add('on');
+  if(lines)lines.innerHTML=__SF_PERF_LOG.slice().reverse().map(x=>{
+    const cls=x.total<=2000?'good':x.total>=5000?'bad':'';
+    let d='';try{d=Object.entries(x.detail||{}).map(([k,v])=>k+'='+((typeof v==='object')?JSON.stringify(v):v)).join(' · ')}catch(_e){}
+    return `<div class="${cls}">${x.t}｜${x.name}｜${x.total}ms${d?'｜'+d:''}</div>`;
+  }).join('');
+};
+</script>
+</head>
+<body><div id="sf-perf-audit"><b>SEEFOOD PERF AUDIT</b><div id="sf-perf-lines">等待操作…</div></div><div class="shell">
 <header class="top"><div><div class="kicker">LIVE DEMAND × SUPPLY</div><div class="title">獵場戰情室 2.0</div></div><a href="index.html#home" class="close"><i data-lucide="x"></i></a></header>
 <div id="radar-loading" class="radar-loading"><div class="radar-loading-card"><div class="radar-loader-ring"></div><b id="radar-loading-title">正在掃描附近獵場</b><p id="radar-loading-desc">先把地圖叫醒，再同步最新獵物與敲碗情報。</p><small>LIVE RADAR</small></div></div>
 <section class="toolbar"><div class="searchwrap"><i data-lucide="search" class="searchicon" width="18"></i><input id="place-search" class="search" placeholder="搜尋 SEEFOOD 獵場、店家或 Google 地點" autocomplete="off"><button class="clear" onclick="clearSearch()"><i data-lucide="x" width="15"></i></button><div id="search-results" class="search-results hidden"></div></div></section>
@@ -72,12 +93,12 @@ function radarLoading(stage){
 }
 function applyRadarPayload(j,fit=true){payload=j||{stores:[],allMerchants:[]};renderSummary();renderDistricts();renderTicker();renderMapData(fit)}
 async function load(){
-  buildMap();let painted=false;
+  const __r0=performance.now();buildMap();let painted=false;
   try{const c=JSON.parse(localStorage.getItem('sf_radar_public_cache')||'null');if(c&&c.ts&&Date.now()-Number(c.ts)<600000&&c.data){applyRadarPayload(c.data,true);painted=true;radarLoading('cached')}}catch(_e){}
   const slowTimer=setTimeout(()=>radarLoading('slow'),6000);
   try{
-    const r=await fetch(GAS,{cache:'no-store'}),j=await r.json();localStorage.setItem('sf_radar_public_cache',JSON.stringify({ts:Date.now(),data:j}));
-    applyRadarPayload(j,!painted);radarLoading('hide');loadMyWatches();
+    const __rn0=performance.now();const r=await fetch(GAS,{cache:'no-store'}),j=await r.json();const __rn=performance.now()-__rn0;localStorage.setItem('sf_radar_public_cache',JSON.stringify({ts:Date.now(),data:j}));
+    applyRadarPayload(j,!painted);radarLoading('hide');sfPerfLog('RADAR LOAD',performance.now()-__r0,{network:Math.round(__rn),server:j?._perf?.totalMs??'',cache:j?._perf?.cacheHit??'',marks:j?._perf?.marks??''});loadMyWatches();
     const q=new URLSearchParams(location.search).get('shopId');if(q){const mm=(payload.allMerchants||[]).find(x=>String(x.shopId)===q);if(mm)setTimeout(()=>showMerchant(mm),250)}
   }catch(e){if(painted){radarLoading('hide');toast('目前顯示最近一次獵場情報')}else{radarLoading('slow');toast('戰情資料連線較慢，請稍後重試')}}
   finally{clearTimeout(slowTimer);icons()}
