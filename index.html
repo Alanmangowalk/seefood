@@ -264,6 +264,58 @@ select,input,textarea,button{max-width:100%}
 @media(max-width:480px){#tos-modal .sf-legal-head{padding-top:max(18px,env(safe-area-inset-top))}.sf-finance-sheet{padding-bottom:calc(28px + env(safe-area-inset-bottom))}}
 </style>
 
+
+<style id="seefood-rc210871-scroll-shell-only">
+/* RC2.10.8.7.1 — ONLY fix outer-shell scrolling on mobile/tablet.
+   The app shell is already a flex column. Keep header + nav stationary and let only .sf-main-scroll scroll. */
+@media screen and (max-width:1023px){
+  html,body{
+    width:100%!important;
+    height:100%!important;
+    max-height:100dvh!important;
+    overflow:hidden!important;
+    overscroll-behavior:none!important;
+  }
+  body{
+    min-height:100dvh!important;
+    height:100dvh!important;
+  }
+  .sf-app-shell{
+    height:100dvh!important;
+    min-height:0!important;
+    max-height:100dvh!important;
+    overflow:hidden!important;
+  }
+  #home-header-zone{
+    flex:0 0 auto!important;
+    min-height:0!important;
+  }
+  .sf-main-scroll{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    height:auto!important;
+    max-height:none!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior-y:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  #bottom-nav{
+    position:relative!important;
+    left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+    width:100%!important;
+    flex:0 0 auto!important;
+    transform:none!important;
+    padding-bottom:env(safe-area-inset-bottom)!important;
+  }
+  .sf-support-handle{
+    position:fixed!important;
+    right:12px!important;
+    bottom:calc(82px + env(safe-area-inset-bottom))!important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-gray-900 min-h-screen flex justify-center items-top">
 
@@ -331,7 +383,7 @@ select,input,textarea,button{max-width:100%}
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.7</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.7.1</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
