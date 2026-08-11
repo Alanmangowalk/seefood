@@ -50,7 +50,20 @@
 </style>
 
 <script id="seefood-perf-audit-script">
-window.__SF_PERF_ON=new URLSearchParams(location.search).get('perf')==='1';
+window.__SF_PERF_ON=(function(){
+  const search=new URLSearchParams(location.search);
+  if(search.get('perf')==='1')return true;
+  // Also accept #home?perf=1 / #merchant?perf=1 because mobile users often append
+  // the parameter after the visible hash.
+  const h=String(location.hash||'');
+  const qi=h.indexOf('?');
+  if(qi>=0){
+    const hp=new URLSearchParams(h.slice(qi+1));
+    if(hp.get('perf')==='1')return true;
+  }
+  return sessionStorage.getItem('sf_perf_mode')==='1';
+})();
+if(window.__SF_PERF_ON)sessionStorage.setItem('sf_perf_mode','1');
 window.__SF_PERF_LOG=[];
 window.sfPerfLog=function(name,total,detail){
   if(!window.__SF_PERF_ON)return;
