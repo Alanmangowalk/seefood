@@ -323,20 +323,8 @@ select,input,textarea,button{max-width:100%}
 </style>
 
 <script id="seefood-perf-audit-script">
-window.__SF_PERF_ON=(function(){
-  const search=new URLSearchParams(location.search);
-  if(search.get('perf')==='1')return true;
-  // Also accept #home?perf=1 / #merchant?perf=1 because mobile users often append
-  // the parameter after the visible hash.
-  const h=String(location.hash||'');
-  const qi=h.indexOf('?');
-  if(qi>=0){
-    const hp=new URLSearchParams(h.slice(qi+1));
-    if(hp.get('perf')==='1')return true;
-  }
-  return sessionStorage.getItem('sf_perf_mode')==='1';
-})();
-if(window.__SF_PERF_ON)sessionStorage.setItem('sf_perf_mode','1');
+window.__SF_PERF_ON=true;
+sessionStorage.setItem('sf_perf_mode','1');
 window.__SF_PERF_LOG=[];
 window.sfPerfLog=function(name,total,detail){
   if(!window.__SF_PERF_ON)return;
@@ -349,6 +337,19 @@ window.sfPerfLog=function(name,total,detail){
     return `<div class="${cls}">${x.t}｜${x.name}｜${x.total}ms${d?'｜'+d:''}</div>`;
   }).join('');
 };
+
+window.addEventListener('DOMContentLoaded',()=>{
+  try{
+    const box=document.getElementById('sf-perf-audit');
+    if(box){box.classList.add('on');}
+    const lines=document.getElementById('sf-perf-lines');
+    if(lines && !lines.dataset.booted){
+      lines.dataset.booted='1';
+      lines.innerHTML='<div class="good">PERF MODE ACTIVE · 等待操作…</div>';
+    }
+  }catch(_e){}
+});
+
 </script>
 </head>
 <body class="bg-gray-900 min-h-screen flex justify-center items-top"><div id="sf-perf-audit"><b>SEEFOOD PERF AUDIT</b><div id="sf-perf-lines">等待操作…</div></div>
@@ -417,7 +418,7 @@ window.sfPerfLog=function(name,total,detail){
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.7.3-PERF</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.8.7.4-PERF</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
