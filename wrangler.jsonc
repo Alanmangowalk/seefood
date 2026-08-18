@@ -1,19 +1,12 @@
 {
   "name": "seefood",
   "main": "./worker.js",
-  "compatibility_date": "2026-08-19",
+  "compatibility_date": "2026-08-18",
   "assets": {
     "directory": "./",
     "binding": "ASSETS",
     "run_worker_first": [
       "/api/*"
-    ],
-    "exclude": [
-      "worker.js",
-      "wrangler.jsonc",
-      "README.md",
-      ".git/**",
-      "node_modules/**"
     ]
   },
   "d1_databases": [
