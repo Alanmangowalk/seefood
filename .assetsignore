@@ -1,4 +1,14 @@
 worker.js
 wrangler.jsonc
+wrangler.r2.example.jsonc
+SEEFOOD_FULL_D1_SETUP.txt
+SEEFOOD_FULL_D1_VALIDATION.txt
 README.md
+VALIDATION_REPORT.md
+SHA256SUMS.txt
+.assetsignore
+migrations/**
+tests/**
+*.zip
 .git/**
+node_modules/**
