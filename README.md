@@ -1,124 +1,134 @@
-# SEEFOOD D1 Shadow Backend — RC2.10.9.3
+# SEEFOOD D1 Primary — RC2.10.9.4
 
-這是 SEEFOOD「完整 GAS Runtime 退休」的 Shadow 候選包。它不會取代目前正式站：Worker 名稱固定為 `seefood-d1-shadow`，D1 綁定為 `seefood-staging`，前端也只有在網址帶 `?d1=1` 時才會把營運 API 切到 Worker + D1。
+這是部署到既有 Cloudflare Worker `seefood` 的正式單一路徑版本。首頁、商家後台、戰情室、Guide 與所有營運 action 均使用同網域 Worker + D1；不再使用 `?d1=1`、測試 LIFF、Shadow 分流或 Google Apps Script fallback。
 
-## 本包的基準與範圍
+## 不會動到的資料
 
-- 功能基準：8/11 23:43 上傳的 `GAS(3).txt`、`index (2).txt`、`guide(3).txt`、`radar(3).txt`、`seefood申請表單 (1)(1).xlsx`。
-- 已部署差異參考：RC2.10.9.1 的 GAS 與 Index，只用來保留冷啟動、導覽、捲動及首頁分批提交修正，不取代上述五份基準。
-- 本包只包含 `worker.js`、`index.html`、Shadow 設定、前向 D1 修正與測試。
-- `guide`、`radar` 尚未審視，刻意不包含也不覆蓋。
-- 歷史 D1 Step 2／Step 3 已完成，禁止重跑。
+- 既有 Google 試算表及 GAS 專案保持原樣，只作歷史備份。
+- 本包沒有 Google Apps Script Web App URL，也不會讀寫試算表。
+- Cloudflare 上現有 D1 的顯示名稱仍是 `seefood-staging`、ID 仍是 `7cdcb658-6db9-443a-9b0a-6135bdc7b055`。這只是舊資源名稱；為避免重建、錯綁或遺失現有 45 張表與資料，本版把它直接視為正式 D1，不另建第二套資料庫。
+- 唯一會修改 D1 的檔案是 `migrations/0001_partner_rule_v2_reconciliation.sql`；它只新增正式分潤規則、修正核銷前誤建的未鎖定分潤，及寫入版本標記，不刪除訂單／付款／使用者資料。
 
-## 已搬入 Worker + D1 的後台範圍
+## 本版已完成
 
-- 首頁 Feed／Banner／獵場資料
-- LINE 使用者、同帳號多店與商家 Dashboard
-- 商家註冊、KYC metadata、合約與獨立收款資料
-- Basic 3 格／Plus 10 格、商品上架與品項級 8 小時 TTL
-- 訂單、庫存預留、ECPay callback、票券、核銷、逾期與客服申訴
-- 7／30／90 日 Analytics
-- 敲碗、Watchlist、站內／LINE／Email 通知佇列
-- Partner KYC、v2 合約、推薦關係、分潤台帳與請款
-- Settlement、Audit、Risk、Google Places 與排程維護
-
-GAS 的 29 個主要 action 已由 28 個 `/api/action` handler 加上獨立的 `/api/ecpay/return` callback 覆蓋。
-
-## 分潤規則（唯一有效版本）
-
-`PARTNER-2.0-SERVICE-FEE-ONLY`
-
-- 只有訂單成為 `REDEEMED` 後，才建立 Partner commission。
-- 金額為實際 `service_fee × 50%`。
-- Plus／VIP／月費／廣告／SaaS 與其他加值收入完全排除。
-- 未解決爭議不得轉為 `AVAILABLE`，也不得請款。
-- 舊 v1 合約不再視為有效，Partner 必須簽 v2。
-- 重複核銷／重試透過唯一鍵保持冪等，不會重複分潤。
-
-## 已付款、逾期與人工退款規則
-
-- 已付款訂單不開放買家自行取消、退款或建立爭議。
-- 因買家延遲或逾期未取，不受理退款；訂單 `EXPIRED` 在付款滿 14 天且沒有客服案件後，仍可列入商家撥款。
-- 餐點品質、品項重大不符、店家無法供餐、店家查無訂單或食安問題，改由官方客服受理。
-- 只有帶正確 `X-Admin-Key` 的 `/api/admin/order-complaints` 能建立案件與做人工決策。
-- 客服核准退款時先改成 `REFUND_PENDING`，在既有 `refunds` 台帳建立 `PENDING` 紀錄，立即排除商家收入並 void 尚未請款的 Partner commission。
-- 實際在金流後台完成返還後，必須提供退款編號，才可把訂單／付款標成 `REFUNDED`、退款台帳標成 `COMPLETED`、客服案件標成 `RESOLVED_REFUND`。
-- 人工核准必須在付款後 14 天內；超時由 API 阻擋。
-- 若 Partner commission 已是 `REQUESTED`／`PAID`，系統禁止自動調整，必須交財務追回與稽核。
-- 已實際請款成功的訂單不直接標成單純 `CANCELLED`，因為該狀態不能證明款項已返還；一律走 `REFUND_PENDING → REFUNDED`。`CANCELLED` 僅保留給未完成付款的取消流程。
-
-## 安全修正
-
-- 所有 `/api/action` 後台操作只接受 `POST`。
-- D1 Shadow 未設定 `LINE_LOGIN_CHANNEL_ID` 與 `SESSION_SECRET` 時採 fail-closed，回傳 503；不再相信前端自行傳入的 UID。
-- LINE access token 由 Worker 向 LINE 驗證，再建立 HttpOnly／Secure／SameSite=Lax session。
-- ECPay callback 必須通過 CheckMacValue。
-- ECPay 返回頁、通知深連結與 staging LIFF 重新導向都會保留 `?d1=1`，不會靜默退回舊 GAS。
-- 身分／銀行敏感資料需 `DATA_ENCRYPTION_KEY`；證件檔案需私有 R2 `DOCS` binding。
-- `.assetsignore` 排除 Worker 原始碼、migration、測試與報告，不會當成靜態資產公開。
+- `seefood` Worker 成為唯一正式 API；D1 是唯一營運資料來源。
+- 28 個主要 action、ECPay callback、Cron、LINE server session、商家帳務、Partner、通知、Analytics、敲碗與 Google Places handler 均在 Worker。
+- 分潤規則固定為 `PARTNER-2.0-SERVICE-FEE-ONLY`：只計完成核銷且符合規則的交易服務費 50%；Plus、月費、廣告、SaaS、VIP 與其他加值收入一律 0%。
+- 買家不能自行申請退款或爭議。品質／重大不符／無法供餐／食安案件由客服後台建立，付款後 14 天內人工決定；核准後先停止商家入帳，實際返款完成才標記已退款。
+- 延遲或逾期未取不受理退款；滿 14 天且無未結申訴的核銷／逾期訂單才可進商家結算。
+- Guide 與 Radar 已納入正式包並改接 D1。
+- 首頁三張 Banner 有內建文字備援，不再因 API 或圖片失敗整區消失。
+- 客服耳機恢復顯示；結帳時才暫時隱藏。
+- 效能小視窗預設隱藏，只在網址加 `?perf=1` 時顯示。
+- 正式 LIFF ID：`2010392646-KEEBg8gS`。
 
 ## 部署前必要條件
 
-1. 確認目標仍是 staging D1：`seefood-staging`，ID 與 `wrangler.jsonc` 相符。
-2. 先匯出遠端 D1 備份。
-3. **只執行** `migrations/0001_partner_rule_v2_reconciliation.sql`；不要重跑歷史 Step 2／Step 3。
-4. 至少先設定：
-   - `LINE_LOGIN_CHANNEL_ID`
-   - `SESSION_SECRET`
-5. 準備獨立的 staging LIFF ID，並把 Endpoint URL 設為 Shadow 網域。測試網址需使用 `?d1=1&liffId=<staging-liff-id>`；未提供時登入會 fail-closed，避免誤跳正式站。LIFF ID 是公開識別碼，不是 Secret。
-6. 測試付款前再設定：
-   - `ECPAY_MERCHANT_ID`
-   - `ECPAY_HASH_KEY`
-   - `ECPAY_HASH_IV`
-   - `ECPAY_URL`
-7. 測試客服退款前設定 `ADMIN_API_KEY`。
-8. 測試 KYC 前設定 `DATA_ENCRYPTION_KEY` 並綁定私有 R2 `DOCS`；可參考 `wrangler.r2.example.jsonc`。
-9. 其他依功能設定：`GOOGLE_PLACES_API_KEY`、`LINE_CHANNEL_ACCESS_TOKEN`、`EMAIL_WEBHOOK_URL`、`EMAIL_WEBHOOK_TOKEN`。
+1. Cloudflare 帳號已能管理既有 Worker `seefood` 與 D1 `seefood-staging`。
+2. 建立私人證件桶 `seefood-private-docs`，不要設為 public；`wrangler.jsonc` 已綁為 `DOCS`。
+3. 在 Worker 設定以下必要 Secret：
 
-所有 Secret 都應用 Cloudflare Secret 設定，不可寫入 repo。
+   - `SESSION_SECRET`：至少 32 bytes 的新隨機值。
+   - `LINE_LOGIN_CHANNEL_ID`：必須和正式 LIFF 所屬 LINE Login channel 相同。
+   - `ADMIN_API_KEY`：客服／結算管理 API 的長隨機金鑰。
+   - `DATA_ENCRYPTION_KEY`：銀行帳戶等敏感資料的長隨機加密金鑰。
 
-## 建議操作順序
+4. 正式啟用相應功能前再設定：
 
-以下命令是操作範例，請在已登入正確 Cloudflare account 的專案目錄執行：
+   - 金流：`ECPAY_MERCHANT_ID`、`ECPAY_HASH_KEY`、`ECPAY_HASH_IV`、`ECPAY_URL`
+   - 地點搜尋：`GOOGLE_PLACES_API_KEY`
+   - LINE 通知：`LINE_CHANNEL_ACCESS_TOKEN`
+   - Email 通知：`EMAIL_WEBHOOK_URL`、`EMAIL_WEBHOOK_TOKEN`
+
+不要把任何 Secret 寫進 HTML、`worker.js`、`wrangler.jsonc`、Git 或聊天內容。
+
+## 安全部署順序
+
+在解壓後的本資料夾執行。不要重新執行過去 Step 2／Step 3 的建表 SQL。
+
+### 1. 登入並確認綁定的是既有 D1
 
 ```bash
-npx wrangler d1 export seefood-staging --remote --output=seefood-staging-before-partner-v2.sql
-npx wrangler d1 execute seefood-staging --remote --file=migrations/0001_partner_rule_v2_reconciliation.sql
-npx wrangler deploy
+npx wrangler login
+npx wrangler d1 info seefood-staging
+npx wrangler d1 time-travel info seefood-staging
 ```
 
-部署後先看：
+先把 Time Travel 輸出的目前 bookmark 保存下來。
+
+### 2. 匯出正式 D1 備份
+
+```bash
+npx wrangler d1 export seefood-staging --remote --output=../seefood-primary-before-rc2.10.9.4.sql
+```
+
+確認匯出檔不是空檔，再繼續。備份放在專案上一層，且 `.assetsignore` 也會排除 SQL／SQLite／DB／Secret 檔，避免被當成靜態資產公開。
+
+### 3. 建立私人 R2 桶（尚未建立才執行）
+
+```bash
+npx wrangler r2 bucket create seefood-private-docs
+```
+
+### 4. 設定必要 Secret
+
+```bash
+npx wrangler secret put SESSION_SECRET
+npx wrangler secret put LINE_LOGIN_CHANNEL_ID
+npx wrangler secret put ADMIN_API_KEY
+npx wrangler secret put DATA_ENCRYPTION_KEY
+```
+
+每次等待 Wrangler 顯示輸入提示後再貼值，不要把值直接接在指令後。`wrangler.jsonc` 已宣告這四項為 required，缺少時正式部署會中止。
+
+### 5. 套用唯一增量遷移
+
+```bash
+npx wrangler d1 execute seefood-staging --remote --file=./migrations/0001_partner_rule_v2_reconciliation.sql
+```
+
+輸出最後三個欄位應符合：
+
+- `partner_v2_rule = 1`
+- `refund_policy_marker = 1`
+- `reconciled_pre_redeem_entries` 可為 0 或正整數
+
+### 6. 部署到既有正式 Worker
+
+```bash
+npx wrangler deploy --strict
+```
+
+設定檔名稱固定為 `seefood`，因此會更新既有 `seefood.mangowalkers.workers.dev`，不會建立另一個 Shadow Worker。`keep_vars: true` 會保留 Dashboard 既有一般變數；Cloudflare 部署也不會刪除既有 Secret。
+
+## 部署後驗證
+
+正常正式網址不需任何 query：
+
+- 首頁：`https://seefood.mangowalkers.workers.dev/`
+- Guide：`https://seefood.mangowalkers.workers.dev/guide.html`
+- Radar：`https://seefood.mangowalkers.workers.dev/radar.html`
+- Health：`https://seefood.mangowalkers.workers.dev/api/health`
+- 效能診斷：`https://seefood.mangowalkers.workers.dev/?perf=1`
+
+Health 至少應看到：
 
 ```text
-https://<shadow-worker-domain>/api/health
-https://<shadow-worker-domain>/?d1=1&liffId=<staging-liff-id>
+status = ok
+release = 3.0-RC2.10.9.4-D1-PRIMARY
+mode = PRIMARY
+sourceOfTruth = D1
+d1 = connected
+readiness.lineSession = ENFORCED
+readiness.partnerRule = CURRENT
+readiness.refundPolicy = ADMIN_ONLY_14D
+readiness.privateDocs = CONFIGURED
+readiness.encryption = CONFIGURED
 ```
 
-`/api/health` 應顯示：
+若 `ecpay`、`places` 或通知顯示 `NOT_CONFIGURED`，代表相應外部 Secret 尚未設定；D1 本身不會因此被改回 GAS。
 
-- `release = 3.0-RC2.10.9.3-D1-SHADOW`
-- `d1 = connected`
-- `lineSession = ENFORCED`
-- `partnerRule = CURRENT`
-- `refundPolicy = ADMIN_ONLY_14D`
-
-## Shadow 驗證順序
-
-1. 首頁冷啟動、返回首頁、Guest／LINE 選擇與捲動。
-2. 以 staging LIFF ID 登入後建立 server session，確認回跳網址仍有 `d1=1`。
-3. 註冊、同帳號多店、切店、Dashboard 與 Live State。
-4. Basic／Plus 欄位、上架、下架、補貨與 8 小時 TTL。
-5. Checkout → ECPay 成功後確認訂單為 `PAID`，此時不得有分潤。
-6. 票券核銷後訂單改為 `REDEEMED`，才建立服務費 50% 分潤。
-7. 重複核銷不新增第二筆；客服申訴審核期間不釋放、不請款。
-8. 買家端「訂單問題」只導向官方客服，不直接寫 dispute；逾期未取文案明確不退款。
-9. 管理端依序測 `OPEN → CLOSE_NO_REFUND`，以及 `OPEN → APPROVE_REFUND → 金流實退 → MARK_REFUNDED`。
-10. 確認 14 天內訂單列於客服審核保留、`REFUND_PENDING/REFUNDED` 不入商家收入、滿 14 天的 `REDEEMED/EXPIRED` 才可撥款。
-11. v1 Partner 合約顯示待重簽，v2 完成後才可完成 onboarding。
-12. Plus $299／店／月正常，但不出現在 Partner commission ledger。
-13. Analytics、通知、Settlement／Audit／Risk 最後做整站回歸。
-
-本機可重跑的回歸指令：
+## 本機驗證
 
 ```bash
 node --check worker.js
@@ -129,67 +139,10 @@ node tests/refund-policy.mjs
 node tests/migration.mjs
 ```
 
-`tests/fixtures/frozen_step2a_h_contract.sql` 只是一份測試用 schema contract，明確禁止拿去部署或重建 D1。
+預期五組測試全部 PASS。完整結果見 `VALIDATION_REPORT.md`。
 
-未帶 `?d1=1` 的頁面仍走既有 GAS，可作對照與回退。完成整套 Shadow 測試前，不要把正式流量預設切到 D1，也不要停用 GAS。
+## 重要回復資訊
 
-## 客服後台 API 範例
-
-所有操作都使用 `POST /api/admin/order-complaints` 與 `X-Admin-Key`。這是客服後台／受控操作端點，`ADMIN_API_KEY` 絕對不可放進公開前端。允許的申訴類型為 `QUALITY_ISSUE`、`ITEM_MISMATCH`、`MERCHANT_UNAVAILABLE`、`ORDER_NOT_FOUND`、`FOOD_SAFETY`、`OTHER_QUALITY_OR_FULFILLMENT`；沒有「買家延遲取餐」類型。
-
-本包完成的是客服後台 API 與資料狀態機，沒有新增一個公開的客服管理畫面；現有內部後台需串接此端點，或另做只供授權員工使用的管理介面。
-
-建立客服案件：
-
-```json
-{
-  "operation": "OPEN",
-  "orderId": "ORDER_ID",
-  "adminId": "STAFF_ID",
-  "disputeType": "QUALITY_ISSUE",
-  "description": "客服查核紀錄"
-}
-```
-
-人工判斷不退款：
-
-```json
-{
-  "operation": "CLOSE_NO_REFUND",
-  "orderId": "ORDER_ID",
-  "adminId": "STAFF_ID",
-  "resolutionNote": "判斷依據"
-}
-```
-
-人工核准退款、先停止入帳：
-
-```json
-{
-  "operation": "APPROVE_REFUND",
-  "orderId": "ORDER_ID",
-  "adminId": "STAFF_ID",
-  "resolutionNote": "退款核准依據"
-}
-```
-
-實際完成金流返還後才能確認：
-
-```json
-{
-  "operation": "MARK_REFUNDED",
-  "orderId": "ORDER_ID",
-  "adminId": "STAFF_ID",
-  "gatewayReference": "ECPAY_REFUND_REFERENCE"
-}
-```
-
-## Migration 注意事項
-
-本次 migration 會：
-
-- 新增／確認 v2 service-fee-only 規則。
-- 將任何「尚未 `REDEEMED`，卻已是 `PENDING_REVIEW` 或 `AVAILABLE`」的 Shadow 分潤標為 `VOID`。
-- `REQUESTED`／`PAID` 紀錄不自動更動，必須人工稽核。
-
-由於第二項是資料修正，執行前必須備份。它是 forward-only，不應重複套用舊版遷移來回滾。
+- 程式碼回復：Cloudflare Worker 的 Deployments／Versions 可將既有版本重新部署。
+- D1 回復：用部署前保存的 Time Travel bookmark 回復；這是覆寫資料庫的破壞性操作，只在確認遷移造成問題時使用。
+- Google Sheets／GAS 不在此部署鏈內，不需也不應執行任何回寫、刪除或重新部署。

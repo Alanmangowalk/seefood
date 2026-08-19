@@ -78,8 +78,7 @@
 
 
 <script id="seefood-perf-audit-script">
-window.__SF_PERF_ON=true;
-sessionStorage.setItem('sf_perf_mode','1');
+window.__SF_PERF_ON=new URLSearchParams(window.location.search).get('perf')==='1';
 window.__SF_PERF_LOG=[];
 window.sfPerfLog=function(name,total,detail){
   if(!window.__SF_PERF_ON)return;
@@ -100,6 +99,8 @@ window.sfPerfLog=function(name,total,detail){
 window.addEventListener('DOMContentLoaded',()=>{
   try{
     const box=document.getElementById('sf-perf-audit');
+    if(!box)return;
+    box.classList.toggle('hidden-by-user',!window.__SF_PERF_ON);
     const toggle=document.getElementById('sf-perf-toggle');
     const hide=document.getElementById('sf-perf-hide');
     const lines=document.getElementById('sf-perf-lines');
@@ -158,7 +159,7 @@ window.addEventListener('DOMContentLoaded',()=>{
       }
       if(action)return action;
       if(/radar/i.test(url))return 'RADAR';
-      if(/script\.google|googleusercontent|exec/.test(url))return 'GAS';
+      if(/\/api\/(?:home|action)/.test(url))return 'D1 API';
       return (url.split('?')[0].split('/').pop()||'FETCH').slice(0,28);
     }catch(_e){return 'FETCH';}
   }
@@ -226,7 +227,7 @@ window.addEventListener('DOMContentLoaded',()=>{
 </script>
 
 </head>
-<body><div id="sf-perf-audit">
+<body><div id="sf-perf-audit" class="hidden-by-user">
   <div class="sf-perf-head">
     <span class="sf-perf-dot"></span>
     <span class="sf-perf-title">PERF</span>
@@ -247,11 +248,12 @@ window.addEventListener('DOMContentLoaded',()=>{
 <div id="drawer-bg" class="drawer-bg hidden" onclick="if(event.target===this)closeDrawer()"><div class="drawer"><div style="display:flex;justify-content:space-between;gap:12px"><div><div id="d-pills" class="status-row"></div><h3 id="d-name">獵場</h3><p id="d-area" style="font-size:10px;color:#7D8994;margin:4px 0 0"></p></div><button class="close" onclick="closeDrawer()"><i data-lucide="x"></i></button></div><div class="stats"><div class="stat"><small>目前獵物</small><b id="d-items">0</b></div><div class="stat"><small>剩餘份數</small><b id="d-remain">0</b></div><div class="stat"><small>今日敲碗</small><b id="d-knock">0</b></div></div><div id="d-demand" class="demand"></div><div id="d-watch" class="watchline"><div><b>上架叫我</b><span>這家店一開賣，就通知你。</span></div><button id="d-watch-btn" class="switch" onclick="toggleWatch()"></button></div><div id="d-actions" class="actions"></div></div></div>
 <div id="toast" class="toast hidden"></div>
 <script>
-const GAS="https://script.google.com/macros/s/AKfycbxOsS40qejUGDKjp0kQFn76CeM0DBiTN41HHorYJ6gBa9qK1fTEP3xDRbn7CgXo3C4Z9g/exec";
+const HOME_API='/api/home';
+const ACTION_API='/api/action';
 const uid=localStorage.getItem('seefood_line_uid')||'LINE_GUEST';
 let payload={stores:[],allMerchants:[]},map,markers={},selected=null,userPos=null,userMarker=null,searchTimer=null,myWatchIds=new Set(),placesConfigured=true;
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-async function api(action,data={},timeout=9000){const p=new URLSearchParams({action,...data}),c=new AbortController(),t=setTimeout(()=>c.abort(),timeout);try{const r=await fetch(GAS,{method:'POST',body:p,signal:c.signal});return await r.json()}finally{clearTimeout(t)}}
+async function api(action,data={},timeout=9000){const p=new URLSearchParams({action,...data}),c=new AbortController(),t=setTimeout(()=>c.abort(),timeout);try{const r=await fetch(ACTION_API,{method:'POST',body:p,signal:c.signal,credentials:'same-origin'}),j=await r.json();if(r.status===401&&j.code==='SESSION_REQUIRED')localStorage.removeItem('seefood_line_uid');return j}finally{clearTimeout(t)}}
 function icons(){try{lucide.createIcons()}catch(e){}}
 function toast(t){const x=document.getElementById('toast');x.textContent=t;x.classList.remove('hidden');setTimeout(()=>x.classList.add('hidden'),2400)}
 function isActiveShop(id){return payload.stores.some(s=>String(s.shopId)===String(id)&&Number(s.remain)>0)}
@@ -269,7 +271,7 @@ async function load(){
   try{const c=JSON.parse(localStorage.getItem('sf_radar_public_cache')||'null');if(c&&c.ts&&Date.now()-Number(c.ts)<600000&&c.data){applyRadarPayload(c.data,true);painted=true;radarLoading('cached')}}catch(_e){}
   const slowTimer=setTimeout(()=>radarLoading('slow'),6000);
   try{
-    const __rn0=performance.now();const r=await fetch(GAS,{cache:'no-store'}),j=await r.json();const __rn=performance.now()-__rn0;localStorage.setItem('sf_radar_public_cache',JSON.stringify({ts:Date.now(),data:j}));
+    const __rn0=performance.now();const r=await fetch(HOME_API+'?t='+Date.now(),{cache:'no-store'}),j=await r.json();if(!r.ok||j.status!=='success')throw new Error('RADAR_HOME_INVALID_RESPONSE');const __rn=performance.now()-__rn0;localStorage.setItem('sf_radar_public_cache',JSON.stringify({ts:Date.now(),data:j}));
     applyRadarPayload(j,!painted);radarLoading('hide');sfPerfLog('RADAR LOAD',performance.now()-__r0,{network:Math.round(__rn),server:j?._perf?.totalMs??'',cache:j?._perf?.cacheHit??'',marks:j?._perf?.marks??''});loadMyWatches();
     const q=new URLSearchParams(location.search).get('shopId');if(q){const mm=(payload.allMerchants||[]).find(x=>String(x.shopId)===q);if(mm)setTimeout(()=>showMerchant(mm),250)}
   }catch(e){if(painted){radarLoading('hide');toast('目前顯示最近一次獵場情報')}else{radarLoading('slow');toast('戰情資料連線較慢，請稍後重試')}}
@@ -298,7 +300,7 @@ function locateMe(){navigator.geolocation?.getCurrentPosition(p=>{userPos=[p.coo
 function showMerchant(m){selected={type:'merchant',...m,watching:myWatchIds.has(String(m.shopId))};const active=isActiveShop(m.shopId),items=shopItems(m.shopId),remain=shopRemain(m.shopId),k=Number(m.knockToday)||0;document.getElementById('d-name').textContent=m.name||'獵場';document.getElementById('d-area').textContent=[m.city,m.district,m.address].filter(Boolean).join(' · ');document.getElementById('d-items').textContent=items;document.getElementById('d-remain').textContent=remain;document.getElementById('d-knock').textContent=k;document.getElementById('d-pills').innerHTML=`<span class="pill ${active?'live':''}">${active?'正在開賣':'暫無獵物'}</span>${m.isVip?'<span class="pill plus">Plus</span>':''}<span class="pill">${m.verified?'已實名':'驗證中'}</span>`;document.getElementById('d-demand').innerHTML=active?`<b>獵場目前有 ${items} 個獵物</b><p>直接查看商品，或分享給附近的朋友一起搶。</p>`:`<b>今天已有 ${k} 位獵人在敲碗</b><p>敲一下碗，讓老闆知道現在有人想吃；也可以開啟上架通知。</p>`;document.getElementById('d-actions').innerHTML=active?`<button class="btn ghost" onclick="focusSelected()">地圖查看</button><button class="btn primary" onclick="goHunt('${esc(m.shopId)}')">查看獵物</button>`:`<button class="btn ghost" onclick="focusSelected()">地圖查看</button><button class="btn primary" onclick="knock()">敲一下碗</button>`;document.getElementById('d-watch').style.display=active?'none':'flex';document.getElementById('d-watch-btn').classList.toggle('on',myWatchIds.has(String(m.shopId)));document.getElementById('drawer-bg').classList.remove('hidden');document.querySelector('.locate')?.classList.add('drawer-hidden');icons()}
 function closeDrawer(){document.getElementById('drawer-bg').classList.add('hidden');document.querySelector('.locate')?.classList.remove('drawer-hidden')}
 function focusSelected(){if(selected?.lat&&selected?.lng){map.setView([selected.lat,selected.lng],16);closeDrawer()}}
-function goHunt(id){location.href=`index.html?targetShopId=${encodeURIComponent(id)}#home`}
+function goHunt(id){const q=new URLSearchParams({targetShopId:id});if(window.__SF_PERF_ON)q.set('perf','1');location.href=`index.html?${q.toString()}#home`}
 async function knock(){if(uid==='LINE_GUEST'){toast('請先回首頁登入 LINE');return}const btn=document.querySelector('#d-actions .primary');if(btn){btn.disabled=true;btn.textContent='送出中…'}try{const j=await api('knockShop',{uid,shopId:selected.shopId,subscribe:'1'},18000);if(j.status==='success'){myWatchIds.add(String(selected.shopId));localStorage.setItem('sf_my_hunts_dirty',String(Date.now()));localStorage.setItem('sf_last_knocked_shop',String(selected.shopId));document.getElementById('d-watch-btn').classList.add('on');selected.knockToday=j.knockToday;const mm=(payload.allMerchants||[]).find(x=>String(x.shopId)===String(selected.shopId));if(mm)mm.knockToday=j.knockToday;document.getElementById('d-knock').textContent=j.knockToday;document.getElementById('d-demand').innerHTML=`<b>今天已有 ${j.knockToday} 位獵人在敲碗</b><p>${j.alreadyKnocked?'今天的敲碗已經記下來了。':'收到！這家店開賣時也會叫你。'}</p>`;renderSummary();renderDistricts();renderTicker();toast(j.alreadyKnocked?'今天已敲過這家':'敲碗成功，上架會叫你');refreshMarker(selected.shopId)}else if(j.status==='busy')toast('正在同步需求，請再按一次');else toast(j.msg||'目前無法送出敲碗')}catch(e){toast(e&&e.name==='AbortError'?'同步時間較久，請再按一次':'目前無法連線，請再試一次')}finally{if(btn){btn.disabled=false;btn.textContent='敲一下碗'}}}
 async function toggleWatch(){if(uid==='LINE_GUEST'){toast('請先回首頁登入 LINE');return}const b=document.getElementById('d-watch-btn'),next=!b.classList.contains('on'),j=await api('setShopWatch',{uid,shopId:selected.shopId,active:next?'1':'0'});if(j.status==='success'){b.classList.toggle('on',next);if(next)myWatchIds.add(String(selected.shopId));else myWatchIds.delete(String(selected.shopId));localStorage.setItem('sf_my_hunts_dirty',String(Date.now()));refreshMarker(selected.shopId);toast(next?'已開啟：上架叫我':'已取消上架通知')}else toast(j.msg||'設定失敗')}
 async function loadMyWatches(){if(uid==='LINE_GUEST')return;try{const j=await api('getMyHunts',{uid},10000);if(j.status==='success'){myWatchIds=new Set((j.hunts||[]).map(x=>String(x.shopId)));Object.keys(markers).forEach(id=>refreshMarker(id));if(selected?.shopId)document.getElementById('d-watch-btn')?.classList.toggle('on',myWatchIds.has(String(selected.shopId)))}}catch(e){}}
@@ -310,5 +312,6 @@ async function searchGooglePlacesNow(q,btn){if(!q||q.length<2)return;const box=d
 function selectLocal(id){clearSearch();const m=(payload.allMerchants||[]).find(x=>String(x.shopId)===String(id));if(m){showMerchant(m);if(m.lat&&m.lng)map.setView([m.lat,m.lng],16)}}
 async function recommendExternal(p){if(p&&p.lat&&p.lng)map.setView([Number(p.lat),Number(p.lng)],16);if(uid==='LINE_GUEST'){toast('請先回首頁登入 LINE，再推薦新獵場');return}const ok=confirm(`推薦「${p.name}」成為 SEEFOOD 新獵場？\n\n${p.address||''}`);if(!ok)return;try{const j=await api('recommendPlace',{uid,googlePlaceId:p.googlePlaceId||'',name:p.name||'',address:p.address||'',lat:p.lat||0,lng:p.lng||0,city:p.city||'',district:p.district||''},12000);if(j.status==='success'){toast(j.alreadyRecommended?'你已推薦過這間店':'推薦成功！這間店已加入獵場候選');document.getElementById('search-results').classList.add('hidden');document.getElementById('place-search').value=''}else toast(j.msg||'推薦失敗')}catch(e){toast('連線比較忙，請再試一次')}}
 document.getElementById('place-search').addEventListener('input',e=>{clearTimeout(searchTimer);const q=e.target.value;searchTimer=setTimeout(()=>doSearch(q),220)});
+if(window.__SF_PERF_ON)document.querySelector('.top .close')?.setAttribute('href','index.html?perf=1#home');
 load();icons();
 </script></body></html>
