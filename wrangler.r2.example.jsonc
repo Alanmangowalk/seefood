@@ -16,6 +16,12 @@
       "database_id": "7cdcb658-6db9-443a-9b0a-6135bdc7b055"
     }
   ],
+  "r2_buckets": [
+    {
+      "binding": "DOCS",
+      "bucket_name": "seefood-private-docs-staging"
+    }
+  ],
   "triggers": {
     "crons": [
       "* * * * *"
