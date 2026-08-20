@@ -1,6 +1,6 @@
 const APP_NAME = 'SEEFOOD';
 const DB_NAME = 'seefood-staging';
-const RELEASE = '3.0-RC2.11.0-D1-MAIN-CANDIDATE';
+const RELEASE = '3.0-RC2.14.0-D1-MAIN-CANDIDATE';
 const PARTNER_RULE = 'PARTNER-2.0-SERVICE-FEE-ONLY';
 const PARTNER_CONTRACT_VERSION = 'PARTNER-2.0-SERVICE-FEE-ONLY';
 const PARTNER_CONSENT_VERSION = '2.0-SERVICE-FEE-ONLY';
@@ -131,7 +131,7 @@ async function sessionUser(env,request) {
   try{const data=JSON.parse(b64urlDecodeText(payload));if(!data.uid||num(data.exp)<=Math.floor(Date.now()/1000))return null;return String(data.uid);}catch(_e){return null;}
 }
 async function lineSessionLogin(env,p) {
-  if(!env.SESSION_SECRET||!env.LINE_LOGIN_CHANNEL_ID)return {response:json({status:'config_required',code:'LINE_SESSION_NOT_CONFIGURED',msg:'SEEFOOD 必須先設定 LINE_LOGIN_CHANNEL_ID 與 SESSION_SECRET'},{status:503})};
+  if(!env.SESSION_SECRET||!env.LINE_LOGIN_CHANNEL_ID)return {response:json({status:'config_required',code:'LINE_SESSION_NOT_CONFIGURED',msg:'LINE 登入服務尚未完成設定，請稍後再試'},{status:503})};
   const token=String(p.accessToken||'').trim();if(!token)return {response:json({status:'error',msg:'缺少 LINE access token'},{status:401})};
   const verify=await fetch(`https://api.line.me/oauth2/v2.1/verify?access_token=${encodeURIComponent(token)}`);
   if(!verify.ok)return {response:json({status:'error',msg:'LINE 登入憑證無效或已過期'},{status:401})};
@@ -142,7 +142,7 @@ async function lineSessionLogin(env,p) {
   return {response:json({status:'success',userId:uid,sessionExpiresIn:maxAge},{headers:{'Set-Cookie':cookie}})};
 }
 async function enforceActionSession(env,request,p) {
-  if(!env.SESSION_SECRET||!env.LINE_LOGIN_CHANNEL_ID)return {status:'config_required',httpStatus:503,code:'LINE_SESSION_NOT_CONFIGURED',msg:'SEEFOOD 尚未啟用 LINE server session'};
+  if(!env.SESSION_SECRET||!env.LINE_LOGIN_CHANNEL_ID)return {status:'config_required',httpStatus:503,code:'LINE_SESSION_NOT_CONFIGURED',msg:'LINE 登入服務尚未完成設定，請稍後再試'};
   const uid=await sessionUser(env,request);if(!uid)return {status:'error',code:'SESSION_REQUIRED',msg:'LINE 登入驗證已失效，請重新登入'};
   const claimed=String(p.uid||p.lineUid||p.buyerUid||'');if(claimed&&claimed!=='LINE_GUEST'&&claimed!==uid)return {status:'error',code:'IDENTITY_MISMATCH',msg:'登入身分不一致'};
   p.uid=uid;if(Object.prototype.hasOwnProperty.call(p,'lineUid'))p.lineUid=uid;if(Object.prototype.hasOwnProperty.call(p,'buyerUid'))p.buyerUid=uid;
@@ -231,11 +231,12 @@ async function audit(env, {actorType='SYSTEM',actorId=null,action,entityType,ent
 }
 
 async function health(env) {
-  const [counts,rule]=await Promise.all([
+  const [counts,rule,plusBilling]=await Promise.all([
     env.DB.prepare(`SELECT (SELECT COUNT(*) FROM users) users,(SELECT COUNT(*) FROM shops) shops,(SELECT COUNT(*) FROM shop_items) shop_items,(SELECT COUNT(*) FROM orders) orders,(SELECT COUNT(*) FROM payments) payments,(SELECT COUNT(*) FROM tickets) tickets`).first(),
-    latestRule(env)
+    latestRule(env),
+    env.DB.prepare(`SELECT 1 ok FROM schema_versions WHERE version='3.1.3-PLUS-DEFERRED-BILLING' LIMIT 1`).first()
   ]);
-  return {status:'ok',service:APP_NAME,release:RELEASE,database:DB_NAME,d1:'connected',counts,readiness:{lineSession:(env.SESSION_SECRET&&env.LINE_LOGIN_CHANNEL_ID)?'ENFORCED':'REQUIRED_NOT_CONFIGURED',partnerRule:rule?.rule_version===PARTNER_RULE?'CURRENT':`MISMATCH:${rule?.rule_version||'NONE'}`,refundPolicy:`ADMIN_ONLY_${REFUND_WINDOW_DAYS}D`,ecpay:(env.ECPAY_MERCHANT_ID&&env.ECPAY_HASH_KEY&&env.ECPAY_HASH_IV&&env.ECPAY_URL)?'CONFIGURED':'NOT_CONFIGURED',places:env.GOOGLE_PLACES_API_KEY?'CONFIGURED':'NOT_CONFIGURED',privateDocs:env.DOCS?'CONFIGURED':'NOT_CONFIGURED',encryption:env.DATA_ENCRYPTION_KEY?'CONFIGURED':'NOT_CONFIGURED'}};
+  return {status:'ok',service:APP_NAME,release:RELEASE,database:DB_NAME,d1:'connected',counts,readiness:{lineSession:(env.SESSION_SECRET&&env.LINE_LOGIN_CHANNEL_ID)?'ENFORCED':'REQUIRED_NOT_CONFIGURED',partnerRule:rule?.rule_version===PARTNER_RULE?'CURRENT':`MISMATCH:${rule?.rule_version||'NONE'}`,plusBilling:plusBilling?.ok?'CURRENT':'MIGRATION_REQUIRED',refundPolicy:`ADMIN_ONLY_${REFUND_WINDOW_DAYS}D`,ecpay:(env.ECPAY_MERCHANT_ID&&env.ECPAY_HASH_KEY&&env.ECPAY_HASH_IV&&env.ECPAY_URL)?'CONFIGURED':'NOT_CONFIGURED',places:env.GOOGLE_PLACES_API_KEY?'CONFIGURED':'NOT_CONFIGURED',privateDocs:env.DOCS?'CONFIGURED':'NOT_CONFIGURED',encryption:env.DATA_ENCRYPTION_KEY?'CONFIGURED':'NOT_CONFIGURED'}};
 }
 
 async function homeFeed(env) {
@@ -281,17 +282,27 @@ async function syncCore(env,p) {
     env.DB.prepare(`SELECT COUNT(*) n FROM tickets WHERE user_id=? AND status='ACTIVE' AND datetime(pickup_deadline)>CURRENT_TIMESTAMP`).bind(uid).first(),
     growthStats(env,uid)
   ]);
-  return {status:'success',myShops:shops,orders,activeTicketCount:num(tickets?.n),merchantAccount:acc?{accountId:acc.account_id,kycStatus:normalizeVerified(acc.kyc_status)?'VERIFIED_BASIC':acc.kyc_status,payoutStatus:normalizeVerified(acc.payout_status)?'VERIFIED_BASIC':acc.payout_status,signerName:acc.signer_name||'',bankOwner:''}:null,growthStats:growth,hunterNoticeCount:num(unread?.n),hunterSignalCount:num(unread?.n),schemaVersion:'3.1.2'};
+  return {status:'success',myShops:shops,orders,activeTicketCount:num(tickets?.n),merchantAccount:acc?{accountId:acc.account_id,kycStatus:normalizeVerified(acc.kyc_status)?'VERIFIED_BASIC':acc.kyc_status,payoutStatus:normalizeVerified(acc.payout_status)?'VERIFIED_BASIC':acc.payout_status,signerName:acc.signer_name||'',bankOwner:''}:null,growthStats:growth,hunterNoticeCount:num(unread?.n),hunterSignalCount:num(unread?.n),schemaVersion:'3.1.3'};
+}
+
+async function plusOutstanding(env,shopId) {
+  const r=await env.DB.prepare(`SELECT COALESCE(SUM(amount_outstanding),0) amount FROM plus_billing_charges WHERE shop_id=? AND status IN ('OUTSTANDING','PARTIALLY_COLLECTED') AND datetime(eligible_from)<=CURRENT_TIMESTAMP`).bind(shopId).first();
+  return num(r?.amount);
 }
 
 async function financeForPeriod(env,shopId,period) {
-  const b=periodBounds(period); if(!b)return {sales:0,reviewHold:0,gatewayFee:0,plusFee:0,netIncome:0};
+  const b=periodBounds(period); if(!b)return {sales:0,reviewHold:0,gatewayFee:0,plusFee:0,plusOutstanding:0,plusBalanceAfter:0,netIncome:0};
   const refundCutoff=addMs(isoNow(),-REFUND_WINDOW_DAYS*86400000);
-  const [o,ps]=await Promise.all([
+  const [locked,o,outstanding]=await Promise.all([
+    env.DB.prepare(`SELECT gross_sales,gateway_fees,plus_fees,net_payout,status FROM merchant_settlement_batches WHERE shop_id=? AND period_start=? AND period_end=? AND status<>'CANCELLED' ORDER BY datetime(created_at) DESC LIMIT 1`).bind(shopId,b.start,b.end).first(),
     env.DB.prepare(`SELECT COALESCE(SUM(CASE WHEN datetime(o.paid_at)<=datetime(?) AND NOT EXISTS(SELECT 1 FROM order_disputes d WHERE d.order_id=o.order_id AND d.status NOT IN ('RESOLVED_NO_REFUND','RESOLVED_REFUND','REJECTED','CANCELLED')) THEN o.subtotal ELSE 0 END),0) sales,COALESCE(SUM(CASE WHEN NOT(datetime(o.paid_at)<=datetime(?) AND NOT EXISTS(SELECT 1 FROM order_disputes d WHERE d.order_id=o.order_id AND d.status NOT IN ('RESOLVED_NO_REFUND','RESOLVED_REFUND','REJECTED','CANCELLED'))) THEN o.subtotal ELSE 0 END),0) review_hold,COALESCE(SUM(CASE WHEN datetime(o.paid_at)<=datetime(?) AND NOT EXISTS(SELECT 1 FROM order_disputes d WHERE d.order_id=o.order_id AND d.status NOT IN ('RESOLVED_NO_REFUND','RESOLVED_REFUND','REJECTED','CANCELLED')) AND o.subtotal>0 THEN MAX(?,ROUND(o.subtotal*?)) ELSE 0 END),0) gateway FROM orders o WHERE o.shop_id=? AND o.status IN ('REDEEMED','EXPIRED') AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))>=datetime(?) AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))<datetime(?)`).bind(refundCutoff,refundCutoff,refundCutoff,GATEWAY_MIN,GATEWAY_RATE,shopId,b.start,b.end).first(),
-    env.DB.prepare(`SELECT COUNT(*) n FROM plus_subscriptions WHERE shop_id=? AND datetime(starts_at)>=datetime(?) AND datetime(starts_at)<datetime(?) AND status IN ('ACTIVE','EXPIRED','CANCELLED')`).bind(shopId,b.start,b.end).first()
+    plusOutstanding(env,shopId)
   ]);
-  const sales=num(o?.sales),reviewHold=num(o?.review_hold),gf=num(o?.gateway),pf=num(ps?.n)*PLUS_PRICE; return {sales,reviewHold,gatewayFee:gf,plusFee:pf,netIncome:Math.max(0,sales-gf-pf)};
+  if(locked){return {sales:num(locked.gross_sales),reviewHold:num(o?.review_hold),gatewayFee:num(locked.gateway_fees),plusFee:num(locked.plus_fees),plusOutstanding:outstanding,plusBalanceAfter:outstanding,netIncome:num(locked.net_payout),settlementStatus:locked.status,locked:true};}
+  const sales=num(o?.sales),reviewHold=num(o?.review_hold),gf=num(o?.gateway),available=Math.max(0,sales-gf);
+  const isNextPayablePeriod=period===previousPeriod(twPeriod());
+  const plusFee=isNextPayablePeriod?Math.min(available,outstanding):0;
+  return {sales,reviewHold,gatewayFee:gf,plusFee,plusOutstanding:outstanding,plusBalanceAfter:Math.max(0,outstanding-plusFee),netIncome:Math.max(0,available-plusFee),locked:false};
 }
 async function merchantLive(env,uid,shopId) {
   if(!await ownedShop(env,uid,shopId))return {status:'error',msg:'無權限管理此店'};
@@ -316,7 +327,7 @@ async function shopDashboard(env,p) {
   const slotRows=(slots.results||[]).filter(s=>!!shop.is_plus||num(s.slot_index)<=BASIC_SLOT_LIMIT), liveSlots=slotRows.map(s=>({index:num(s.slot_index),type:s.item_type||'暫不使用',name:s.name||'',desc:s.description||'',orig:num(s.original_price),rate:num(s.original_price)>0?num(s.sale_price)/num(s.original_price):0,rem:num(s.current_stock),status:s.status,time:s.pickup_cutoff||''}));
   const storeStatus=slotRows.some(s=>s.status==='ON'&&num(s.current_stock)>0)?'ON':'OFF',storeTime=slotRows.find(s=>s.pickup_cutoff)?.pickup_cutoff||'今日打烊前';
   const last5=payout?.bank_account_last5||'';
-  const myShop={shopId,shopName:shop.name,isVip:!!shop.is_plus,bCode:payout?.bank_code||'',bBranch:payout?.branch_code||'',bAcc:last5?`••••${last5}`:'',bOwner:payout?.account_holder||'',contractStatus:toLegacyContract(shop.contract_status),merchantType:shop.merchant_type,signerName:shop.signer_name||'',signerId:shop.signer_id_last4?`******${shop.signer_id_last4}`:'',merchantAccount:{accountId:shop.account_id,kycStatus:normalizeVerified(shop.kyc_status)?'VERIFIED_BASIC':shop.kyc_status,payoutStatus:normalizeVerified(shop.payout_status)?'VERIFIED_BASIC':shop.payout_status},shopProfile:{shopId,accountId:shop.account_id,responsibleMode:shop.responsible_mode,responsibleName:shop.responsible_name||'',responsiblePhone:shop.responsible_phone||'',kycInherited:!!shop.kyc_inherited,shopStatus:shop.status,riskStatus:shop.risk_status},finance:{currentPeriod:curr,sales:fc.sales,reviewHold:fc.reviewHold,gatewayFee:fc.gatewayFee,vipFee:fc.plusFee,debtIn:0,netIncome:fc.netIncome,currentStatus:'ACCUMULATING',historyPeriod:hist,historySales:fh.sales,historyReviewHold:fh.reviewHold,historyFee:fh.gatewayFee,historyVipFee:fh.plusFee,historyDebtIn:0,historyNetIncome:fh.netIncome,historyStatus:'AUDITING'},liveSlots,storeStatus,storeTime,activeOrders:live.activeOrders,knockToday:live.knockToday,watchers:live.watchers,merchantUnread:live.merchantUnread,merchantNotices:live.merchantNotices};
+  const myShop={shopId,shopName:shop.name,isVip:!!shop.is_plus,bCode:payout?.bank_code||'',bBranch:payout?.branch_code||'',bAcc:last5?`••••${last5}`:'',bOwner:payout?.account_holder||'',contractStatus:toLegacyContract(shop.contract_status),merchantType:shop.merchant_type,signerName:shop.signer_name||'',signerId:shop.signer_id_last4?`******${shop.signer_id_last4}`:'',merchantAccount:{accountId:shop.account_id,kycStatus:normalizeVerified(shop.kyc_status)?'VERIFIED_BASIC':shop.kyc_status,payoutStatus:normalizeVerified(shop.payout_status)?'VERIFIED_BASIC':shop.payout_status},shopProfile:{shopId,accountId:shop.account_id,responsibleMode:shop.responsible_mode,responsibleName:shop.responsible_name||'',responsiblePhone:shop.responsible_phone||'',kycInherited:!!shop.kyc_inherited,shopStatus:shop.status,riskStatus:shop.risk_status},finance:{currentPeriod:curr,sales:fc.sales,reviewHold:fc.reviewHold,gatewayFee:fc.gatewayFee,vipFee:fc.plusFee,plusOutstanding:fc.plusOutstanding,plusBalanceAfter:fc.plusBalanceAfter,debtIn:0,netIncome:fc.netIncome,currentStatus:fc.settlementStatus||'ACCUMULATING',historyPeriod:hist,historySales:fh.sales,historyReviewHold:fh.reviewHold,historyFee:fh.gatewayFee,historyVipFee:fh.plusFee,historyPlusOutstanding:fh.plusOutstanding,historyPlusBalanceAfter:fh.plusBalanceAfter,historyDebtIn:0,historyNetIncome:fh.netIncome,historyStatus:fh.settlementStatus||'AUDITING'},liveSlots,storeStatus,storeTime,activeOrders:live.activeOrders,knockToday:live.knockToday,watchers:live.watchers,merchantUnread:live.merchantUnread,merchantNotices:live.merchantNotices};
   return {status:'success',myShop,_perf:{route:'SHOP_DASHBOARD_D1'}};
 }
 
@@ -671,32 +682,88 @@ async function signContract(env,p,request) {const uid=String(p.uid||''),shopId=c
   ]);
   const inherited=(await env.DB.prepare(`SELECT s.shop_id FROM shops s LEFT JOIN shop_business_profiles bp ON bp.shop_id=s.shop_id WHERE s.merchant_account_id=? AND COALESCE(bp.responsible_mode,'SAME')='SAME'`).bind(acc.account_id).all()).results||[];for(const x of inherited){await env.DB.batch([env.DB.prepare(`UPDATE shop_business_profiles SET kyc_inherited=1,updated_at=? WHERE shop_id=?`).bind(now,x.shop_id),env.DB.prepare(`INSERT INTO merchant_contracts(contract_id,merchant_account_id,shop_id,contract_version,status,signer_name,signed_at,signing_source,created_at,updated_at) VALUES(?,?,?,?,'SIGNED',?,?,'INHERITED_ACCOUNT_KYC',?,?) ON CONFLICT(shop_id,contract_version) DO UPDATE SET status='SIGNED',signer_name=excluded.signer_name,signed_at=excluded.signed_at,signing_source='INHERITED_ACCOUNT_KYC',updated_at=excluded.updated_at`).bind(id('MCON'),acc.account_id,x.shop_id,MERCHANT_CONTRACT_VERSION,signer,now,now,now)]);await resolveReferralIdentity(env,x.shop_id,uid,h);}return {status:'success',kycStatus:'VERIFIED_BASIC',riskScore:risk.riskScore,msg:'商家主帳號基礎實名驗證完成；同主體店鋪可沿用。'};
 }
-async function upgradePlus(env,p) {const uid=String(p.uid||''),shopId=clean(p.shopId,100);if(!await ownedShop(env,uid,shopId))return {status:'error',msg:'無權限升級此店'};await env.DB.prepare(`UPDATE plus_subscriptions SET status='EXPIRED',updated_at=? WHERE shop_id=? AND status='ACTIVE' AND ends_at IS NOT NULL AND datetime(ends_at)<=CURRENT_TIMESTAMP`).bind(isoNow(),shopId).run();if(await activePlus(env,shopId))return {status:'success',alreadyVip:true,isVip:true};const now=isoNow(),ends=addMs(now,30*86400000);await env.DB.prepare(`INSERT INTO plus_subscriptions(subscription_id,shop_id,plan_code,price_amount,currency,status,starts_at,ends_at,source_order_id,created_at,updated_at) VALUES(?,?,'PLUS',?,'TWD','ACTIVE',?,?,'MERCHANT_SETTLEMENT',?,?)`).bind(id('PLUS'),shopId,PLUS_PRICE,now,ends,now,now).run();await audit(env,{actorType:'USER',actorId:uid,action:'PLUS_ACTIVATED',entityType:'SHOP',entityId:shopId,after:{price:PLUS_PRICE,ends}});return {status:'success',shopId,isVip:true};}
+async function upgradePlus(env,p) {
+  const uid=String(p.uid||''),shopId=clean(p.shopId,100);
+  if(!await ownedShop(env,uid,shopId))return {status:'error',msg:'無權限升級此店'};
+  const now=isoNow();
+  await env.DB.prepare(`UPDATE plus_subscriptions SET status='EXPIRED',updated_at=? WHERE shop_id=? AND status='ACTIVE' AND ends_at IS NOT NULL AND datetime(ends_at)<=CURRENT_TIMESTAMP`).bind(now,shopId).run();
+  if(await activePlus(env,shopId))return {status:'success',alreadyVip:true,isVip:true,plusOutstanding:await plusOutstanding(env,shopId)};
+  const outstanding=await plusOutstanding(env,shopId);
+  if(outstanding>0)return {status:'error',code:'PLUS_BALANCE_DUE',msg:`尚有 Plus 方案費 $${outstanding} 未由貨款扣清，扣清後即可再次升級。`,plusOutstanding:outstanding};
+  const subscriptionId=id('PLUS'),chargeId=id('PLUSBILL'),ends=addMs(now,30*86400000);
+  await env.DB.batch([
+    env.DB.prepare(`INSERT INTO plus_subscriptions(subscription_id,shop_id,plan_code,price_amount,currency,status,starts_at,ends_at,source_order_id,created_at,updated_at) VALUES(?,?,'PLUS',?,'TWD','ACTIVE',?,?,'MERCHANT_SETTLEMENT',?,?)`).bind(subscriptionId,shopId,PLUS_PRICE,now,ends,now,now),
+    env.DB.prepare(`INSERT INTO plus_billing_charges(charge_id,subscription_id,shop_id,charge_type,amount_due,amount_collected,amount_outstanding,currency,status,eligible_from,created_at,updated_at) VALUES(?,?,?,'PLUS_MONTHLY',?,0,?,'TWD','OUTSTANDING',?,?,?)`).bind(chargeId,subscriptionId,shopId,PLUS_PRICE,PLUS_PRICE,now,now,now)
+  ]);
+  await audit(env,{actorType:'USER',actorId:uid,action:'PLUS_ACTIVATED',entityType:'SHOP',entityId:shopId,after:{subscriptionId,chargeId,price:PLUS_PRICE,starts:now,ends,billing:'NEXT_PAYABLE_MERCHANT_SETTLEMENT'}});
+  return {status:'success',shopId,isVip:true,startsAt:now,endsAt:ends,plusOutstanding:PLUS_PRICE,billingMode:'NEXT_PAYABLE_MERCHANT_SETTLEMENT'};
+}
 
 async function settlementPreview(env,period) {
   const selectedPeriod=period||previousPeriod(twPeriod()),b=periodBounds(selectedPeriod);
   if(!b)return {status:'error',msg:'期間格式需為 YYYY-MM-A/B'};
   const refundCutoff=addMs(isoNow(),-REFUND_WINDOW_DAYS*86400000);
-  const r=await env.DB.prepare(`
-    SELECT
-      s.shop_id,s.name,ma.account_id,
-      mpp.status payout_status,mpp.bank_code,mpp.branch_code,mpp.account_holder,mpp.bank_account_last5,
-      CASE WHEN EXISTS(SELECT 1 FROM merchant_contracts mc WHERE mc.shop_id=s.shop_id AND mc.status='SIGNED') THEN 1 ELSE 0 END signed,
-      COALESCE((SELECT SUM(o.subtotal) FROM orders o WHERE o.shop_id=s.shop_id AND o.status IN ('REDEEMED','EXPIRED') AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))>=datetime(?) AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))<datetime(?) AND datetime(o.paid_at)<=datetime(?) AND NOT EXISTS(SELECT 1 FROM order_disputes d WHERE d.order_id=o.order_id AND d.status NOT IN ('RESOLVED_NO_REFUND','RESOLVED_REFUND','REJECTED','CANCELLED'))),0) gross,
-      COALESCE((SELECT SUM(CASE WHEN o.subtotal>0 THEN MAX(?,ROUND(o.subtotal*?)) ELSE 0 END) FROM orders o WHERE o.shop_id=s.shop_id AND o.status IN ('REDEEMED','EXPIRED') AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))>=datetime(?) AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))<datetime(?) AND datetime(o.paid_at)<=datetime(?) AND NOT EXISTS(SELECT 1 FROM order_disputes d WHERE d.order_id=o.order_id AND d.status NOT IN ('RESOLVED_NO_REFUND','RESOLVED_REFUND','REJECTED','CANCELLED'))),0) gateway,
-      COALESCE((SELECT SUM(o.subtotal) FROM orders o WHERE o.shop_id=s.shop_id AND o.status IN ('REDEEMED','EXPIRED') AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))>=datetime(?) AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))<datetime(?) AND NOT(datetime(o.paid_at)<=datetime(?) AND NOT EXISTS(SELECT 1 FROM order_disputes d WHERE d.order_id=o.order_id AND d.status NOT IN ('RESOLVED_NO_REFUND','RESOLVED_REFUND','REJECTED','CANCELLED')))),0) review_hold,
-      COALESCE((SELECT COUNT(*) FROM plus_subscriptions ps WHERE ps.shop_id=s.shop_id AND ps.status<>'REFUNDED' AND datetime(ps.starts_at)>=datetime(?) AND datetime(ps.starts_at)<datetime(?)),0) plus_count
-    FROM shops s
-    JOIN merchant_accounts ma ON ma.account_id=s.merchant_account_id
-    LEFT JOIN merchant_payout_profiles mpp ON mpp.merchant_account_id=ma.account_id
-    WHERE s.status='ACTIVE'
-    ORDER BY s.shop_id
-  `).bind(b.start,b.end,refundCutoff,GATEWAY_MIN,GATEWAY_RATE,b.start,b.end,refundCutoff,b.start,b.end,refundCutoff,b.start,b.end).all();
+  const [r,batches]=await Promise.all([
+    env.DB.prepare(`
+      SELECT
+        s.shop_id,s.name,ma.account_id,
+        mpp.status payout_status,mpp.bank_code,mpp.branch_code,mpp.account_holder,mpp.bank_account_last5,
+        CASE WHEN EXISTS(SELECT 1 FROM merchant_contracts mc WHERE mc.shop_id=s.shop_id AND mc.status='SIGNED') THEN 1 ELSE 0 END signed,
+        COALESCE((SELECT SUM(o.subtotal) FROM orders o WHERE o.shop_id=s.shop_id AND o.status IN ('REDEEMED','EXPIRED') AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))>=datetime(?) AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))<datetime(?) AND datetime(o.paid_at)<=datetime(?) AND NOT EXISTS(SELECT 1 FROM order_disputes d WHERE d.order_id=o.order_id AND d.status NOT IN ('RESOLVED_NO_REFUND','RESOLVED_REFUND','REJECTED','CANCELLED'))),0) gross,
+        COALESCE((SELECT SUM(CASE WHEN o.subtotal>0 THEN MAX(?,ROUND(o.subtotal*?)) ELSE 0 END) FROM orders o WHERE o.shop_id=s.shop_id AND o.status IN ('REDEEMED','EXPIRED') AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))>=datetime(?) AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))<datetime(?) AND datetime(o.paid_at)<=datetime(?) AND NOT EXISTS(SELECT 1 FROM order_disputes d WHERE d.order_id=o.order_id AND d.status NOT IN ('RESOLVED_NO_REFUND','RESOLVED_REFUND','REJECTED','CANCELLED'))),0) gateway,
+        COALESCE((SELECT SUM(o.subtotal) FROM orders o WHERE o.shop_id=s.shop_id AND o.status IN ('REDEEMED','EXPIRED') AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))>=datetime(?) AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))<datetime(?) AND NOT(datetime(o.paid_at)<=datetime(?) AND NOT EXISTS(SELECT 1 FROM order_disputes d WHERE d.order_id=o.order_id AND d.status NOT IN ('RESOLVED_NO_REFUND','RESOLVED_REFUND','REJECTED','CANCELLED')))),0) review_hold,
+        COALESCE((SELECT SUM(c.amount_outstanding) FROM plus_billing_charges c WHERE c.shop_id=s.shop_id AND c.status IN ('OUTSTANDING','PARTIALLY_COLLECTED') AND datetime(c.eligible_from)<=CURRENT_TIMESTAMP),0) plus_outstanding
+      FROM shops s
+      JOIN merchant_accounts ma ON ma.account_id=s.merchant_account_id
+      LEFT JOIN merchant_payout_profiles mpp ON mpp.merchant_account_id=ma.account_id
+      WHERE s.status='ACTIVE'
+      ORDER BY s.shop_id
+    `).bind(b.start,b.end,refundCutoff,GATEWAY_MIN,GATEWAY_RATE,b.start,b.end,refundCutoff,b.start,b.end,refundCutoff).all(),
+    env.DB.prepare(`SELECT * FROM merchant_settlement_batches WHERE period_start=? AND period_end=? AND status<>'CANCELLED'`).bind(b.start,b.end).all()
+  ]);
+  const batchMap=new Map((batches.results||[]).map(x=>[String(x.shop_id),x]));
   const rows=(r.results||[]).map(x=>{
-    const gf=num(x.gateway),plus=num(x.plus_count)*PLUS_PRICE,net=Math.max(0,num(x.gross)-gf-plus),approved=!!x.signed&&x.payout_status==='VERIFIED';
-    return {shopId:x.shop_id,shopName:x.name,gross:num(x.gross),refundReviewHold:num(x.review_hold),gatewayFee:gf,plusFee:plus,netPayout:net,bankCode:x.bank_code||'',branchCode:x.branch_code||'',bankAccountMasked:x.bank_account_last5?`••••${x.bank_account_last5}`:'',accountHolder:x.account_holder||'',status:approved?'APPROVED':'ON_HOLD',holdReason:!x.signed?'未完簽':x.payout_status!=='VERIFIED'?'收款帳戶未驗證':''};
+    const existing=batchMap.get(String(x.shop_id)),approved=!!x.signed&&x.payout_status==='VERIFIED',outstanding=num(x.plus_outstanding);
+    if(existing){return {shopId:x.shop_id,shopName:x.name,gross:num(existing.gross_sales),refundReviewHold:num(x.review_hold),gatewayFee:num(existing.gateway_fees),plusFee:num(existing.plus_fees),plusOutstanding:outstanding,plusBalanceAfter:outstanding,netPayout:num(existing.net_payout),bankCode:x.bank_code||'',branchCode:x.branch_code||'',bankAccountMasked:x.bank_account_last5?`••••${x.bank_account_last5}`:'',accountHolder:x.account_holder||'',status:existing.status,settlementBatchId:existing.batch_id,locked:true,holdReason:''};}
+    const gf=num(x.gateway),available=Math.max(0,num(x.gross)-gf),plus=approved?Math.min(available,outstanding):0,net=Math.max(0,available-plus);
+    return {shopId:x.shop_id,shopName:x.name,gross:num(x.gross),refundReviewHold:num(x.review_hold),gatewayFee:gf,plusFee:plus,plusOutstanding:outstanding,plusBalanceAfter:Math.max(0,outstanding-plus),netPayout:net,bankCode:x.bank_code||'',branchCode:x.branch_code||'',bankAccountMasked:x.bank_account_last5?`••••${x.bank_account_last5}`:'',accountHolder:x.account_holder||'',status:approved?'APPROVED':'ON_HOLD',locked:false,holdReason:!x.signed?'未完簽':x.payout_status!=='VERIFIED'?'收款帳戶未驗證':''};
   });
-  return {status:'success',period:selectedPeriod,rows,totalApproved:rows.filter(x=>x.status==='APPROVED').reduce((a,b)=>a+b.netPayout,0)};
+  return {status:'success',period:selectedPeriod,rows,totalApproved:rows.filter(x=>x.status==='APPROVED'||x.status==='READY_TO_PAY').reduce((a,b)=>a+b.netPayout,0)};
+}
+
+async function closeSettlementPeriod(env,period,actorId='HQ') {
+  const selectedPeriod=period||previousPeriod(twPeriod()),b=periodBounds(selectedPeriod);
+  if(!b)return {status:'error',msg:'期間格式需為 YYYY-MM-A/B'};
+  const preview=await settlementPreview(env,selectedPeriod);
+  if(preview.status!=='success')return preview;
+  const now=isoNow(),results=[];
+  for(const row of preview.rows||[]){
+    if(row.locked){results.push({shopId:row.shopId,status:'ALREADY_CLOSED',batchId:row.settlementBatchId,netPayout:row.netPayout});continue;}
+    if(row.status!=='APPROVED'){results.push({shopId:row.shopId,status:'ON_HOLD',reason:row.holdReason});continue;}
+    if(num(row.gross)<=0){results.push({shopId:row.shopId,status:'NO_PAYABLE_SALES'});continue;}
+    const eligible=(await env.DB.prepare(`SELECT o.order_id,o.subtotal FROM orders o WHERE o.shop_id=? AND o.status IN ('REDEEMED','EXPIRED') AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))>=datetime(?) AND datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at))<datetime(?) AND datetime(o.paid_at)<=datetime(?) AND NOT EXISTS(SELECT 1 FROM order_disputes d WHERE d.order_id=o.order_id AND d.status NOT IN ('RESOLVED_NO_REFUND','RESOLVED_REFUND','REJECTED','CANCELLED')) ORDER BY datetime(COALESCE(o.redeemed_at,o.paid_at,o.created_at)),o.order_id`).bind(row.shopId,b.start,b.end,addMs(now,-REFUND_WINDOW_DAYS*86400000)).all()).results||[];
+    if(!eligible.length){results.push({shopId:row.shopId,status:'NO_PAYABLE_SALES'});continue;}
+    const batchId=id('SETTLE'),gross=eligible.reduce((a,x)=>a+num(x.subtotal),0),gateway=eligible.reduce((a,x)=>a+gatewayFee(x.subtotal),0),available=Math.max(0,gross-gateway);
+    const charges=(await env.DB.prepare(`SELECT charge_id,subscription_id,amount_outstanding FROM plus_billing_charges WHERE shop_id=? AND status IN ('OUTSTANDING','PARTIALLY_COLLECTED') AND datetime(eligible_from)<=datetime(?) ORDER BY datetime(eligible_from),datetime(created_at),charge_id`).bind(row.shopId,now).all()).results||[];
+    let remaining=available,plusDeduction=0;const allocations=[];
+    for(const c of charges){if(remaining<=0)break;const amount=Math.min(remaining,num(c.amount_outstanding));if(amount<=0)continue;allocations.push({charge:c,amount});remaining-=amount;plusDeduction+=amount;}
+    const netPayout=Math.max(0,available-plusDeduction),stm=[];
+    stm.push(env.DB.prepare(`INSERT INTO merchant_settlement_batches(batch_id,shop_id,period_start,period_end,gross_sales,gateway_fees,plus_fees,adjustments,net_payout,status,closed_at,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,'READY_TO_PAY',?,?,?)`).bind(batchId,row.shopId,b.start,b.end,gross,gateway,plusDeduction,0,netPayout,now,now,now));
+    for(const o of eligible){
+      stm.push(env.DB.prepare(`INSERT INTO merchant_settlement_items(settlement_item_id,batch_id,item_type,order_id,amount,description,created_at) VALUES(?,?,'ORDER',?,?,?,?)`).bind(id('SETITEM'),batchId,o.order_id,num(o.subtotal),`訂單 ${o.order_id} 可撥貨款`,now));
+      const gf=gatewayFee(o.subtotal);if(gf>0)stm.push(env.DB.prepare(`INSERT INTO merchant_settlement_items(settlement_item_id,batch_id,item_type,order_id,amount,description,created_at) VALUES(?,?,'GATEWAY_FEE',?, ?,?,?)`).bind(id('SETITEM'),batchId,o.order_id,-gf,`訂單 ${o.order_id} 金流成本`,now));
+    }
+    for(const a of allocations){
+      const after=Math.max(0,num(a.charge.amount_outstanding)-a.amount),status=after===0?'SETTLED':'PARTIALLY_COLLECTED';
+      stm.push(env.DB.prepare(`UPDATE plus_billing_charges SET amount_collected=amount_collected+?,amount_outstanding=?,status=?,settled_at=CASE WHEN ?='SETTLED' THEN ? ELSE settled_at END,updated_at=? WHERE charge_id=? AND amount_outstanding>=? AND status IN ('OUTSTANDING','PARTIALLY_COLLECTED')`).bind(a.amount,after,status,status,now,now,a.charge.charge_id,a.amount));
+      stm.push(env.DB.prepare(`INSERT INTO plus_billing_collections(collection_id,charge_id,shop_id,settlement_batch_id,settlement_period,amount,source,created_at) VALUES(?,?,?,?,?,?,'MERCHANT_SETTLEMENT',?)`).bind(id('PLUSCOL'),a.charge.charge_id,row.shopId,batchId,selectedPeriod,a.amount,now));
+      stm.push(env.DB.prepare(`INSERT INTO merchant_settlement_items(settlement_item_id,batch_id,item_type,amount,description,created_at) VALUES(?,?,'PLUS_FEE',?,?,?)`).bind(id('SETITEM'),batchId,-a.amount,`Plus 方案費抵扣 ${a.charge.charge_id}`,now));
+    }
+    await env.DB.batch(stm);
+    await audit(env,{actorType:'ADMIN',actorId,action:'MERCHANT_SETTLEMENT_CLOSED',entityType:'SETTLEMENT_BATCH',entityId:batchId,after:{shopId:row.shopId,period:selectedPeriod,gross,gateway,plusDeduction,netPayout}});
+    results.push({shopId:row.shopId,status:'READY_TO_PAY',batchId,gross,gatewayFee:gateway,plusDeduction,netPayout,plusBalanceAfter:Math.max(0,num(row.plusOutstanding)-plusDeduction)});
+  }
+  return {status:'success',period:selectedPeriod,results};
 }
 
 async function expirePlus(env) {
@@ -839,6 +906,7 @@ export default {
         const result=await adminOrderComplaint(env,await formParams(request),request),status=result._httpStatus||200;delete result._httpStatus;return json(result,{status});
       }
       if(url.pathname==='/api/admin/settlements'&&request.method==='GET'){if(!env.ADMIN_API_KEY||request.headers.get('X-Admin-Key')!==env.ADMIN_API_KEY)return json({status:'error',msg:'UNAUTHORIZED'},{status:401});return json(await settlementPreview(env,url.searchParams.get('period')));}
+      if(url.pathname==='/api/admin/settlements'&&request.method==='POST'){if(!env.ADMIN_API_KEY||request.headers.get('X-Admin-Key')!==env.ADMIN_API_KEY)return json({status:'error',msg:'UNAUTHORIZED'},{status:401});const p=await formParams(request);if(String(p.operation||'')!=='CLOSE_PERIOD')return json({status:'error',msg:'UNKNOWN_SETTLEMENT_OPERATION'},{status:400});return json(await closeSettlementPeriod(env,p.period,String(p.actorId||'HQ')));}
       if(url.pathname==='/api/admin/cron'&&request.method==='POST'){if(!env.ADMIN_API_KEY||request.headers.get('X-Admin-Key')!==env.ADMIN_API_KEY)return json({status:'error',msg:'UNAUTHORIZED'},{status:401});return json({status:'success',result:await cronRun(env)});}
       if(url.pathname.startsWith('/api/'))return json({status:'error',message:'API route not found'},{status:404});
       return env.ASSETS.fetch(request);

@@ -3,7 +3,8 @@ import { DatabaseSync } from 'node:sqlite';
 
 const root = new URL('../', import.meta.url);
 const worker = fs.readFileSync(new URL('worker.js', root), 'utf8');
-const migration = fs.readFileSync(new URL('migrations/0001_partner_rule_v2_reconciliation.sql', root), 'utf8');
+const migration1 = fs.readFileSync(new URL('migrations/0001_partner_rule_v2_reconciliation.sql', root), 'utf8');
+const migration2 = fs.readFileSync(new URL('migrations/0002_plus_deferred_billing.sql', root), 'utf8');
 const contract = fs.readFileSync(new URL('tests/fixtures/frozen_step2a_h_contract.sql', root), 'utf8');
 
 const db = new DatabaseSync(':memory:');
@@ -23,6 +24,11 @@ for (const status of ['UNDER_REVIEW', 'RESOLVED_NO_REFUND', 'RESOLVED_REFUND']) 
   if (!disputeSql.includes(`'${status}'`)) throw new Error(`Frozen dispute status missing: ${status}`);
 }
 
+db.exec(migration1);
+db.exec(migration2);
+const migratedTables = db.prepare("SELECT COUNT(*) n FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%'").get().n;
+if (migratedTables !== 47) throw new Error(`Expected 47 tables after Plus billing migration, received ${migratedTables}`);
+
 const preparedSql = /\.prepare\(\s*`([\s\S]*?)`\s*\)/g;
 let match;
 let prepared = 0;
@@ -32,13 +38,13 @@ while ((match = preparedSql.exec(worker))) {
     db.prepare(match[1]);
     prepared += 1;
   } catch (error) {
-    throw new Error(`Worker SQL at line ${line} is incompatible with frozen Step2A-H: ${error.message}`);
+    throw new Error(`Worker SQL at line ${line} is incompatible with migrated D1 schema: ${error.message}`);
   }
 }
 
-db.exec(migration);
 const currentRule = db.prepare("SELECT COUNT(*) n FROM partner_rule_versions WHERE rule_version='PARTNER-2.0-SERVICE-FEE-ONLY'").get().n;
 const policyMarker = db.prepare("SELECT COUNT(*) n FROM schema_versions WHERE version='3.1.2-ADMIN-REFUND-14D'").get().n;
-if (currentRule !== 1 || policyMarker !== 1) throw new Error('Forward migration did not apply to the full frozen schema contract');
+const plusMarker = db.prepare("SELECT COUNT(*) n FROM schema_versions WHERE version='3.1.3-PLUS-DEFERRED-BILLING'").get().n;
+if (currentRule !== 1 || policyMarker !== 1 || plusMarker !== 1) throw new Error('Forward migrations did not apply to the full frozen schema contract');
 
-console.log(`FULL FROZEN SCHEMA CONTRACT PASS: ${tables} tables; ${prepared} Worker SQL statements; Step2H x10000 units; forward migration`);
+console.log(`FULL FROZEN SCHEMA CONTRACT PASS: ${tables} frozen tables -> ${migratedTables} migrated tables; ${prepared} Worker SQL statements; Step2H x10000 units; Plus deferred billing`);

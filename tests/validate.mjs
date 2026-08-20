@@ -4,6 +4,7 @@ import vm from 'node:vm';
 const root = new URL('../', import.meta.url);
 const worker = fs.readFileSync(new URL('worker.js', root), 'utf8');
 const index = fs.readFileSync(new URL('index.html', root), 'utf8');
+const radar = fs.readFileSync(new URL('radar.html', root), 'utf8');
 const wrangler = JSON.parse(fs.readFileSync(new URL('wrangler.jsonc', root), 'utf8'));
 const assetsIgnore = fs.readFileSync(new URL('.assetsignore', root), 'utf8');
 
@@ -13,9 +14,13 @@ const check = (condition, message) => {
 };
 
 check(worker.includes("const PARTNER_RULE = 'PARTNER-2.0-SERVICE-FEE-ONLY'"), 'Partner rule is not v2 service-fee-only');
-check(worker.includes("const RELEASE = '3.0-RC2.11.0-D1-MAIN-CANDIDATE'"), 'Worker main-candidate release marker is missing');
+check(worker.includes("const RELEASE = '3.0-RC2.14.0-D1-MAIN-CANDIDATE'"), 'Worker main-candidate release marker is missing');
 check(worker.includes("const PARTNER_CONTRACT_VERSION = 'PARTNER-2.0-SERVICE-FEE-ONLY'"), 'Partner contract is not v2');
 check(worker.includes('const REFUND_WINDOW_DAYS = 14'), '14-day refund decision window is missing');
+check(worker.includes('plus_billing_charges'), 'Plus deferred billing ledger is missing');
+check(worker.includes("code:'PLUS_BALANCE_DUE'"), 'Plus re-upgrade debt gate is missing');
+check(worker.includes('async function closeSettlementPeriod'), 'Merchant settlement close foundation is missing');
+check(worker.includes("operation||'')!=='CLOSE_PERIOD'"), 'Admin settlement close operation is missing');
 check(worker.includes("contract_version=? AND status='SIGNED'"), 'Onboarding does not require the current contract version');
 check(worker.includes("PARTNER_CONSENT_VERSION"), 'Partner v2 consent version is missing');
 check(worker.includes("request.method!=='POST'"), 'Action endpoint is not POST-only');
@@ -75,21 +80,40 @@ check(!/VIP\s*\+?\s*150|Plus[^\n]{0,120}(?:分潤|收益)[^\n]{0,80}50%/i.test(i
 
 check(wrangler.name === 'seefood', `Main Worker name should be seefood, received: ${wrangler.name}`);
 check(wrangler.d1_databases?.[0]?.database_name === 'seefood-staging', 'Current live D1 binding changed unexpectedly; review data migration before renaming');
+check(wrangler.vars?.LINE_LOGIN_CHANNEL_ID === '2010392646', 'Production LINE Login channel ID is not pinned as a non-secret Worker variable');
+check(wrangler.secrets?.required?.includes('SESSION_SECRET'), 'SESSION_SECRET is not declared as a required deployment secret');
+check(!wrangler.secrets?.required?.includes('LINE_LOGIN_CHANNEL_ID'), 'LINE_LOGIN_CHANNEL_ID should be a normal variable, not a required secret');
 for (const privatePath of ['worker.js', 'migrations/**', 'tests/**', 'VALIDATION_REPORT.md', 'SHA256SUMS.txt']) {
   check(assetsIgnore.includes(privatePath), `Static assets ignore is missing: ${privatePath}`);
 }
 check(fs.existsSync(new URL('guide.html', root)) && fs.existsSync(new URL('radar.html', root)), 'Main-site package must include Guide and Radar');
 
+check(index.includes("let targetShopFocusId = ''"), 'Main-site target-shop focus state is missing');
+check(index.includes("if (targetShopFocusId) filtered = filtered.filter"), 'targetShopId does not narrow Home Feed to the selected shop');
+check(radar.includes('>前往獵場</button>'), 'Radar CTA label was not restored to 前往獵場');
+check(!radar.includes('>地圖查看</button>'), 'Legacy 地圖查看 CTA remains in Radar');
+check(radar.includes("location.href=`/?${q.toString()}#home`"), 'Radar 前往獵場 does not return to the canonical SEEFOOD main site');
+
 check(index.includes('const vip = s.isVip ? 10 : 0;'), 'Plus recommendation weight (+10) is missing');
 check(index.includes("if (currentSortMethod === 'recommend') { filtered.forEach(s => s.huntScore = calculateHuntScore(s));"), 'Plus/recommendation score is not confined to Recommend sorting');
 check(index.includes("else filtered.sort((a,b) => a.distance - b.distance);"), 'Distance sort is no longer pure distance');
 check(index.includes("${s.isVip ? ' <span title=\"SEEFOOD Plus 獵場\""), 'Active Plus identity marker is not shown independently of deep-discount styling');
+check(index.includes('let isGoldenVip = s.isVip && s.discountRate <= 0.5;'), 'Plus-only <=5折 priority frame rule is missing');
+check(index.includes('不用先付款'), 'Plus deferred-billing copy is missing from the merchant UI');
+check(index.includes('清零後即可再次升級'), 'Plus outstanding-balance re-upgrade copy is missing');
 
 const inlineScripts = [...index.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1]).filter(s => s.trim());
 inlineScripts.forEach((source, i) => {
   try { new vm.Script(source, { filename: `index-inline-${i + 1}.js` }); }
   catch (error) { failures.push(`Index inline script ${i + 1} syntax: ${error.message}`); }
 });
+const radarInlineScripts = [...radar.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1]).filter(s => s.trim());
+radarInlineScripts.forEach((source, i) => {
+  try { new vm.Script(source, { filename: `radar-inline-${i + 1}.js` }); }
+  catch (error) { failures.push(`Radar inline script ${i + 1} syntax: ${error.message}`); }
+});
+check(index.includes('<div id="sf-perf-audit" style="display:none">'), 'Main-site PERF HUD is not hidden by default');
+check(radar.includes('<body><div id="sf-perf-audit" class="hidden-by-user">'), 'Radar PERF HUD is not hidden by default');
 
 const moduleUrl = `data:text/javascript;base64,${Buffer.from(worker).toString('base64')}`;
 const mod = await import(moduleUrl);
@@ -110,4 +134,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`VALIDATION PASS: ${expectedActions.length} GAS actions + ECPay callback; ${inlineScripts.length} Index scripts; security gates verified`);
+console.log(`VALIDATION PASS: ${expectedActions.length} GAS actions + ECPay callback; ${inlineScripts.length} Index scripts; ${radarInlineScripts.length} Radar scripts; security gates verified`);

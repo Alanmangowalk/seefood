@@ -74,6 +74,8 @@ db.exec(`
   CREATE TABLE merchant_payout_profiles(merchant_account_id TEXT PRIMARY KEY,status TEXT,bank_code TEXT,branch_code TEXT,account_holder TEXT,bank_account_last5 TEXT);
   CREATE TABLE merchant_contracts(shop_id TEXT,status TEXT);
   CREATE TABLE plus_subscriptions(shop_id TEXT,status TEXT,starts_at TEXT);
+  CREATE TABLE plus_billing_charges(shop_id TEXT,status TEXT,amount_outstanding INTEGER,eligible_from TEXT);
+  CREATE TABLE merchant_settlement_batches(batch_id TEXT PRIMARY KEY,shop_id TEXT,period_start TEXT,period_end TEXT,gross_sales INTEGER,gateway_fees INTEGER,plus_fees INTEGER,net_payout INTEGER,status TEXT,created_at TEXT);
 
   INSERT INTO users VALUES('U-BUYER','ACTIVE','TEST',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
   INSERT INTO merchant_accounts VALUES('MA-1');

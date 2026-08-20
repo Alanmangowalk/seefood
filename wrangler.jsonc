@@ -20,5 +20,13 @@
     "crons": [
       "* * * * *"
     ]
+  },
+  "secrets": {
+    "required": [
+      "SESSION_SECRET"
+    ]
+  },
+  "vars": {
+    "LINE_LOGIN_CHANNEL_ID": "2010392646"
   }
 }

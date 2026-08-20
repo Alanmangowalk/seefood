@@ -351,8 +351,8 @@ select,input,textarea,button{max-width:100%}
 
 
 <script id="seefood-perf-audit-script">
-window.__SF_PERF_ON=true;
-sessionStorage.setItem('sf_perf_mode','1');
+window.__SF_PERF_ON=new URLSearchParams(window.location.search).get('perf')==='1';
+if(window.__SF_PERF_ON)sessionStorage.setItem('sf_perf_mode','1');else sessionStorage.removeItem('sf_perf_mode');
 window.__SF_PERF_LOG=[];
 window.sfPerfLog=function(name,total,detail){
   if(!window.__SF_PERF_ON)return;
@@ -373,6 +373,8 @@ window.sfPerfLog=function(name,total,detail){
 window.addEventListener('DOMContentLoaded',()=>{
   try{
     const box=document.getElementById('sf-perf-audit');
+    if(box)box.style.display=window.__SF_PERF_ON?'':'none';
+    if(!window.__SF_PERF_ON)return;
     const toggle=document.getElementById('sf-perf-toggle');
     const hide=document.getElementById('sf-perf-hide');
     const lines=document.getElementById('sf-perf-lines');
@@ -499,7 +501,7 @@ window.addEventListener('DOMContentLoaded',()=>{
 </script>
 
 </head>
-<body class="bg-gray-900 min-h-screen flex justify-center items-top"><div id="sf-perf-audit">
+<body class="bg-gray-900 min-h-screen flex justify-center items-top"><div id="sf-perf-audit" style="display:none">
   <div class="sf-perf-head">
     <span class="sf-perf-dot"></span>
     <span class="sf-perf-title">PERF</span>
@@ -576,16 +578,16 @@ window.addEventListener('DOMContentLoaded',()=>{
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.9.3-D1-SHADOW</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
                     <span class="text-red-500">📍</span>
-                    <select id="select-region" onchange="handleRegionChange()" class="bg-transparent focus:outline-none text-gray-700 w-full cursor-pointer truncate">
+                    <select id="select-region" onchange="clearTargetShopFocus();handleRegionChange()" class="bg-transparent focus:outline-none text-gray-700 w-full cursor-pointer truncate">
                         <option value="全部地區">全部地區</option>
                     </select>
                 </div>
-                <select id="select-district" onchange="filterStores()" class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold text-gray-700 focus:outline-none cursor-pointer w-1/2 ml-2 truncate">
+                <select id="select-district" onchange="clearTargetShopFocus();filterStores()" class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold text-gray-700 focus:outline-none cursor-pointer w-1/2 ml-2 truncate">
                     <option value="全部行政區">全部行政區</option>
                 </select>
             </div>
@@ -874,7 +876,7 @@ window.addEventListener('DOMContentLoaded',()=>{
                         <span class="bg-white/20 text-slate-900 font-black text-[10px] px-3 py-2 rounded-lg shadow-sm">前往閱讀</span>
                     </a>
 
-                    <section id="vip-upgrade-banner" class="sf-plus-card"><div class="sf-plus-copy"><span class="sf-plus-kicker">SEEFOOD PLUS · 目前店鋪</span><h3>讓好獵物，更容易被看見。</h3><p>獵物曝光排序加權＋10 格商品欄位＋30／90 日進階分析＋前期趨勢比較。每間店獨立升級，不影響其他店鋪。</p></div><div class="sf-plus-price"><b>$299</b><span>/ 月</span></div><button type="button" onclick="triggerGrandMasterUpgrade()" class="sf-plus-cta">查看 Plus 並升級</button></section><button type="button" onclick="openFinanceModal()" class="w-full bg-slate-800 border border-slate-600 text-blue-300 font-black py-3 rounded-xl text-sm transition active:scale-95 hover:bg-slate-700 flex justify-center items-center relative z-10 shadow-sm">
+                    <section id="vip-upgrade-banner" class="sf-plus-card"><div class="sf-plus-copy"><span class="sf-plus-kicker">SEEFOOD PLUS · 目前店鋪</span><h3>讓好獵物，更容易被看見。</h3><p id="sf-plus-banner-desc">獵物曝光排序加權＋10 格商品欄位＋30／90 日進階分析＋前期趨勢比較。每間店獨立升級，不影響其他店鋪。</p></div><div class="sf-plus-price"><b>$299</b><span>/ 30 天</span></div><button id="sf-plus-banner-cta" type="button" onclick="triggerGrandMasterUpgrade()" class="sf-plus-cta">查看 Plus 並升級</button></section><button type="button" onclick="openFinanceModal()" class="w-full bg-slate-800 border border-slate-600 text-blue-300 font-black py-3 rounded-xl text-sm transition active:scale-95 hover:bg-slate-700 flex justify-center items-center relative z-10 shadow-sm">
                         查看帳務與對帳
                     </button>
 
@@ -1131,7 +1133,7 @@ window.addEventListener('DOMContentLoaded',()=>{
         const __sfLiffId = __sfProductionLiffId;
         // RC2.11：主站唯一 Runtime。所有營運 action 直接走 Cloudflare Worker + D1，不再依 query 切回 GAS。
         const gasUrl = '/api/action';
-        let storesData = []; let locationHierarchy = {}; let currentSortMethod = 'recommend'; let currentOrder = {}; let orderSubTab = 'active';
+        let storesData = []; let locationHierarchy = {}; let currentSortMethod = 'recommend'; let targetShopFocusId = ''; let currentOrder = {}; let orderSubTab = 'active';
         let userStats = { co2Total: 0.0, savedAmount: 0, hasFirstOrder: false, storeCounts: {}, unlockedTimes: { lunch: false, nightMarket: false, midnight: false }, lineUid: "LINE_GUEST", merchantFinance: null };
         let userLocation = null; let cloudBanners = []; let bannerIndex = 0;
         let textBannerTemplates = [ { emoji: "🌍", text: "系統連線中..." }, { emoji: "👑", text: "SEEFOOD Plus：更多商品欄位與進階營運分析。" } ];
@@ -1624,6 +1626,7 @@ window.addEventListener('DOMContentLoaded',()=>{
                 const urlParams = new URLSearchParams(window.location.search);
                 const targetShopId = urlParams.get('targetShopId');
                 if (targetShopId) {
+                    targetShopFocusId = targetShopId;
                     {
                         const keepPerf=window.__SF_PERF_ON?'?perf=1':'';
                         const cleanHash=(window.location.hash||'').split('?')[0];
@@ -1666,6 +1669,7 @@ window.addEventListener('DOMContentLoaded',()=>{
             if (elFuel) elFuel.innerText = `🍃 相當於為地球集體少燃燒了 ${globalFuel.toFixed(1)} 公升汽油 🛰️`;
         }
 
+        function clearTargetShopFocus() { targetShopFocusId = ''; }
         function initFilterMenus() { const regionSelect = document.getElementById('select-region'); if(!regionSelect) return; locationHierarchy = { "全部地區": new Set(["全部行政區"]) }; storesData.forEach(store => { if (!locationHierarchy[store.city]) locationHierarchy[store.city] = new Set(["全部行政區"]); locationHierarchy[store.city].add(store.district); }); regionSelect.innerHTML = ''; Object.keys(locationHierarchy).forEach(c => { regionSelect.innerHTML += `<option value="${c}">${c}</option>`; }); handleRegionChange(); }
         function handleRegionChange() { const districtSelect = document.getElementById('select-district'); const selectedCity = document.getElementById('select-region').value; districtSelect.innerHTML = ''; if (selectedCity === "全部地區") { districtSelect.innerHTML = `<option value="全部行政區">全部行政區</option>`; } else { districtSelect.innerHTML = `<option value="全部行政區">全部行政區</option>`; (locationHierarchy[selectedCity] || ["全部行政區"]).forEach(d => { if(d !== "全部行政區") districtSelect.innerHTML += `<option value="${d}">${d}</option>`; }); } filterStores(); }
 
@@ -1673,12 +1677,14 @@ window.addEventListener('DOMContentLoaded',()=>{
             const container = document.getElementById('store-list-container'); const selectedCity = document.getElementById('select-region').value; const selectedDistrict = document.getElementById('select-district').value;
             if(!container) return; container.innerHTML = '';
             let filtered = storesData.filter(s => { return (selectedCity === "全部地區" || s.city === selectedCity) && (selectedDistrict === "全部行政區" || s.district === selectedDistrict) && s.remain > 0; });
+            if (targetShopFocusId) filtered = filtered.filter(s => String(s.shopId) === String(targetShopFocusId));
             filtered.forEach(s => { if (!s.lat || !s.lng) { s.distance = Infinity; } else if (userLocation) { s.distance = getDistance(userLocation.lat, userLocation.lng, s.lat, s.lng); } else { s.distance = Infinity; } });
             if (currentSortMethod === 'recommend') { filtered.forEach(s => s.huntScore = calculateHuntScore(s)); filtered.sort((a,b) => b.huntScore - a.huntScore); filtered = diversifyStores(filtered); }
             else if (currentSortMethod === 'discount') filtered.sort((a,b) => (a.discountRate !== b.discountRate) ? a.discountRate - b.discountRate : a.distance - b.distance);
             else if (currentSortMethod === 'remain') filtered.sort((a,b) => b.remain - a.remain);
             else filtered.sort((a,b) => a.distance - b.distance);
-            if (filtered.length === 0) { container.innerHTML = `<div class="sf-empty-state sf-empty-feed"><span class="sf-empty-icon"><i data-lucide="radar"></i></span><p class="sf-empty-kicker">RADAR CLEAR</p><h3>附近獵場暫時休息中</h3><p>目前範圍沒有可狩獵的惜食品項。可以重新掃描，或點亮你想吃的店。</p><div class="sf-empty-actions"><button type="button" onclick="filterStores()" class="sf-empty-primary">重新掃描</button><button type="button" onclick="switchTab('achievement');setTimeout(()=>document.getElementById('partner-hub-zone')?.scrollIntoView({behavior:'smooth'}),180)" class="sf-empty-secondary">點亮新獵場</button></div></div>`; refreshIcons26(); return; }
+            if (filtered.length === 0) { container.innerHTML = `<div class="sf-empty-state sf-empty-feed"><span class="sf-empty-icon"><i data-lucide="radar"></i></span><p class="sf-empty-kicker">RADAR CLEAR</p><h3>${targetShopFocusId ? '這間獵場目前沒有可獵取商品' : '附近獵場暫時休息中'}</h3><p>${targetShopFocusId ? '可以回到全部獵場繼續探索，或稍後再回來看看。' : '目前範圍沒有可狩獵的惜食品項。可以重新掃描，或點亮你想吃的店。'}</p><div class="sf-empty-actions"><button type="button" onclick="clearTargetShopFocus();filterStores()" class="sf-empty-primary">${targetShopFocusId ? '查看全部獵場' : '重新掃描'}</button><button type="button" onclick="switchTab('achievement');setTimeout(()=>document.getElementById('partner-hub-zone')?.scrollIntoView({behavior:'smooth'}),180)" class="sf-empty-secondary">點亮新獵場</button></div></div>`; refreshIcons26(); return; }
+            if (targetShopFocusId) { const targetName = filtered[0]?.name || '這間獵場'; container.innerHTML = `<div class="mb-3 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-slate-700"><span>正在查看 ${escapeHTML(targetName)} 的惜食品</span><button type="button" onclick="clearTargetShopFocus();filterStores()" class="shrink-0 rounded-full bg-white px-3 py-1 text-[10px] font-black text-slate-600 shadow-sm">查看全部</button></div>`; }
             filtered.forEach(s => {
                 let isGoldenVip = s.isVip && s.discountRate <= 0.5; let distanceHtml = "";
                 if (!s.lat || !s.lng) { distanceHtml = `<p class="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-0.5 rounded">📍 新商店地圖建置中</p>`; } else if (!userLocation) { distanceHtml = `<p class="text-xs text-blue-500 font-bold cursor-pointer animate-pulse bg-blue-50 px-2 py-0.5 rounded border border-blue-200 shadow-sm" onclick="requestLocation()">📍 點我解鎖真實距離</p>`; } else { let distDisplay = s.distance > 1000 ? (s.distance/1000).toFixed(1) + "km" : s.distance + "m"; distanceHtml = `<p class="text-xs text-gray-400 font-bold">📍 距離 ${distDisplay}</p>`; }
@@ -1777,11 +1783,11 @@ window.addEventListener('DOMContentLoaded',()=>{
                 if(fin.historyPeriod) document.getElementById('history-period-title').innerHTML = `${fin.historyPeriod} <span class="text-[10px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-800/60 ml-1">對帳中</span>`;
                 document.getElementById('fin-sales').innerText = `$${fin.sales || 0}`;
                 document.getElementById('fin-held-sales').innerText = `$${fin.reviewHold || 0}`;
-                document.getElementById('fin-fee').innerHTML = `-$${fin.gatewayFee || 0} ${fin.vipFee > 0 ? `<br><span class="text-red-400">Plus 方案費 <b>-$${fin.vipFee}</b></span>` : ''} ${fin.debtIn < 0 ? `<br><span class="text-amber-400">前期結轉欠款 <b>-$${Math.abs(fin.debtIn)}</b></span>` : ''}`;
+                document.getElementById('fin-fee').innerHTML = `-$${fin.gatewayFee || 0} ${fin.vipFee > 0 ? `<br><span class="text-red-400">Plus 本期貨款抵扣 <b>-$${fin.vipFee}</b></span>` : ''} ${Number(fin.plusBalanceAfter||0)>0 ? `<br><span class="text-amber-400">Plus 尚待未來貨款抵扣 <b>$${Math.round(Number(fin.plusBalanceAfter||0))}</b></span>` : ''} ${fin.debtIn < 0 ? `<br><span class="text-amber-400">前期結轉欠款 <b>-$${Math.abs(fin.debtIn)}</b></span>` : ''}`;
                 document.getElementById('finance-net-income').innerText = `$${fin.netIncome || 0}`;
                 document.getElementById('hist-sales').innerText = `$${fin.historySales || 0}`;
                 document.getElementById('hist-held-sales').innerText = `$${fin.historyReviewHold || 0}`;
-                document.getElementById('hist-fee').innerHTML = `-$${fin.historyFee || 0} ${fin.historyVipFee > 0 ? `<br><span class="text-red-400">Plus 方案費 <b>-$${fin.historyVipFee}</b></span>` : ''} ${fin.historyDebtIn < 0 ? `<br><span class="text-amber-400">前期結轉欠款 <b>-$${Math.abs(fin.historyDebtIn)}</b></span>` : ''}`;
+                document.getElementById('hist-fee').innerHTML = `-$${fin.historyFee || 0} ${fin.historyVipFee > 0 ? `<br><span class="text-red-400">Plus 方案費抵扣 <b>-$${fin.historyVipFee}</b></span>` : ''} ${fin.historyDebtIn < 0 ? `<br><span class="text-amber-400">前期結轉欠款 <b>-$${Math.abs(fin.historyDebtIn)}</b></span>` : ''}`;
                 document.getElementById('hist-net-income').innerText = `$${fin.historyNetIncome || 0}`;
             } else {
                 document.getElementById('current-period-title').innerText = "本期資料結算中"; document.getElementById('fin-sales').innerText = "$0"; document.getElementById('fin-held-sales').innerText = "$0"; document.getElementById('fin-fee').innerText = "-$0"; document.getElementById('finance-net-income').innerText = "$0"; document.getElementById('history-period-title').innerText = "無歷史期數"; document.getElementById('hist-sales').innerText = "$0"; document.getElementById('hist-held-sales').innerText = "$0"; document.getElementById('hist-fee').innerText = "-$0"; document.getElementById('hist-net-income').innerText = "$0";
@@ -1829,7 +1835,7 @@ window.addEventListener('DOMContentLoaded',()=>{
         }
         function closeVerifyOverlay() { if(liveTimerInterval) clearInterval(liveTimerInterval); document.getElementById('verify-success-overlay').classList.add('hidden'); switchOrderSubTab('active'); }
 
-        async function triggerGrandMasterUpgrade(){const shopId=localStorage.getItem('seefood_merchant_shop_id')||'SFB-001',shopName=localStorage.getItem('seefood_merchant_shop_name')||'目前店鋪';const html=`<div class="sf-plus-dialog"><div class="sf-plus-dialog-price"><b>$299</b><span>/ 月・每店獨立</span></div><div class="sf-benefit"><b>獵物曝光排序加權</b><span>在距離、供給狀態與平台公平性規則下取得推薦權重加成，提高被獵人看見的機會；不保證固定第一名或固定曝光量。</span></div><div class="sf-benefit"><b>10 格商品欄位</b><span>Basic 3 格升級為 10 格，商品配置更有彈性。</span></div><div class="sf-benefit"><b>30／90 日進階分析</b><span>查看較長週期營收、熱門商品與尖峰時段。</span></div><div class="sf-benefit"><b>前期趨勢比較</b><span>用同期間資料看成長與變化，不只看單日數字。</span></div><p class="sf-plus-note">本次升級只套用於「${sfDialogEscape(shopName)}」，其他店鋪維持各自方案。Plus 為自願升級，不影響基本方案使用。</p></div>`;const ok=await seefoodConfirm(html,{html:true,title:'升級 SEEFOOD Plus',tone:'plus',icon:'<i data-lucide="sparkles"></i>',confirmText:'確認升級 $299 / 月',cancelText:'先不用'});if(!ok)return;const p=new URLSearchParams();p.append('action','upgradeVip');p.append('shopId',shopId);p.append('uid',userStats.lineUid);fetch(gasUrl,{method:'POST',body:p}).then(r=>r.json()).then(res=>{if(res.status==='success'){localStorage.setItem('seefood_merchant_vip','true');seefoodAlert('這間店已升級 Plus。獵物曝光排序加權、10 格商品欄位與進階分析已開啟。',{title:'Plus 已開通',tone:'success'});merchantAnalytics30Cache={};loadShopDashboardV25(shopId,true)}else seefoodAlert(res.msg||'升級未完成，請稍後再試。',{title:'升級未完成',tone:'danger'})}).catch(()=>seefoodAlert('目前無法連線，請稍後再試。',{title:'連線異常',tone:'danger'}))} async function showAppTutorial(){const isiOS=/iPhone|iPad|iPod/i.test(navigator.userAgent),isAndroid=/Android/i.test(navigator.userAgent),inLine=/Line\//i.test(navigator.userAgent);let intro=inLine?'<div class="sf-browser-note"><b>目前在 LINE 內建瀏覽器</b><span>請先使用右上角選單，以 Safari／Chrome 開啟，再加入主畫面。</span></div>':'';let steps=isiOS?['使用 Safari 開啟 SEEFOOD','點 Safari 的「分享」按鈕','向下找到「加入主畫面」','確認名稱後點「新增」']:isAndroid?['使用 Chrome 開啟 SEEFOOD','點右上角「⋮」選單','選「加到主畫面」或「安裝應用程式」','依畫面提示完成新增']:['iPhone：Safari「分享 → 加入主畫面」','Android：Chrome「⋮ → 加到主畫面／安裝應用程式」'];const html=intro+'<div class="sf-install-steps">'+steps.map((x,i)=>`<div><b>${i+1}</b><span>${x}</span></div>`).join('')+'</div><p class="sf-plus-note">加入後會像 App 圖示一樣出現在桌面，但不需要另外下載 App。</p>';await seefoodConfirm(html,{html:true,title:'加入手機主畫面',icon:'<i data-lucide="smartphone"></i>',confirmText:'我知道了',cancelText:'關閉'})} function activeShopId() { return localStorage.getItem('seefood_merchant_shop_id') || 'NO_SHOP'; }
+        async function triggerGrandMasterUpgrade(){const shopId=localStorage.getItem('seefood_merchant_shop_id')||'SFB-001',shopName=localStorage.getItem('seefood_merchant_shop_name')||'目前店鋪',outstanding=Math.max(0,Number(localStorage.getItem('seefood_plus_outstanding')||0));if(outstanding>0&&!localStorage.getItem('seefood_merchant_vip')?.includes('true')){await seefoodAlert(`這間店尚有 Plus 方案費 $${Math.round(outstanding)} 未由貨款扣清。系統不會外部追繳；未來有可撥貨款時會繼續抵扣，清零後即可再次升級。`,{title:'Plus 尚有待抵扣餘額',tone:'plus'});return;}const html=`<div class="sf-plus-dialog"><div class="sf-plus-dialog-price"><b>$299</b><span>/ 30 天・每店獨立</span></div><div class="sf-benefit"><b>無痛升級</b><span>不用先付款，確認後立即開通完整 30 天。$299 從下一次實際可撥給店家的貨款開始抵扣；貨款不足就先扣可扣的部分，本次 30 天使用權不受影響。</span></div><div class="sf-benefit"><b>獵物曝光排序加權</b><span>只在「推薦」排序中，和距離、供給狀態與平台公平性規則共同計算；不保證固定第一名或固定曝光量。</span></div><div class="sf-benefit"><b>10 格商品欄位</b><span>Basic 3 格升級為 10 格，商品配置更有彈性。</span></div><div class="sf-benefit"><b>30／90 日進階分析</b><span>查看較長週期營收、熱門商品與尖峰時段。</span></div><div class="sf-benefit"><b>前期趨勢比較</b><span>用同期間資料看成長與變化，不只看單日數字。</span></div><p class="sf-plus-note">本次升級只套用於「${sfDialogEscape(shopName)}」。Plus 每次開通都完整使用 30 天；若 $299 尚未從貨款扣清，到期後不追繳，但清零前不能再次升級。</p></div>`;const ok=await seefoodConfirm(html,{html:true,title:'升級 SEEFOOD Plus',tone:'plus',icon:'<i data-lucide="sparkles"></i>',confirmText:'立即開通 Plus',cancelText:'先不用'});if(!ok)return;const p=new URLSearchParams();p.append('action','upgradeVip');p.append('shopId',shopId);p.append('uid',userStats.lineUid);fetch(gasUrl,{method:'POST',body:p}).then(r=>r.json()).then(res=>{if(res.status==='success'){localStorage.setItem('seefood_merchant_vip','true');localStorage.setItem('seefood_plus_outstanding',String(res.plusOutstanding||299));seefoodAlert('Plus 已立即開通 30 天。$299 會從下一次可撥貨款開始抵扣；即使尚未扣清，也不影響這次 30 天使用。',{title:'Plus 已開通',tone:'success'});merchantAnalytics30Cache={};loadShopDashboardV25(shopId,true)}else seefoodAlert(res.msg||'升級未完成，請稍後再試。',{title:'升級未完成',tone:'danger'})}).catch(()=>seefoodAlert('目前無法連線，請稍後再試。',{title:'連線異常',tone:'danger'}))} async function showAppTutorial(){const isiOS=/iPhone|iPad|iPod/i.test(navigator.userAgent),isAndroid=/Android/i.test(navigator.userAgent),inLine=/Line\//i.test(navigator.userAgent);let intro=inLine?'<div class="sf-browser-note"><b>目前在 LINE 內建瀏覽器</b><span>請先使用右上角選單，以 Safari／Chrome 開啟，再加入主畫面。</span></div>':'';let steps=isiOS?['使用 Safari 開啟 SEEFOOD','點 Safari 的「分享」按鈕','向下找到「加入主畫面」','確認名稱後點「新增」']:isAndroid?['使用 Chrome 開啟 SEEFOOD','點右上角「⋮」選單','選「加到主畫面」或「安裝應用程式」','依畫面提示完成新增']:['iPhone：Safari「分享 → 加入主畫面」','Android：Chrome「⋮ → 加到主畫面／安裝應用程式」'];const html=intro+'<div class="sf-install-steps">'+steps.map((x,i)=>`<div><b>${i+1}</b><span>${x}</span></div>`).join('')+'</div><p class="sf-plus-note">加入後會像 App 圖示一樣出現在桌面，但不需要另外下載 App。</p>';await seefoodConfirm(html,{html:true,title:'加入手機主畫面',icon:'<i data-lucide="smartphone"></i>',confirmText:'我知道了',cancelText:'關閉'})} function activeShopId() { return localStorage.getItem('seefood_merchant_shop_id') || 'NO_SHOP'; }
         function slotDataKey(index, shopId = activeShopId()) { return `seefood_shop_${shopId}_slot_data_${index}`; }
         function slotLockKey(index, shopId = activeShopId()) { return `seefood_shop_${shopId}_slot_${index}_locked`; }
         function getSlotSaved(index) { return localStorage.getItem(slotDataKey(index)); }
@@ -2026,8 +2032,9 @@ window.addEventListener('DOMContentLoaded',()=>{
         function money30(n){ return '$' + Math.round(Number(n)||0).toLocaleString('zh-TW'); }
         function delta30(n){ n=Number(n)||0; if(Math.abs(n)<0.05)return '較前期持平'; return `較前期 ${n>0?'+':''}${n.toFixed(1)}%`; }
         function sfApplyVipEntitlements26(shop){
-            const isVip=!!shop?.isVip; localStorage.setItem('seefood_merchant_vip',isVip?'true':'false');
+            const isVip=!!shop?.isVip, outstanding=Math.max(0,Number(shop?.finance?.plusOutstanding||0)); localStorage.setItem('seefood_merchant_vip',isVip?'true':'false');localStorage.setItem('seefood_plus_outstanding',String(outstanding));
             const banner=document.getElementById('vip-upgrade-banner'); if(banner)banner.classList.toggle('hidden',isVip);
+            const plusDesc=document.getElementById('sf-plus-banner-desc'),plusCta=document.getElementById('sf-plus-banner-cta');if(!isVip&&outstanding>0){if(plusDesc)plusDesc.textContent=`尚有 Plus 方案費 $${Math.round(outstanding)} 待由未來可撥貨款抵扣。系統不外部追繳；清零後即可再次升級。`;if(plusCta){plusCta.textContent=`待抵扣 $${Math.round(outstanding)}`;plusCta.disabled=true;}}else{if(plusDesc)plusDesc.textContent='獵物曝光排序加權＋10 格商品欄位＋30／90 日進階分析＋前期趨勢比較。每間店獨立升級，不影響其他店鋪。';if(plusCta){plusCta.textContent='查看 Plus 並升級';plusCta.disabled=false;}}
             const badge=document.getElementById('dashboard-plan-badge'); if(badge)badge.innerText=isVip?'Plus（10格＋進階分析）':'基礎免費版（3格）';
             const range=document.getElementById('m30-range'); if(range){[...range.options].forEach(o=>{o.disabled=!isVip && Number(o.value)>7}); if(!isVip&&Number(range.value)>7)range.value='7';}
             const lock=document.getElementById('m30-analytics-locked'),content=document.getElementById('m30-analytics-content'),pill=document.getElementById('m30-analytics-plan'); if(lock)lock.classList.toggle('hidden',isVip);if(content)content.classList.toggle('hidden',!isVip);if(pill)pill.textContent=isVip?'PLUS 已解鎖':'PLUS';
