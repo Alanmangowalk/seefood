@@ -16,3 +16,6 @@ tests/**
 .dev.vars
 .git/**
 node_modules/**
+
+docs/**
+archive/**
