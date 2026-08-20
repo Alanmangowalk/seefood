@@ -1,16 +1,7 @@
 {
-  "name": "seefood",
+  "name": "seefood-d1-shadow",
   "main": "./worker.js",
   "compatibility_date": "2026-08-18",
-  "keep_vars": true,
-  "secrets": {
-    "required": [
-      "SESSION_SECRET",
-      "LINE_LOGIN_CHANNEL_ID",
-      "ADMIN_API_KEY",
-      "DATA_ENCRYPTION_KEY"
-    ]
-  },
   "assets": {
     "directory": "./",
     "binding": "ASSETS",
@@ -23,12 +14,6 @@
       "binding": "DB",
       "database_name": "seefood-staging",
       "database_id": "7cdcb658-6db9-443a-9b0a-6135bdc7b055"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "DOCS",
-      "bucket_name": "seefood-private-docs"
     }
   ],
   "triggers": {

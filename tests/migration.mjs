@@ -45,7 +45,7 @@ const refundPolicyVersion = db.prepare(`SELECT version FROM schema_versions WHER
 if (!rule || rule.eligible_revenue_type !== 'SERVICE_FEE_ONLY' || rule.service_fee_rate_bps !== 5000 || rule.plus_eligible !== 0) {
   throw new Error(`Partner v2 rule mismatch: ${JSON.stringify(rule)}`);
 }
-if (pre.status !== 'VOID' || pre.void_reason !== 'PRE_REDEEM_RULE_V2_RECONCILIATION') {
+if (pre.status !== 'VOID' || pre.void_reason !== 'PRE_REDEEM_SHADOW_RECONCILIATION') {
   throw new Error(`Pre-redeem commission was not reconciled: ${JSON.stringify(pre)}`);
 }
 if (done.status !== 'AVAILABLE') throw new Error('Redeemed commission was incorrectly voided');

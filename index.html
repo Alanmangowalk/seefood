@@ -351,8 +351,8 @@ select,input,textarea,button{max-width:100%}
 
 
 <script id="seefood-perf-audit-script">
-// Production default is quiet. Add ?perf=1 only when diagnostics are needed.
-window.__SF_PERF_ON=new URLSearchParams(window.location.search).get('perf')==='1';
+window.__SF_PERF_ON=true;
+sessionStorage.setItem('sf_perf_mode','1');
 window.__SF_PERF_LOG=[];
 window.sfPerfLog=function(name,total,detail){
   if(!window.__SF_PERF_ON)return;
@@ -373,9 +373,6 @@ window.sfPerfLog=function(name,total,detail){
 window.addEventListener('DOMContentLoaded',()=>{
   try{
     const box=document.getElementById('sf-perf-audit');
-    if(!box)return;
-    document.body.classList.toggle('sf-perf-enabled',window.__SF_PERF_ON);
-    box.classList.toggle('hidden-by-user',!window.__SF_PERF_ON);
     const toggle=document.getElementById('sf-perf-toggle');
     const hide=document.getElementById('sf-perf-hide');
     const lines=document.getElementById('sf-perf-lines');
@@ -434,7 +431,7 @@ window.addEventListener('DOMContentLoaded',()=>{
       }
       if(action)return action;
       if(/radar/i.test(url))return 'RADAR';
-      if(/\/api\/(?:home|action)/.test(url))return 'D1 API';
+      if(/script\.google|googleusercontent|exec/.test(url))return 'GAS';
       return (url.split('?')[0].split('/').pop()||'FETCH').slice(0,28);
     }catch(_e){return 'FETCH';}
   }
@@ -502,7 +499,7 @@ window.addEventListener('DOMContentLoaded',()=>{
 </script>
 
 </head>
-<body class="bg-gray-900 min-h-screen flex justify-center items-top"><div id="sf-perf-audit" class="hidden-by-user">
+<body class="bg-gray-900 min-h-screen flex justify-center items-top"><div id="sf-perf-audit">
   <div class="sf-perf-head">
     <span class="sf-perf-dot"></span>
     <span class="sf-perf-title">PERF</span>
@@ -579,7 +576,7 @@ window.addEventListener('DOMContentLoaded',()=>{
         <div id="home-header-zone" class="flex-none bg-white shadow-sm z-30 transition-all duration-300">
             <div class="sf-brandbar px-4 py-3 flex items-center justify-between">
                 <span class="sf-brand-title font-black text-xl tracking-wider">SEEFOOD <span class="font-semibold">美食獵人</span></span>
-                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.9.4-D1</span>
+                <span class="sf-version-pill text-[10px] px-2.5 py-1 rounded-full font-bold">3.0 RC2.10.9.3-D1-SHADOW</span>
             </div>
             <div id="home-discovery-filter" class="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white">
                 <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold w-1/2">
@@ -1130,10 +1127,12 @@ window.addEventListener('DOMContentLoaded',()=>{
     </div>
 
     <script>
-        // The official Worker now uses D1 as its single runtime backend.
-        // The former GAS endpoint is intentionally not called; its Sheets remain untouched as a backup.
-        const __sfLiffId = '2010392646-KEEBg8gS';
-        const actionApiUrl = '/api/action';
+        const legacyGasUrl = "https://script.google.com/macros/s/AKfycbxOsS40qejUGDKjp0kQFn76CeM0DBiTN41HHorYJ6gBa9qK1fTEP3xDRbn7CgXo3C4Z9g/exec";
+        const __sfD1Shadow = new URLSearchParams(window.location.search).get('d1') === '1';
+        const __sfProductionLiffId = '2010392646-KEEBg8gS';
+        const __sfShadowLiffId = new URLSearchParams(window.location.search).get('liffId') || '';
+        const __sfLiffId = __sfD1Shadow ? __sfShadowLiffId : __sfProductionLiffId;
+        const gasUrl = __sfD1Shadow ? '/api/action' : legacyGasUrl;
         let storesData = []; let locationHierarchy = {}; let currentSortMethod = 'recommend'; let currentOrder = {}; let orderSubTab = 'active';
         let userStats = { co2Total: 0.0, savedAmount: 0, hasFirstOrder: false, storeCounts: {}, unlockedTimes: { lunch: false, nightMarket: false, midnight: false }, lineUid: "LINE_GUEST", merchantFinance: null };
         let userLocation = null; let cloudBanners = []; let bannerIndex = 0;
@@ -1210,17 +1209,14 @@ window.addEventListener('DOMContentLoaded',()=>{
             const list=getHeroBannerList30(); if(!list.length)return; bannerIndex=((i%list.length)+list.length)%list.length; const b=list[bannerIndex];
             const wrap=document.getElementById('image-banner-container'), fallback=document.getElementById('text-banner-container');
             const img=document.getElementById('image-banner-img');
-            if(!wrap||!fallback)return;
             document.getElementById('image-banner-title').textContent=b.title||'SEEFOOD 美食獵人';
             document.getElementById('image-banner-subtitle').textContent=b.subtitle||'探索惜食獵場，讓美味不被浪費。';
             document.getElementById('image-banner-cta').textContent=b.cta||'開始探索';
             document.getElementById('image-banner-kicker').textContent=b.kicker||'SEEFOOD 美食獵人';
             const ft=document.getElementById('text-banner-text'), fs=document.getElementById('text-banner-subtitle'), fc=document.getElementById('text-banner-cta'), fk=document.getElementById('text-banner-kicker');
             if(ft)ft.textContent=b.title||'SEEFOOD 美食獵人'; if(fs)fs.textContent=b.subtitle||''; if(fc)fc.textContent=b.cta||'開始探索'; if(fk)fk.textContent=b.kicker||'SEEFOOD 美食獵人';
-            // Lightweight production carousel: retain all three entries without downloading large artwork.
-            if(img){img.removeAttribute('src');img.alt='';}
-            wrap.classList.add('hidden');fallback.classList.remove('hidden');
-            fallback.removeAttribute('aria-hidden');
+            // RC2.9: large banner artwork is temporarily suspended. Keep copy/link carousel, but do not download image assets.
+            img.removeAttribute('src');img.alt='';wrap.classList.add('hidden');fallback.classList.remove('hidden');
             const dotHtml=list.map((_,n)=>`<span class="${n===bannerIndex?'active':''}"></span>`).join('');
             const dots=document.getElementById('hero-dots'), fdots=document.getElementById('hero-dots-fallback'); if(dots)dots.innerHTML=dotHtml;if(fdots)fdots.innerHTML=dotHtml;
             const activeTab=(window.location.hash||'#home').replace('#','')||'home'; if(activeTab!=='home'){wrap.classList.add('hidden');fallback.classList.add('hidden');}
@@ -1310,13 +1306,14 @@ window.addEventListener('DOMContentLoaded',()=>{
         function sfWithTimeout30(p,ms,label='TIMEOUT'){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error(label)),ms))]);}
         async function ensureLiffReady30(){
             if(sfLiffReadyPromise)return sfLiffReadyPromise;
-            sfLiffReadyPromise=(async()=>{if(!window.liff)throw new Error('LIFF_SDK_UNAVAILABLE');if(!__sfLiffId){const e=new Error('SEEFOOD 尚未設定 LIFF ID');e.code='LIFF_NOT_CONFIGURED';throw e;}await sfWithTimeout30(liff.init({liffId:__sfLiffId}),6000,'LIFF_INIT_TIMEOUT');return true;})();
+            sfLiffReadyPromise=(async()=>{if(!window.liff)throw new Error('LIFF_SDK_UNAVAILABLE');if(!__sfLiffId){const e=new Error('D1 Shadow 尚未指定 staging LIFF ID');e.code='D1_SHADOW_LIFF_NOT_CONFIGURED';throw e;}await sfWithTimeout30(liff.init({liffId:__sfLiffId}),6000,'LIFF_INIT_TIMEOUT');return true;})();
             try{return await sfLiffReadyPromise}catch(e){sfLiffReadyPromise=null;throw e;}
         }
-        async function sfEstablishServerSession30(){
+        async function sfEstablishD1Session30(){
+            if(!__sfD1Shadow)return true;
             if(!window.liff||!liff.isLoggedIn())return false;
             const token=liff.getAccessToken();if(!token)return false;
-            const r=await sfWithTimeout30(fetch('/api/auth/line',{method:'POST',body:new URLSearchParams({accessToken:token})}),6000,'AUTH_TIMEOUT');
+            const r=await sfWithTimeout30(fetch('/api/auth/line',{method:'POST',body:new URLSearchParams({accessToken:token})}),6000,'D1_AUTH_TIMEOUT');
             const j=await r.json();
             if(j.status!=='success'){
                 const err=new Error(j.msg||'D1_AUTH_FAILED');err.code=j.code||'D1_AUTH_FAILED';throw err;
@@ -1328,7 +1325,7 @@ window.addEventListener('DOMContentLoaded',()=>{
             sessionStorage.removeItem('sf_guest_choice');
             // Preserve where the user was trying to go before LINE round-trip.
             try{sessionStorage.setItem('sf_login_return_hash',window.location.hash||'#home');}catch(_e){}
-            const LIFF_URL=`https://liff.line.me/${encodeURIComponent(__sfLiffId)}`;
+            const LIFF_URL=`https://liff.line.me/${encodeURIComponent(__sfLiffId)}`+(__sfD1Shadow?`?d1=1&liffId=${encodeURIComponent(__sfLiffId)}`:'');
 
             try{
                 await ensureLiffReady30();
@@ -1337,7 +1334,7 @@ window.addEventListener('DOMContentLoaded',()=>{
                     const p=await sfWithTimeout30(liff.getProfile(),5000,'LIFF_PROFILE_TIMEOUT');
                     userStats.lineUid=p.userId;
                     localStorage.setItem('seefood_line_uid',p.userId);
-                    await sfEstablishServerSession30();
+                    await sfEstablishD1Session30();
                     hideAuthChoice30();
                     syncUserDataFromCloud();
                     return;
@@ -1355,8 +1352,8 @@ window.addEventListener('DOMContentLoaded',()=>{
                 window.location.assign(LIFF_URL);
             }catch(err){
                 console.error('LINE 登入啟動失敗',err);
-                if(err&&(err.code==='LINE_SESSION_NOT_CONFIGURED'||err.code==='LIFF_NOT_CONFIGURED')){
-                    seefoodAlert(err.message||'LINE 登入服務尚未完成設定。',{title:'LINE 登入尚未就緒',tone:'warning'});
+                if(err&&(err.code==='LINE_SESSION_NOT_CONFIGURED'||err.code==='D1_SHADOW_LIFF_NOT_CONFIGURED')){
+                    seefoodAlert(err.message||'D1 後台測試環境尚未完成 LINE session 設定。',{title:'D1 後台尚未就緒',tone:'warning'});
                     return;
                 }
                 // Even if LIFF SDK initialization itself is blocked/slow, the official LIFF URL
@@ -1368,15 +1365,15 @@ window.addEventListener('DOMContentLoaded',()=>{
         function continueAsGuest30(){if(!hasAcceptedTos30()){checkTos();return;}sessionStorage.setItem('sf_guest_choice','1');userStats.lineUid='LINE_GUEST';hideAuthChoice30();loadUserStats();fetchLiveStores();}
         async function initLiffAuth(){
             if(window.location.protocol==='file:'){loadUserStats();return 'guest';}
-            try{await ensureLiffReady30();if(liff.isLoggedIn()){const p=await sfWithTimeout30(liff.getProfile(),5000,'LIFF_PROFILE_TIMEOUT');userStats.lineUid=p.userId;localStorage.setItem('seefood_line_uid',p.userId);await sfEstablishServerSession30();hideAuthChoice30();syncUserDataFromCloud();try{const rh=sessionStorage.getItem('sf_login_return_hash');if(rh){sessionStorage.removeItem('sf_login_return_hash');setTimeout(()=>{window.location.hash=rh;checkHashAndSwitch();},80);}}catch(_e){}return 'login';}userStats.lineUid='LINE_GUEST';loadUserStats();if(liff.isInClient&&liff.isInClient()){liff.login({redirectUri:window.location.href});return 'redirect';}if(sessionStorage.getItem('sf_guest_choice')!=='1')showAuthChoice30();return 'guest';}
-            catch(err){console.error('LIFF 初始化失敗',err);if(err&&(err.code==='LINE_SESSION_NOT_CONFIGURED'||err.code==='LIFF_NOT_CONFIGURED'))seefoodAlert(err.message||'LINE 登入服務尚未完成設定。',{title:'LINE 登入尚未就緒',tone:'warning'});userStats.lineUid='LINE_GUEST';loadUserStats();if(sessionStorage.getItem('sf_guest_choice')!=='1')showAuthChoice30();return 'guest';}
+            try{await ensureLiffReady30();if(liff.isLoggedIn()){const p=await sfWithTimeout30(liff.getProfile(),5000,'LIFF_PROFILE_TIMEOUT');userStats.lineUid=p.userId;localStorage.setItem('seefood_line_uid',p.userId);await sfEstablishD1Session30();hideAuthChoice30();syncUserDataFromCloud();try{const rh=sessionStorage.getItem('sf_login_return_hash');if(rh){sessionStorage.removeItem('sf_login_return_hash');setTimeout(()=>{window.location.hash=rh;checkHashAndSwitch();},80);}}catch(_e){}return 'login';}userStats.lineUid='LINE_GUEST';loadUserStats();if(liff.isInClient&&liff.isInClient()){liff.login({redirectUri:window.location.href});return 'redirect';}if(sessionStorage.getItem('sf_guest_choice')!=='1')showAuthChoice30();return 'guest';}
+            catch(err){console.error('LIFF 初始化失敗',err);if(err&&(err.code==='LINE_SESSION_NOT_CONFIGURED'||err.code==='D1_SHADOW_LIFF_NOT_CONFIGURED'))seefoodAlert(err.message||'D1 後台測試環境尚未完成 LINE session 設定。',{title:'D1 後台尚未就緒',tone:'warning'});userStats.lineUid='LINE_GUEST';loadUserStats();if(sessionStorage.getItem('sf_guest_choice')!=='1')showAuthChoice30();return 'guest';}
         }
         async function bootstrapIdentity30(){if(!hasAcceptedTos30())return 'tos';return await initLiffAuth();}
 
         async function postActionV25(action, params={}) {
             const __p0=performance.now();
             const p=new URLSearchParams(); p.append('action',action); Object.entries(params).forEach(([k,v])=>{if(v!==undefined&&v!==null)p.append(k,v)});
-            const res=await fetch(actionApiUrl,{method:'POST',body:p}); return await res.json();
+            const res=await fetch(gasUrl,{method:'POST',body:p}); return await res.json();
         }
 
         function renderShopDashboardV25(shop) {
@@ -1604,9 +1601,15 @@ window.addEventListener('DOMContentLoaded',()=>{
             try {
                 const __net0=performance.now();
                 let resJson;
-                const __homeUrl='/api/home?t='+new Date().getTime();
-                resJson=await sfFetchJsonWithTimeout(__homeUrl,5000);
-                if(!resJson||resJson.status!=='success')throw new Error('HOME_FEED_INVALID_RESPONSE');
+                try{
+                    const __homeUrl=(__sfD1Shadow?'/api/home':legacyGasUrl)+'?t='+new Date().getTime();
+                    resJson=await sfFetchJsonWithTimeout(__homeUrl,__sfD1Shadow?5000:12000);
+                    if(!resJson||resJson.status!=='success')throw new Error('HOME_FEED_INVALID_RESPONSE');
+                }catch(__homePrimaryErr){
+                    if(!__sfD1Shadow)throw __homePrimaryErr;
+                    console.warn('D1 Home Feed failed; fallback to GAS',__homePrimaryErr);
+                    resJson=await sfFetchJsonWithTimeout(legacyGasUrl+'?t='+new Date().getTime(),12000);
+                }
                 const __netMs=performance.now()-__net0; const rawData = resJson.stores || []; const baseSavedKg = resJson.totalSavedKg || 1285.5;
                 let totalReg = resJson.registeredStores || 0; textBannerTemplates[0].text = `獵人雷達點燈：全台已進駐 ${totalReg}/100 店，滿百即刻開車解鎖！`; const bText = document.getElementById('text-banner-text');
                 if(bText && bannerIndex === 0) bText.innerText = textBannerTemplates[0].text;
@@ -1748,7 +1751,7 @@ window.addEventListener('DOMContentLoaded',()=>{
             
             const p = new URLSearchParams(); p.append('action', 'buyItem'); p.append('shopId', currentOrder.shopId); p.append('itemIndex', currentOrder.itemIndex); p.append('buyerUid', userStats.lineUid); p.append('time', currentOrder.time); p.append('payMethod', paymentMethod);
             
-            fetch(actionApiUrl, { method: "POST", body: p }).then(res => res.json()).then(resJson => {
+            fetch(gasUrl, { method: "POST", body: p }).then(res => res.json()).then(resJson => {
                 hideGlobalLoading();
                 if (resJson.status === "success" && resJson.ecpayParams) {
                     showSniperResult("✅", "捕獲成功", `[${paymentMethod}] 授權通過！安全通道建立中...`);
@@ -1827,7 +1830,7 @@ window.addEventListener('DOMContentLoaded',()=>{
             const p=new URLSearchParams(); p.append('action','verifyOrder'); p.append('orderId',orderId);
             const saved=JSON.parse(localStorage.getItem('seefood_orders_list')||'[]'); const row=saved.find(o=>String(o.id)===String(localId)||String(o.orderId)===String(orderId));
             if(row){row._verifying=true;localStorage.setItem('seefood_orders_list',JSON.stringify(saved));}
-            fetch(actionApiUrl,{method:'POST',body:p}).then(r=>r.json()).then(j=>{
+            fetch(gasUrl,{method:'POST',body:p}).then(r=>r.json()).then(j=>{
                 if(j.status!=='success'){if(row)delete row._verifying;localStorage.setItem('seefood_orders_list',JSON.stringify(saved));renderSavedTicketsWall();alert(j.msg||'核銷失敗');return;}
                 const now=new Date().toLocaleString('zh-TW',{hour12:false}); const latest=JSON.parse(localStorage.getItem('seefood_orders_list')||'[]'); const x=latest.find(o=>String(o.id)===String(localId)||String(o.orderId)===String(orderId)); if(x){x.used=true;x.status='Redeemed';x.verifyTime=now;delete x._verifying;} localStorage.setItem('seefood_orders_list',JSON.stringify(latest));
                 renderSavedTicketsWall();sfRefreshAttentionDots(); if(overlay)overlay.classList.remove('hidden'); if(liveTimerInterval)clearInterval(liveTimerInterval);liveTimerInterval=setInterval(()=>{const el=document.getElementById('overlay-live-time');if(el)el.innerText=new Date().toLocaleString('zh-TW',{hour12:false});},1000);
@@ -1836,7 +1839,7 @@ window.addEventListener('DOMContentLoaded',()=>{
         }
         function closeVerifyOverlay() { if(liveTimerInterval) clearInterval(liveTimerInterval); document.getElementById('verify-success-overlay').classList.add('hidden'); switchOrderSubTab('active'); }
 
-        async function triggerGrandMasterUpgrade(){const shopId=localStorage.getItem('seefood_merchant_shop_id')||'SFB-001',shopName=localStorage.getItem('seefood_merchant_shop_name')||'目前店鋪';const html=`<div class="sf-plus-dialog"><div class="sf-plus-dialog-price"><b>$299</b><span>/ 月・每店獨立</span></div><div class="sf-benefit"><b>獵物曝光排序加權</b><span>在距離、供給狀態與平台公平性規則下取得推薦權重加成，提高被獵人看見的機會；不保證固定第一名或固定曝光量。</span></div><div class="sf-benefit"><b>10 格商品欄位</b><span>Basic 3 格升級為 10 格，商品配置更有彈性。</span></div><div class="sf-benefit"><b>30／90 日進階分析</b><span>查看較長週期營收、熱門商品與尖峰時段。</span></div><div class="sf-benefit"><b>前期趨勢比較</b><span>用同期間資料看成長與變化，不只看單日數字。</span></div><p class="sf-plus-note">本次升級只套用於「${sfDialogEscape(shopName)}」，其他店鋪維持各自方案。Plus 為自願升級，不影響基本方案使用。</p></div>`;const ok=await seefoodConfirm(html,{html:true,title:'升級 SEEFOOD Plus',tone:'plus',icon:'<i data-lucide="sparkles"></i>',confirmText:'確認升級 $299 / 月',cancelText:'先不用'});if(!ok)return;const p=new URLSearchParams();p.append('action','upgradeVip');p.append('shopId',shopId);p.append('uid',userStats.lineUid);fetch(actionApiUrl,{method:'POST',body:p}).then(r=>r.json()).then(res=>{if(res.status==='success'){localStorage.setItem('seefood_merchant_vip','true');seefoodAlert('這間店已升級 Plus。獵物曝光排序加權、10 格商品欄位與進階分析已開啟。',{title:'Plus 已開通',tone:'success'});merchantAnalytics30Cache={};loadShopDashboardV25(shopId,true)}else seefoodAlert(res.msg||'升級未完成，請稍後再試。',{title:'升級未完成',tone:'danger'})}).catch(()=>seefoodAlert('目前無法連線，請稍後再試。',{title:'連線異常',tone:'danger'}))} async function showAppTutorial(){const isiOS=/iPhone|iPad|iPod/i.test(navigator.userAgent),isAndroid=/Android/i.test(navigator.userAgent),inLine=/Line\//i.test(navigator.userAgent);let intro=inLine?'<div class="sf-browser-note"><b>目前在 LINE 內建瀏覽器</b><span>請先使用右上角選單，以 Safari／Chrome 開啟，再加入主畫面。</span></div>':'';let steps=isiOS?['使用 Safari 開啟 SEEFOOD','點 Safari 的「分享」按鈕','向下找到「加入主畫面」','確認名稱後點「新增」']:isAndroid?['使用 Chrome 開啟 SEEFOOD','點右上角「⋮」選單','選「加到主畫面」或「安裝應用程式」','依畫面提示完成新增']:['iPhone：Safari「分享 → 加入主畫面」','Android：Chrome「⋮ → 加到主畫面／安裝應用程式」'];const html=intro+'<div class="sf-install-steps">'+steps.map((x,i)=>`<div><b>${i+1}</b><span>${x}</span></div>`).join('')+'</div><p class="sf-plus-note">加入後會像 App 圖示一樣出現在桌面，但不需要另外下載 App。</p>';await seefoodConfirm(html,{html:true,title:'加入手機主畫面',icon:'<i data-lucide="smartphone"></i>',confirmText:'我知道了',cancelText:'關閉'})} function activeShopId() { return localStorage.getItem('seefood_merchant_shop_id') || 'NO_SHOP'; }
+        async function triggerGrandMasterUpgrade(){const shopId=localStorage.getItem('seefood_merchant_shop_id')||'SFB-001',shopName=localStorage.getItem('seefood_merchant_shop_name')||'目前店鋪';const html=`<div class="sf-plus-dialog"><div class="sf-plus-dialog-price"><b>$299</b><span>/ 月・每店獨立</span></div><div class="sf-benefit"><b>獵物曝光排序加權</b><span>在距離、供給狀態與平台公平性規則下取得推薦權重加成，提高被獵人看見的機會；不保證固定第一名或固定曝光量。</span></div><div class="sf-benefit"><b>10 格商品欄位</b><span>Basic 3 格升級為 10 格，商品配置更有彈性。</span></div><div class="sf-benefit"><b>30／90 日進階分析</b><span>查看較長週期營收、熱門商品與尖峰時段。</span></div><div class="sf-benefit"><b>前期趨勢比較</b><span>用同期間資料看成長與變化，不只看單日數字。</span></div><p class="sf-plus-note">本次升級只套用於「${sfDialogEscape(shopName)}」，其他店鋪維持各自方案。Plus 為自願升級，不影響基本方案使用。</p></div>`;const ok=await seefoodConfirm(html,{html:true,title:'升級 SEEFOOD Plus',tone:'plus',icon:'<i data-lucide="sparkles"></i>',confirmText:'確認升級 $299 / 月',cancelText:'先不用'});if(!ok)return;const p=new URLSearchParams();p.append('action','upgradeVip');p.append('shopId',shopId);p.append('uid',userStats.lineUid);fetch(gasUrl,{method:'POST',body:p}).then(r=>r.json()).then(res=>{if(res.status==='success'){localStorage.setItem('seefood_merchant_vip','true');seefoodAlert('這間店已升級 Plus。獵物曝光排序加權、10 格商品欄位與進階分析已開啟。',{title:'Plus 已開通',tone:'success'});merchantAnalytics30Cache={};loadShopDashboardV25(shopId,true)}else seefoodAlert(res.msg||'升級未完成，請稍後再試。',{title:'升級未完成',tone:'danger'})}).catch(()=>seefoodAlert('目前無法連線，請稍後再試。',{title:'連線異常',tone:'danger'}))} async function showAppTutorial(){const isiOS=/iPhone|iPad|iPod/i.test(navigator.userAgent),isAndroid=/Android/i.test(navigator.userAgent),inLine=/Line\//i.test(navigator.userAgent);let intro=inLine?'<div class="sf-browser-note"><b>目前在 LINE 內建瀏覽器</b><span>請先使用右上角選單，以 Safari／Chrome 開啟，再加入主畫面。</span></div>':'';let steps=isiOS?['使用 Safari 開啟 SEEFOOD','點 Safari 的「分享」按鈕','向下找到「加入主畫面」','確認名稱後點「新增」']:isAndroid?['使用 Chrome 開啟 SEEFOOD','點右上角「⋮」選單','選「加到主畫面」或「安裝應用程式」','依畫面提示完成新增']:['iPhone：Safari「分享 → 加入主畫面」','Android：Chrome「⋮ → 加到主畫面／安裝應用程式」'];const html=intro+'<div class="sf-install-steps">'+steps.map((x,i)=>`<div><b>${i+1}</b><span>${x}</span></div>`).join('')+'</div><p class="sf-plus-note">加入後會像 App 圖示一樣出現在桌面，但不需要另外下載 App。</p>';await seefoodConfirm(html,{html:true,title:'加入手機主畫面',icon:'<i data-lucide="smartphone"></i>',confirmText:'我知道了',cancelText:'關閉'})} function activeShopId() { return localStorage.getItem('seefood_merchant_shop_id') || 'NO_SHOP'; }
         function slotDataKey(index, shopId = activeShopId()) { return `seefood_shop_${shopId}_slot_data_${index}`; }
         function slotLockKey(index, shopId = activeShopId()) { return `seefood_shop_${shopId}_slot_${index}_locked`; }
         function getSlotSaved(index) { return localStorage.getItem(slotDataKey(index)); }
@@ -1904,7 +1907,7 @@ window.addEventListener('DOMContentLoaded',()=>{
             }
             const btn = document.getElementById('btn-online-submit'); if(btn) { btn.innerText = "⏳ 同步中..."; btn.disabled = true; }
             const __up0=performance.now();
-            fetch(actionApiUrl, { method: "POST", body: formData }).then(res => res.json()).then(resJson => {
+            fetch(gasUrl, { method: "POST", body: formData }).then(res => res.json()).then(resJson => {
                 sfPerfLog('UPDATE STATUS',performance.now()-__up0,{server:resJson?._perf?.serverMs??'',marks:resJson?._perf?.marks??''});
                 if(btn) { btn.innerText = "立即開賣"; btn.disabled = false; }
                 if (resJson.status === "error") { alert(resJson.msg); return; }
@@ -1959,7 +1962,7 @@ window.addEventListener('DOMContentLoaded',()=>{
             const refUid = urlParams.get('ref') || "";
 
             const d = new URLSearchParams(); d.append('action', 'register'); d.append('merchantName', name); d.append('merchantAddress', address); d.append('merchantPhone', phone); d.append('ownerName', owner); d.append('ownerPhone', oPhone); d.append('ownerLine', oLine); d.append('lineUid', userStats.lineUid); d.append('merchantEmail', email); d.append('merchantType',mType);d.append('referrerUid',refUid);d.append('responsibleMode',responsibleMode);
-            fetch(actionApiUrl, { method: "POST", body: d }).then(res => res.json()).then(resJson => {
+            fetch(gasUrl, { method: "POST", body: d }).then(res => res.json()).then(resJson => {
                 if (resJson.status === "success") { 
                     alert(resJson.kycInherited?'✅ 新店建立完成！\n已沿用商家主帳號的實名與收款資料，不需重新簽署。':'🎉 店鋪建立完成！\n此店需完成負責人實名後才會解除撥款鎖定。'); localStorage.setItem('seefood_merchant_shop_id', resJson.shopId); localStorage.setItem('seefood_merchant_shop_name', resJson.shopName); document.getElementById('merchant-registration-zone').style.display = 'none'; const c=document.getElementById('cancel-add-shop-btn'); if(c)c.classList.add('hidden'); checkMerchantUrlParameters(); syncUserDataFromCloud();
                 } else if (resJson.status === "error" && resJson.shopId) { alert(resJson.msg); localStorage.setItem('seefood_merchant_shop_id', resJson.shopId); localStorage.setItem('seefood_merchant_shop_name', resJson.shopName); checkMerchantUrlParameters(); syncUserDataFromCloud(); } else { alert(resJson.msg || "申請失敗"); }
@@ -2084,7 +2087,7 @@ window.addEventListener('DOMContentLoaded',()=>{
             const select=document.getElementById('m30-range'); if(select)select.disabled=true;
             try{
                 const p=new URLSearchParams({action:'getMerchantAnalyticsBundle',uid,shopId,forceRefresh:force?'1':'0'});
-                const r=await fetch(actionApiUrl,{method:'POST',body:p}); const j=await r.json();
+                const r=await fetch(gasUrl,{method:'POST',body:p}); const j=await r.json();
                 if(j.status==='success'&&j.analyticsByRange){Object.entries(j.analyticsByRange).forEach(([d,a])=>{merchantAnalytics30Cache[shopId+'_'+d]={ts:Date.now(),data:a};}); const target=j.analyticsByRange[days]||j.analyticsByRange['7']; if(target)renderMerchantAnalytics30(target);}
             }catch(e){console.warn('analytics bundle',e);}
             finally{if(select)select.disabled=false;}
@@ -2158,8 +2161,6 @@ window.addEventListener('DOMContentLoaded',()=>{
         function checkHashAndSwitch() { const hash = window.location.hash.replace('#', '').split('?')[0]; switchTab(['home', 'orders', 'achievement', 'merchant'].includes(hash) ? hash : 'home'); }
         
         window.addEventListener('DOMContentLoaded', () => {
-            // Banner is a core navigation surface and must not depend on a successful API response.
-            startBannerCarousel();
             checkHashAndSwitch();
             checkMerchantUrlParameters();
             setupMobileFormFocus30();
@@ -2257,7 +2258,7 @@ window.addEventListener('DOMContentLoaded',()=>{
             const signCvs = document.getElementById('sign-canvas'); const signBase64 = signCvs.toDataURL('image/png');
             showGlobalLoading('安全送出中', ocr.available?'證號比對完成，正在寫入驗證紀錄…':'OCR 暫時不可用，本次將進入例外審核，不會自動通過。');
             const d = new URLSearchParams(); d.append('action', 'signContract'); d.append('shopId', shopId); d.append('uid', userStats.lineUid); d.append('signerName', sName); d.append('signerId', sId); d.append('bankCode', bCode); d.append('bankBranch', bBranch); d.append('bankAccount', bAcc); d.append('bankOwner', bOwner); d.append('idCardImage',contractIdBase64);d.append('signImage',signBase64);d.append('imageWidth',contractImageMetrics.width);d.append('imageHeight',contractImageMetrics.height);d.append('imageFileSize',contractImageMetrics.fileSize);d.append('imageVariance',contractImageMetrics.variance);d.append('imageBrightness',contractImageMetrics.brightness);d.append('signatureLength',signatureStrokeLength);d.append('signatureWidth',Math.max(0,signatureMetrics.maxX-signatureMetrics.minX));d.append('signatureHeight',Math.max(0,signatureMetrics.maxY-signatureMetrics.minY));d.append('signatureTurns',signatureMetrics.turns);d.append('signatureStrokes',signatureMetrics.strokes||0);d.append('ocrAvailable',ocr.available?'1':'0');d.append('ocrIdMatched',ocr.matched?'1':'0');d.append('ocrConfidence',ocr.confidence||0);
-            fetch(actionApiUrl, { method: "POST", body: d }).then(res => res.json()).then(resJson => {
+            fetch(gasUrl, { method: "POST", body: d }).then(res => res.json()).then(resJson => {
                 if(resJson.status === "success") {
                     alert("實名與收款資料已完成基礎驗證。\n同一商家主帳號的同責任人店鋪可沿用。"); localStorage.setItem('seefood_merchant_contract_status', '已完成'); localStorage.setItem('seefood_signer_name', sName); localStorage.setItem('seefood_signer_id', sId); localStorage.setItem('seefood_merchant_bank_code', bCode); localStorage.setItem('seefood_merchant_bank_branch', bBranch); localStorage.setItem('seefood_merchant_bank_account', bAcc); localStorage.setItem('seefood_merchant_bank_owner', bOwner);
                     closeContractModal(); document.getElementById('contract-warning-wall').classList.add('hidden'); document.getElementById('contract-success-wall').classList.remove('hidden');
@@ -2316,13 +2317,6 @@ window.addEventListener('DOMContentLoaded',()=>{
 .sf-demand-signal{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:stretch;background:#fff;border:1px solid #E2E7EC;border-radius:16px;padding:10px;margin-top:10px}.sf-demand-signal>div{background:#F7F9FB;border-radius:12px;padding:9px 10px}.sf-demand-signal p{font-size:9px;color:#7A8590}.sf-demand-signal b{font-size:20px;color:#0B2239}.sf-demand-signal span{font-size:8px;color:#8A96A3;margin-left:2px}.sf-demand-signal button{border:0;border-radius:12px;background:#F4B41A;color:#0B2239;padding:0 12px;font-size:10px;font-weight:950}
 .sf-live-order{background:#fff;border:1px solid #E1E6EA;border-radius:13px;padding:11px;display:flex;justify-content:space-between;gap:10px}.sf-live-order b,.sf-live-order span,.sf-live-order small,.sf-live-order strong{display:block}.sf-live-order b{font:900 11px ui-monospace,SFMono-Regular,monospace;color:#0B2239}.sf-live-order span{font-size:11px;font-weight:900;color:#263849;margin-top:3px}.sf-live-order small{font-size:9px;color:#7A8590}.sf-live-order strong{font-size:13px;color:#A36C00;margin-top:3px}
 @media(max-width:420px){.sf-demand-signal{grid-template-columns:1fr 1fr}.sf-demand-signal button{grid-column:1/-1;padding:10px}}
-
-/* RC2.10.9.4 — formal D1 primary UI recovery */
-.sf-hero-fallback:not(.hidden){display:block!important}
-.sf-support-handle{display:flex!important}
-@media(min-width:900px){.sf-support-handle{right:24px!important;bottom:24px!important}}
-@media(max-width:899px){body.sf-perf-enabled .sf-support-handle{bottom:calc(148px + env(safe-area-inset-bottom))!important}}
-body.sf-checkout-open #sf-support-handle{display:none!important}
 
 /* RC2.10.1 — live notification polish */
 .sf-hunter-notice{width:100%;border:1px solid #E2E7EC;background:#fff;border-radius:14px;padding:11px;display:flex;align-items:flex-start;gap:10px;text-align:left}.sf-hunter-notice.new{border-color:#E8CF7A;background:#FFF9E8}.sf-hunter-notice>span{width:31px;height:31px;border-radius:10px;background:#EEF2F5;color:#0B2239;display:grid;place-items:center;flex:none}.sf-hunter-notice.new>span{background:#FFF0B7;color:#805800}.sf-hunter-notice svg{width:16px}.sf-hunter-notice b,.sf-hunter-notice small{display:block}.sf-hunter-notice b{font-size:11px;color:#0B2239}.sf-hunter-notice small{font-size:9px;color:#6F7C88;line-height:1.45;margin-top:3px}
@@ -2409,7 +2403,7 @@ body.sf-checkout-open #sf-support-handle{display:none!important}
         document.addEventListener('visibilitychange',()=>{if(!document.hidden&&(window.location.hash||'').includes('merchant'))refreshMerchantLive210();});
         document.addEventListener('visibilitychange',()=>{if(!document.hidden&&userStats.lineUid!=='LINE_GUEST'){const dirty=Number(localStorage.getItem('sf_my_hunts_dirty')||0);if(dirty){refreshMyHunts210();localStorage.removeItem('sf_my_hunts_dirty');}sfRefreshAttentionDots();}});
 
-  window.loadMerchantOrderLedger30=async function(force){const uid=userStats.lineUid,shopId=localStorage.getItem('seefood_merchant_shop_id')||'',box=document.getElementById('m30-order-ledger');if(!uid||!shopId||!box)return;try{const p=new URLSearchParams({action:'getMerchantOrders',uid,shopId,limit:'30'});const r=await fetch(actionApiUrl,{method:'POST',body:p});const j=await r.json();if(j.status!=='success')return;box.innerHTML=(j.orders||[]).map(o=>`<div class="sf-order-ledger-row grid grid-cols-[1.2fr_1fr_auto] gap-3 items-center py-3 border-t border-slate-100 text-xs"><div><b class="font-mono text-slate-800">${escapeHTML(o.orderId)}</b><div class="text-slate-500 mt-1">${escapeHTML(o.item)}</div></div><div><span class="sf-order-status ${o.status==='Redeemed'?'ok':o.status==='Paid'?'warn':''}">${escapeHTML(o.statusLabel)}</span><div class="text-slate-400 mt-1">${escapeHTML(o.settlementLabel||'')}</div></div><div class="sf-order-money text-right"><b class="text-slate-900">$${Math.round(o.itemPrice||0)}</b><div class="text-slate-500 mt-1">應收 $${Math.round(o.netIncome||0)}</div></div></div>`).join('')||'<div class="text-xs text-slate-400 py-4">尚無訂單</div>'}catch(e){box.innerHTML='<div class="text-xs text-red-400 py-3">訂單載入失敗，請稍後重試</div>'}};
+  window.loadMerchantOrderLedger30=async function(force){const uid=userStats.lineUid,shopId=localStorage.getItem('seefood_merchant_shop_id')||'',box=document.getElementById('m30-order-ledger');if(!uid||!shopId||!box)return;try{const p=new URLSearchParams({action:'getMerchantOrders',uid,shopId,limit:'30'});const r=await fetch(gasUrl,{method:'POST',body:p});const j=await r.json();if(j.status!=='success')return;box.innerHTML=(j.orders||[]).map(o=>`<div class="sf-order-ledger-row grid grid-cols-[1.2fr_1fr_auto] gap-3 items-center py-3 border-t border-slate-100 text-xs"><div><b class="font-mono text-slate-800">${escapeHTML(o.orderId)}</b><div class="text-slate-500 mt-1">${escapeHTML(o.item)}</div></div><div><span class="sf-order-status ${o.status==='Redeemed'?'ok':o.status==='Paid'?'warn':''}">${escapeHTML(o.statusLabel)}</span><div class="text-slate-400 mt-1">${escapeHTML(o.settlementLabel||'')}</div></div><div class="sf-order-money text-right"><b class="text-slate-900">$${Math.round(o.itemPrice||0)}</b><div class="text-slate-500 mt-1">應收 $${Math.round(o.netIncome||0)}</div></div></div>`).join('')||'<div class="text-xs text-slate-400 py-4">尚無訂單</div>'}catch(e){box.innerHTML='<div class="text-xs text-red-400 py-3">訂單載入失敗，請稍後重試</div>'}};
   window.sfReportOrderIssue24=async function(orderId){const ok=await seefoodConfirm(`<div class="text-left text-xs leading-6"><b>訂單 ${escapeHTML(orderId)}</b><br>已付款訂單不開放買家自行取消、退款或建立爭議；買家延遲／逾期未取不受理退款。若有餐點品質、品項重大不符、店家無法供餐或食安疑慮，請聯絡官方 LINE，由客服在後台建立案件並人工判斷。</div>`,{html:true,title:'聯絡 SEEFOOD 客服',tone:'warning',confirmText:'前往官方 LINE',cancelText:'先不用'});if(!ok)return;try{await navigator.clipboard.writeText(`SEEFOOD 訂單問題：${orderId}`)}catch(_e){}window.location.href='https://line.me/R/ti/p/@398ndwec'};
   const oldTickets=window.renderSavedTicketsWall;
   if(oldTickets) window.renderSavedTicketsWall=function(){
