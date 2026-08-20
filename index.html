@@ -1127,12 +1127,10 @@ window.addEventListener('DOMContentLoaded',()=>{
     </div>
 
     <script>
-        const legacyGasUrl = "https://script.google.com/macros/s/AKfycbxOsS40qejUGDKjp0kQFn76CeM0DBiTN41HHorYJ6gBa9qK1fTEP3xDRbn7CgXo3C4Z9g/exec";
-        const __sfD1Shadow = new URLSearchParams(window.location.search).get('d1') === '1';
         const __sfProductionLiffId = '2010392646-KEEBg8gS';
-        const __sfShadowLiffId = new URLSearchParams(window.location.search).get('liffId') || '';
-        const __sfLiffId = __sfD1Shadow ? __sfShadowLiffId : __sfProductionLiffId;
-        const gasUrl = __sfD1Shadow ? '/api/action' : legacyGasUrl;
+        const __sfLiffId = __sfProductionLiffId;
+        // RC2.11：主站唯一 Runtime。所有營運 action 直接走 Cloudflare Worker + D1，不再依 query 切回 GAS。
+        const gasUrl = '/api/action';
         let storesData = []; let locationHierarchy = {}; let currentSortMethod = 'recommend'; let currentOrder = {}; let orderSubTab = 'active';
         let userStats = { co2Total: 0.0, savedAmount: 0, hasFirstOrder: false, storeCounts: {}, unlockedTimes: { lunch: false, nightMarket: false, midnight: false }, lineUid: "LINE_GUEST", merchantFinance: null };
         let userLocation = null; let cloudBanners = []; let bannerIndex = 0;
@@ -1306,11 +1304,10 @@ window.addEventListener('DOMContentLoaded',()=>{
         function sfWithTimeout30(p,ms,label='TIMEOUT'){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error(label)),ms))]);}
         async function ensureLiffReady30(){
             if(sfLiffReadyPromise)return sfLiffReadyPromise;
-            sfLiffReadyPromise=(async()=>{if(!window.liff)throw new Error('LIFF_SDK_UNAVAILABLE');if(!__sfLiffId){const e=new Error('D1 Shadow 尚未指定 staging LIFF ID');e.code='D1_SHADOW_LIFF_NOT_CONFIGURED';throw e;}await sfWithTimeout30(liff.init({liffId:__sfLiffId}),6000,'LIFF_INIT_TIMEOUT');return true;})();
+            sfLiffReadyPromise=(async()=>{if(!window.liff)throw new Error('LIFF_SDK_UNAVAILABLE');if(!__sfLiffId){const e=new Error('SEEFOOD 尚未設定 LINE LIFF ID');e.code='LIFF_NOT_CONFIGURED';throw e;}await sfWithTimeout30(liff.init({liffId:__sfLiffId}),6000,'LIFF_INIT_TIMEOUT');return true;})();
             try{return await sfLiffReadyPromise}catch(e){sfLiffReadyPromise=null;throw e;}
         }
         async function sfEstablishD1Session30(){
-            if(!__sfD1Shadow)return true;
             if(!window.liff||!liff.isLoggedIn())return false;
             const token=liff.getAccessToken();if(!token)return false;
             const r=await sfWithTimeout30(fetch('/api/auth/line',{method:'POST',body:new URLSearchParams({accessToken:token})}),6000,'D1_AUTH_TIMEOUT');
@@ -1325,7 +1322,7 @@ window.addEventListener('DOMContentLoaded',()=>{
             sessionStorage.removeItem('sf_guest_choice');
             // Preserve where the user was trying to go before LINE round-trip.
             try{sessionStorage.setItem('sf_login_return_hash',window.location.hash||'#home');}catch(_e){}
-            const LIFF_URL=`https://liff.line.me/${encodeURIComponent(__sfLiffId)}`+(__sfD1Shadow?`?d1=1&liffId=${encodeURIComponent(__sfLiffId)}`:'');
+            const LIFF_URL=`https://liff.line.me/${encodeURIComponent(__sfLiffId)}`;
 
             try{
                 await ensureLiffReady30();
@@ -1352,8 +1349,8 @@ window.addEventListener('DOMContentLoaded',()=>{
                 window.location.assign(LIFF_URL);
             }catch(err){
                 console.error('LINE 登入啟動失敗',err);
-                if(err&&(err.code==='LINE_SESSION_NOT_CONFIGURED'||err.code==='D1_SHADOW_LIFF_NOT_CONFIGURED')){
-                    seefoodAlert(err.message||'D1 後台測試環境尚未完成 LINE session 設定。',{title:'D1 後台尚未就緒',tone:'warning'});
+                if(err&&(err.code==='LINE_SESSION_NOT_CONFIGURED'||err.code==='LIFF_NOT_CONFIGURED')){
+                    seefoodAlert(err.message||'SEEFOOD 登入服務尚未完成安全設定。',{title:'登入服務尚未就緒',tone:'warning'});
                     return;
                 }
                 // Even if LIFF SDK initialization itself is blocked/slow, the official LIFF URL
@@ -1366,7 +1363,7 @@ window.addEventListener('DOMContentLoaded',()=>{
         async function initLiffAuth(){
             if(window.location.protocol==='file:'){loadUserStats();return 'guest';}
             try{await ensureLiffReady30();if(liff.isLoggedIn()){const p=await sfWithTimeout30(liff.getProfile(),5000,'LIFF_PROFILE_TIMEOUT');userStats.lineUid=p.userId;localStorage.setItem('seefood_line_uid',p.userId);await sfEstablishD1Session30();hideAuthChoice30();syncUserDataFromCloud();try{const rh=sessionStorage.getItem('sf_login_return_hash');if(rh){sessionStorage.removeItem('sf_login_return_hash');setTimeout(()=>{window.location.hash=rh;checkHashAndSwitch();},80);}}catch(_e){}return 'login';}userStats.lineUid='LINE_GUEST';loadUserStats();if(liff.isInClient&&liff.isInClient()){liff.login({redirectUri:window.location.href});return 'redirect';}if(sessionStorage.getItem('sf_guest_choice')!=='1')showAuthChoice30();return 'guest';}
-            catch(err){console.error('LIFF 初始化失敗',err);if(err&&(err.code==='LINE_SESSION_NOT_CONFIGURED'||err.code==='D1_SHADOW_LIFF_NOT_CONFIGURED'))seefoodAlert(err.message||'D1 後台測試環境尚未完成 LINE session 設定。',{title:'D1 後台尚未就緒',tone:'warning'});userStats.lineUid='LINE_GUEST';loadUserStats();if(sessionStorage.getItem('sf_guest_choice')!=='1')showAuthChoice30();return 'guest';}
+            catch(err){console.error('LIFF 初始化失敗',err);if(err&&(err.code==='LINE_SESSION_NOT_CONFIGURED'||err.code==='LIFF_NOT_CONFIGURED'))seefoodAlert(err.message||'SEEFOOD 登入服務尚未完成安全設定。',{title:'登入服務尚未就緒',tone:'warning'});userStats.lineUid='LINE_GUEST';loadUserStats();if(sessionStorage.getItem('sf_guest_choice')!=='1')showAuthChoice30();return 'guest';}
         }
         async function bootstrapIdentity30(){if(!hasAcceptedTos30())return 'tos';return await initLiffAuth();}
 
@@ -1600,16 +1597,9 @@ window.addEventListener('DOMContentLoaded',()=>{
             sfLiveStoresBusy=true;
             try {
                 const __net0=performance.now();
-                let resJson;
-                try{
-                    const __homeUrl=(__sfD1Shadow?'/api/home':legacyGasUrl)+'?t='+new Date().getTime();
-                    resJson=await sfFetchJsonWithTimeout(__homeUrl,__sfD1Shadow?5000:12000);
-                    if(!resJson||resJson.status!=='success')throw new Error('HOME_FEED_INVALID_RESPONSE');
-                }catch(__homePrimaryErr){
-                    if(!__sfD1Shadow)throw __homePrimaryErr;
-                    console.warn('D1 Home Feed failed; fallback to GAS',__homePrimaryErr);
-                    resJson=await sfFetchJsonWithTimeout(legacyGasUrl+'?t='+new Date().getTime(),12000);
-                }
+                const __homeUrl='/api/home?t='+new Date().getTime();
+                const resJson=await sfFetchJsonWithTimeout(__homeUrl,5000);
+                if(!resJson||resJson.status!=='success')throw new Error('HOME_FEED_INVALID_RESPONSE');
                 const __netMs=performance.now()-__net0; const rawData = resJson.stores || []; const baseSavedKg = resJson.totalSavedKg || 1285.5;
                 let totalReg = resJson.registeredStores || 0; textBannerTemplates[0].text = `獵人雷達點燈：全台已進駐 ${totalReg}/100 店，滿百即刻開車解鎖！`; const bText = document.getElementById('text-banner-text');
                 if(bText && bannerIndex === 0) bText.innerText = textBannerTemplates[0].text;
@@ -1694,7 +1684,7 @@ window.addEventListener('DOMContentLoaded',()=>{
                 if (!s.lat || !s.lng) { distanceHtml = `<p class="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-0.5 rounded">📍 新商店地圖建置中</p>`; } else if (!userLocation) { distanceHtml = `<p class="text-xs text-blue-500 font-bold cursor-pointer animate-pulse bg-blue-50 px-2 py-0.5 rounded border border-blue-200 shadow-sm" onclick="requestLocation()">📍 點我解鎖真實距離</p>`; } else { let distDisplay = s.distance > 1000 ? (s.distance/1000).toFixed(1) + "km" : s.distance + "m"; distanceHtml = `<p class="text-xs text-gray-400 font-bold">📍 距離 ${distDisplay}</p>`; }
                 let safeJsName = escapeHTML(s.name).replace(/'/g, "\\'"); let safeJsItem = escapeHTML(s.item).replace(/'/g, "\\'"); let safeJsAddress = escapeHTML(s.address).replace(/'/g, "\\'"); let safeJsPhone = escapeHTML(s.phone).replace(/'/g, "\\'"); let safeJsTime = escapeHTML(s.time).replace(/'/g, "\\'");
                 let taxWarningHtml = ''; if (s.merchantType && s.merchantType.includes('個體戶')) { taxWarningHtml = `<p class="text-[9px] text-gray-400 mt-2 border-t border-dashed border-gray-200 pt-2 font-bold leading-tight">⚠️ 本店鋪為個人惜福個體，依法由賣方自負申報，不提供統一發票。</p>`; }
-                container.innerHTML += `<article class="sf-hunt-card ${isGoldenVip ? 'sf-hunt-priority' : ''}"><div class="sf-hunt-head"><div><p class="sf-hunt-location">${escapeHTML(s.district)} · ${escapeHTML(s.name)}${isGoldenVip ? ' <span title="Plus / Pro 獵場" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#D7A928;vertical-align:middle;margin-left:3px"></span>' : ''}</p>${distanceHtml}</div><span class="sf-stock">剩 ${s.remain}</span></div><div class="sf-hunt-body"><h3>${escapeHTML(s.item)}</h3><p>${escapeHTML(s.note||'')}</p><div class="sf-hunt-meta"><span><i data-lucide="clock-3"></i>${escapeHTML(formatPickupTime30(s.time))}</span><span><i data-lucide="store"></i>外帶自取</span></div></div>${taxWarningHtml}<div class="sf-hunt-foot"><div>${s.discountPrice === 0 ? `<span class="sf-free">免費惜福</span>` : `<span class="sf-old-price">$${s.originalPrice}</span><strong>${Math.round(s.discountRate*10)}折 · $${s.discountPrice}</strong>`}</div><div class="sf-hunt-actions"><button type="button" onclick="shareHunt210(event,'${safeJsName}','${safeJsItem}',${s.originalPrice},${s.discountPrice},${s.remain},'${s.shopId}')" class="sf-share-hunt" aria-label="分享這份獵物"><i data-lucide="share-2"></i></button><button onclick="openCheckout('${safeJsName}', '${safeJsItem}', ${s.discountPrice}, '${safeJsTime}', ${s.itemIndex}, ${s.originalPrice}, '${s.shopId}', '${safeJsAddress}', '${safeJsPhone}')" class="sf-primary-action">獵取</button></div></div></article>`;
+                container.innerHTML += `<article class="sf-hunt-card ${isGoldenVip ? 'sf-hunt-priority' : ''}"><div class="sf-hunt-head"><div><p class="sf-hunt-location">${escapeHTML(s.district)} · ${escapeHTML(s.name)}${s.isVip ? ' <span title="SEEFOOD Plus 獵場" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#D7A928;vertical-align:middle;margin-left:3px"></span>' : ''}</p>${distanceHtml}</div><span class="sf-stock">剩 ${s.remain}</span></div><div class="sf-hunt-body"><h3>${escapeHTML(s.item)}</h3><p>${escapeHTML(s.note||'')}</p><div class="sf-hunt-meta"><span><i data-lucide="clock-3"></i>${escapeHTML(formatPickupTime30(s.time))}</span><span><i data-lucide="store"></i>外帶自取</span></div></div>${taxWarningHtml}<div class="sf-hunt-foot"><div>${s.discountPrice === 0 ? `<span class="sf-free">免費惜福</span>` : `<span class="sf-old-price">$${s.originalPrice}</span><strong>${Math.round(s.discountRate*10)}折 · $${s.discountPrice}</strong>`}</div><div class="sf-hunt-actions"><button type="button" onclick="shareHunt210(event,'${safeJsName}','${safeJsItem}',${s.originalPrice},${s.discountPrice},${s.remain},'${s.shopId}')" class="sf-share-hunt" aria-label="分享這份獵物"><i data-lucide="share-2"></i></button><button onclick="openCheckout('${safeJsName}', '${safeJsItem}', ${s.discountPrice}, '${safeJsTime}', ${s.itemIndex}, ${s.originalPrice}, '${s.shopId}', '${safeJsAddress}', '${safeJsPhone}')" class="sf-primary-action">獵取</button></div></div></article>`;
             });
         }
 

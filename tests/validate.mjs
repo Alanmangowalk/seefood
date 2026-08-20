@@ -13,7 +13,7 @@ const check = (condition, message) => {
 };
 
 check(worker.includes("const PARTNER_RULE = 'PARTNER-2.0-SERVICE-FEE-ONLY'"), 'Partner rule is not v2 service-fee-only');
-check(worker.includes("const RELEASE = '3.0-RC2.10.9.3-D1-SHADOW'"), 'Worker release marker is missing');
+check(worker.includes("const RELEASE = '3.0-RC2.11.0-D1-MAIN-CANDIDATE'"), 'Worker main-candidate release marker is missing');
 check(worker.includes("const PARTNER_CONTRACT_VERSION = 'PARTNER-2.0-SERVICE-FEE-ONLY'"), 'Partner contract is not v2');
 check(worker.includes('const REFUND_WINDOW_DAYS = 14'), '14-day refund decision window is missing');
 check(worker.includes("contract_version=? AND status='SIGNED'"), 'Onboarding does not require the current contract version');
@@ -43,8 +43,8 @@ const ecpayBody = worker.slice(ecpayStart, verifyStart);
 const verifyBody = worker.slice(verifyStart, consentStart);
 check(!ecpayBody.includes('createCommission('), 'ECPay callback still creates commission before redemption');
 check(verifyBody.includes('createCommission('), 'verifyOrder does not create commission after redemption');
-check(worker.includes("ClientBackURL:`${new URL(request.url).origin}/?d1=1#orders`"), 'ECPay return loses D1 Shadow mode');
-check(!worker.includes("'index.html#merchant'"), 'Merchant notification deep link loses D1 Shadow mode');
+check(worker.includes("ClientBackURL:`${new URL(request.url).origin}/#orders`"), 'ECPay return does not return to the main site');
+check(!worker.includes('?d1=1'), 'Worker still emits Shadow deep links');
 
 const expectedActions = [
   'syncCore','syncUser','getShopDashboard','getMerchantLiveState','register','updateStatus','buyItem','verifyOrder',
@@ -59,12 +59,13 @@ check(worker.includes("url.pathname==='/api/ecpay/return'"), 'Dedicated ECPay ca
 check(index.includes('seefood-rc210871-scroll-shell-only'), 'Mobile scroll-shell fix regressed');
 check(index.includes('sfCommitHomeFeed30'), 'Home Feed multi-tick commit fix regressed');
 check(index.includes('sfScheduleHomeFeedCommit30'), 'Home Feed schedule fix regressed');
-check(index.includes("get('d1') === '1'"), 'D1 Shadow switch is missing');
-check(index.includes("const gasUrl = __sfD1Shadow ? '/api/action' : legacyGasUrl"), 'D1 action routing is missing');
-check(index.includes("__sfD1Shadow?'/api/home':legacyGasUrl"), 'D1 Home Feed routing is missing');
-check(index.includes('sfEstablishD1Session30'), 'D1 LINE session handshake is missing');
-check(index.includes('D1_SHADOW_LIFF_NOT_CONFIGURED'), 'Shadow LIFF configuration gate is missing');
-check(index.includes('?d1=1&liffId='), 'Shadow LIFF redirect does not preserve D1 mode');
+check(!index.includes('legacyGasUrl'), 'Legacy GAS runtime URL is still present in the main site');
+check(!index.includes('__sfD1Shadow'), 'Shadow query switch is still present in the main site');
+check(index.includes("const gasUrl = '/api/action'"), 'Main-site action routing is not fixed to Worker + D1');
+check(index.includes("const __homeUrl='/api/home?t='"), 'Main-site Home Feed is not fixed to Worker + D1');
+check(index.includes('sfEstablishD1Session30'), 'LINE server-session handshake is missing');
+check(index.includes("const __sfLiffId = __sfProductionLiffId"), 'Main site is not fixed to the production LIFF ID');
+check(!index.includes('?d1=1'), 'Shadow query parameters still exist in Index');
 check(index.includes('分潤合作約定 v2.0'), 'Frontend Partner contract label is not v2.0');
 check(index.includes("seefood_tos_version')==='3.0.2'"), 'Refund policy did not bump the TOS version');
 check(index.includes('買家延遲或逾期未取不受理取消／退款'), 'Late-pickup no-refund copy is missing');
@@ -72,12 +73,17 @@ check(!index.includes("action:'createDispute'"), 'Frontend still opens a buyer s
 check(index.includes('https://line.me/R/ti/p/@398ndwec'), 'Official support handoff is missing');
 check(!/VIP\s*\+?\s*150|Plus[^\n]{0,120}(?:分潤|收益)[^\n]{0,80}50%/i.test(index), 'Legacy Plus/VIP commission promise remains in Index');
 
-check(wrangler.name === 'seefood-d1-shadow', `Unsafe Worker name: ${wrangler.name}`);
-check(wrangler.d1_databases?.[0]?.database_name === 'seefood-staging', 'D1 binding is not staging');
+check(wrangler.name === 'seefood', `Main Worker name should be seefood, received: ${wrangler.name}`);
+check(wrangler.d1_databases?.[0]?.database_name === 'seefood-staging', 'Current live D1 binding changed unexpectedly; review data migration before renaming');
 for (const privatePath of ['worker.js', 'migrations/**', 'tests/**', 'VALIDATION_REPORT.md', 'SHA256SUMS.txt']) {
   check(assetsIgnore.includes(privatePath), `Static assets ignore is missing: ${privatePath}`);
 }
-check(!fs.existsSync(new URL('guide.html', root)) && !fs.existsSync(new URL('radar.html', root)), 'Guide/Radar must not be included in this package');
+check(fs.existsSync(new URL('guide.html', root)) && fs.existsSync(new URL('radar.html', root)), 'Main-site package must include Guide and Radar');
+
+check(index.includes('const vip = s.isVip ? 10 : 0;'), 'Plus recommendation weight (+10) is missing');
+check(index.includes("if (currentSortMethod === 'recommend') { filtered.forEach(s => s.huntScore = calculateHuntScore(s));"), 'Plus/recommendation score is not confined to Recommend sorting');
+check(index.includes("else filtered.sort((a,b) => a.distance - b.distance);"), 'Distance sort is no longer pure distance');
+check(index.includes("${s.isVip ? ' <span title=\"SEEFOOD Plus 獵場\""), 'Active Plus identity marker is not shown independently of deep-discount styling');
 
 const inlineScripts = [...index.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1]).filter(s => s.trim());
 inlineScripts.forEach((source, i) => {
